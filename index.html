@@ -483,7 +483,7 @@ footer small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-
         <span class="eyebrow">About</span>
         <h2 class="title">질문을 제품으로<br>바꾸는 사람</h2>
         <p style="margin-top:26px">좋은 서비스는 기술보다 먼저 <b>“누구의 어떤 문제를 왜 풀 것인가”</b>에서 시작한다고 생각합니다. 사용자 맥락을 구조화하고, 데이터로 가설을 확인하며, AI가 가장 유용하게 개입할 지점을 설계합니다.</p>
-        <p><b>Life Quiz</b>에서는 사회초년생의 정보 탐색과 망각 문제를 발견해 수집·요약·퀴즈·복습·근거형 챗으로 이어지는 학습 경험을 만들었습니다. <b>SwimTech</b>에서는 흩어진 수영 훈련 경험을 하나의 제품 흐름으로 묶고 동작 분석 가능성을 검증하고 있습니다.</p>
+        <p><b>Life Quiz</b>에서는 사회초년생의 정보 탐색과 망각 문제를 발견해 수집·요약·퀴즈·복습·근거형 챗으로 이어지는 학습 경험을 만들었습니다. <b>SwimMate</b>에서는 흩어진 수영 훈련 경험을 준비도 체크·맞춤 플랜·일지·리포트·코치 피드백으로 연결하고 있습니다.</p>
         <p>와치텍에서 익힌 운영 데이터와 대시보드 설계 경험은 저의 기반입니다. 이제 그 기반 위에서 <b>문제 정의 → 데이터 분석 → AI 기능 설계 → 프로토타입 → 운영 개선</b>을 연결하는 AI 서비스 기획자로 성장하고 있습니다.</p>
         <div class="about-sign">— 진현준</div>
       </div>
@@ -633,29 +633,29 @@ footer small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-
       <p class="st-foot reveal"><b>기획 포인트</b> · AI 생성 품질만이 아니라 출처 신뢰도, 의미 중복 검사, 무료 티어 한도, 익명 사용량 제한까지 운영 정책으로 연결했습니다.</p>
     </div>
 
-    <!-- PRODUCT 02: SwimTech -->
+    <!-- PRODUCT 02: SwimMate -->
     <div class="feature secondary-feature reveal">
       <div class="feature-inner">
         <div class="feature-l">
-          <div class="tag-flag">Product 02 · AI &amp; Data Service</div>
-          <h3>SwimTech</h3>
-          <div class="sub">Swim + Technology · 수영 훈련 여정 통합 플랫폼</div>
+          <div class="tag-flag">Product 02 · Product Planning &amp; Operations</div>
+          <h3>SwimMate</h3>
+          <div class="sub">수영을 시작하는 순간부터 코치 피드백까지 잇는 훈련 플랫폼</div>
           <p class="desc">
-            "러닝은 동작 분석 서비스가 있는데, 수영은 왜 없지?"라는 질문에서 출발했습니다.
-            사용자 수요조사를 바탕으로 수영장 찾기 · 훈련 플랜 · 일지 · 챌린지 · 커뮤니티 · AI 코치를
+            "오늘 내 컨디션에 맞춰 무엇을 얼마나 연습해야 할까?"라는 실제 수영인의 고민에서 출발했습니다.
+            수영장 찾기부터 준비도 체크 · 맞춤 플랜 · 일지 · 월간 리포트 · 챌린지 · 커뮤니티를
             하나의 훈련 여정으로 설계하고 직접 운영하고 있습니다.
-            핵심 가설인 <b style="color:var(--text)">AI 기반 영법 피드백(팔 각도 · 발차기 · 자세)</b>은
-            MediaPipe 관절 추적 데이터로 가능성을 검증하며 정확도를 높이는 단계입니다.
+            최근에는 <b style="color:var(--text)">수면·피로·근육 상태·가능 시간을 0~100점으로 구조화해
+            오늘의 훈련을 조정</b>하고, 코치 코드로 수강생과 연결해 강습안 검토·배포까지 이어지도록 확장했습니다.
           </p>
           <div class="chips">
-            <span class="chip">MediaPipe Tasks API</span>
-            <span class="chip">FastAPI · Celery · Redis</span>
-            <span class="chip">PostgreSQL 15</span>
-            <span class="chip">OpenCV</span>
-            <span class="chip">Metabase</span>
+            <span class="chip">Product Discovery</span>
+            <span class="chip">Adaptive Recommendation</span>
+            <span class="chip">Coach Operations</span>
+            <span class="chip">FastAPI · PostgreSQL</span>
+            <span class="chip">Gemini Structured Output</span>
             <span class="chip">Docker Compose</span>
-            <span class="chip">SSE 스트리밍</span>
-            <span class="chip">3-Track ML</span>
+            <span class="chip">PWA</span>
+            <span class="chip">QA Automation</span>
           </div>
           <div class="hero-actions" style="margin-top:18px">
             <a href="https://swimtech.vercel.app" target="_blank" rel="noopener" class="btn primary">
@@ -669,10 +669,10 @@ footer small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-
           </div>
         </div>
         <div class="feature-r">
-          <div class="fstat"><div class="v" data-count="33"><span class="cv">0</span></div><div class="k">실시간 관절 랜드마크 추적</div></div>
-          <div class="fstat"><div class="v" data-count="30"><span class="cv">0</span><span class="u">fps</span></div><div class="k">프레임 단위 동작 분석</div></div>
-          <div class="fstat"><div class="v" data-count="28"><span class="cv">0</span><span class="u">명</span></div><div class="k">수요조사 응답 · 앱 수요 82%</div></div>
-          <div class="fstat"><div class="v">Phase 1<span class="u" style="font-size:.5em"> 완료</span></div><div class="k">인프라 · 분석엔진 · 인증 구축 (Phase 2: AI 모델 정확도 개선 중)</div></div>
+          <div class="fstat"><div class="v">40<span class="u">+ Improvements</span></div><div class="k">사용자 여정 · 운영 정책 · 기능을 직접 설계하고 제품에 반영</div></div>
+          <div class="fstat"><div class="v">1-Click<span class="u"> Demo</span></div><div class="k">회원가입 없이 대시보드 · 일지 · 리포트 전체 흐름 체험</div></div>
+          <div class="fstat"><div class="v">Coach<span class="u"> Ops</span></div><div class="k">코치–수강생 연결부터 AI 강습안 검토 · 배포 · 피드백까지 설계</div></div>
+          <div class="fstat"><div class="v">160<span class="u">+ QA</span></div><div class="k">기능을 추가할 때마다 함께 확장한 API · UI 자동 검증</div></div>
         </div>
       </div>
     </div>
@@ -684,7 +684,7 @@ footer small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-
           <div class="st-klabel">실제 서비스 화면</div>
           <h3 class="st-title">수영 훈련의 모든 과정을<br>하나의 플랫폼에서</h3>
         </div>
-        <p class="st-desc">수영장 찾기부터 훈련 플랜·일지·챌린지·커뮤니티까지 실제로 운영 중이며, MediaPipe로 추출한 관절 데이터를 종합 점수 · 좌우 대칭 · 팔꿈치 각도 · 부상 위험으로 환산하는 <b>AI 분석 보고서</b>는 정확도 개선을 위한 내부 테스트를 진행하고 있습니다.</p>
+        <p class="st-desc">비회원도 클릭 한 번으로 샘플 데이터를 체험할 수 있습니다. 대시보드에서 <b>오늘의 준비도와 주간 목표를 함께 해석해 훈련 강도·거리·시간을 조정</b>하고, 실행 결과는 일지와 월간 리포트, 다음 추천, 코치 피드백으로 다시 연결됩니다.</p>
       </div>
 
       <div class="shots reveal" data-stagger>
@@ -719,13 +719,13 @@ footer small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-
         </figure>
 
         <figure class="shot c3">
-          <div class="shot-bar"><i></i><i></i><i></i><em>analysis-report (베타)</em></div>
-          <div class="shot-view"><img src="assets/swimtech-analysis-1.jpg" alt="SwimTech AI 분석 보고서 — 종합 점수, 좌우 대칭, 팔꿈치 각도, 추천 드릴" loading="lazy" /></div>
-          <figcaption><b>AI 분석 보고서 (개발 중)</b> · 종합 점수·좌우 대칭·관절 각도·부상 위험·추천 드릴</figcaption>
+          <div class="shot-bar"><i></i><i></i><i></i><em>adaptive-dashboard / demo mode</em></div>
+          <div class="shot-view"><img src="assets/swimmate-dashboard.png" alt="SwimMate 훈련 대시보드 — 오늘의 준비도와 적응형 훈련 추천" loading="lazy" /></div>
+          <figcaption><b>적응형 훈련 대시보드</b> · 준비도 체크인 · 주간 목표 · 추천 세션 · 기록·리포트 연결</figcaption>
         </figure>
       </div>
 
-      <p class="st-foot reveal">JWT·소셜 로그인, 개인화 대시보드(Metabase), AI 코치 챗봇, 자동 로그인, 챌린지·뱃지 시스템까지 — 단독으로 설계·구축하며 지금도 계속 업데이트하고 있는 실제 운영 중인 프로덕트입니다.</p>
+      <p class="st-foot reveal"><b>1인 제품 운영</b> · 비회원 데모, 적응형 추천, 25m/50m 맞춤 플랜, 일지·리포트, 단계형 뱃지, 코치 강습 운영과 관리자 지표까지 — 기획·정책·구현·QA를 한 흐름으로 계속 확장하고 있습니다.</p>
     </div>
 
     <!-- OTHER PROJECTS -->
@@ -783,8 +783,8 @@ footer small{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-
       <div class="skill-group reveal">
         <h4>Prototype &amp; Operation</h4>
         <div class="skill-row"><div class="sk-top"><span class="sk-name">Astro · Cloudflare Workers · D1</span><span class="sk-lv">Life Quiz</span></div><div class="bar"><i data-w="78"></i></div></div>
-        <div class="skill-row"><div class="sk-top"><span class="sk-name">FastAPI · Docker · PostgreSQL</span><span class="sk-lv">SwimTech</span></div><div class="bar"><i data-w="72"></i></div></div>
-        <div class="skill-row"><div class="sk-top"><span class="sk-name">MediaPipe · OpenCV</span><span class="sk-lv">AI 검증</span></div><div class="bar"><i data-w="68"></i></div></div>
+        <div class="skill-row"><div class="sk-top"><span class="sk-name">FastAPI · Docker · PostgreSQL</span><span class="sk-lv">SwimMate</span></div><div class="bar"><i data-w="72"></i></div></div>
+        <div class="skill-row"><div class="sk-top"><span class="sk-name">적응형 추천 · 운영 지표 설계</span><span class="sk-lv">SwimMate</span></div><div class="bar"><i data-w="82"></i></div></div>
         <div class="skill-row"><div class="sk-top"><span class="sk-name">Notion · 문서 · 테스트 자동화</span><span class="sk-lv">운영 체계</span></div><div class="bar"><i data-w="82"></i></div></div>
       </div>
     </div>

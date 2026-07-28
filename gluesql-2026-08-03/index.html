@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GlueSQL의 TableFactor 처리와 첫 기여 후보 #1904를 통해 살펴보는 Parser와 Translator의 경계">
+  <meta name="description" content="TableFactor의 args를 따라가며 이해한 GlueSQL의 Parser와 Translator">
   <meta name="author" content="진현준">
-  <meta property="og:title" content="SQL 한 줄은 어디에서 거절되어야 할까?">
-  <meta property="og:description" content="GlueSQL의 TableFactor 처리와 첫 기여 후보 #1904">
+  <meta property="og:title" content="SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까?">
+  <meta property="og:description" content="TableFactor의 args를 따라가며 이해한 SQL 해석 과정">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://opengraph.githubassets.com/1/gluesql/gluesql/issues/1904">
-  <title>SQL 한 줄은 어디에서 거절되어야 할까? | GlueSQL</title>
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/gluesql/gluesql">
+  <title>SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까? | GlueSQL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -636,47 +636,73 @@
       text-align: right;
     }
 
-    .issue-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
-      gap: 3rem;
-      align-items: center;
-    }
-
-    .issue-status {
+    .learning-layout {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0;
-      border-top: 3px solid var(--ink);
+      gap: 1rem;
     }
 
-    .issue-status div {
-      padding: 1.1rem 0;
-      border-bottom: 1px solid var(--line);
+    .learning-slide .slide-inner {
+      gap: 1.25rem;
     }
 
-    .issue-status div:nth-child(odd) {
+    .learning-slide .statement {
+      padding: 1.4rem 2rem;
+    }
+
+    .learning-panel {
+      padding: 1.8rem;
+      border-top: 6px solid var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .learning-panel:nth-child(2) {
+      border-color: var(--coral);
+      background: var(--coral-soft);
+    }
+
+    .learning-panel .label {
+      display: block;
+      margin-bottom: 0.8rem;
       color: var(--muted);
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.72rem;
+      font-weight: 600;
     }
 
-    .issue-status div:nth-child(even) {
+    .learning-panel h3 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .learning-list {
+      display: grid;
+      gap: 0.85rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: learning-item;
+    }
+
+    .learning-list li {
+      display: grid;
+      grid-template-columns: 1.8rem minmax(0, 1fr);
+      gap: 0.65rem;
+      align-items: start;
+      line-height: 1.55;
+      counter-increment: learning-item;
+    }
+
+    .learning-list li::before {
+      content: "0" counter(learning-item);
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
       font-weight: 700;
     }
 
-    .issue-image {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: white;
-      box-shadow: var(--shadow);
-    }
-
-    .issue-image img {
-      display: block;
-      width: 100%;
-      height: auto;
+    .learning-panel:nth-child(2) .learning-list li::before {
+      color: var(--coral);
     }
 
     .interest-box {
@@ -1025,7 +1051,7 @@
       .lead { font-size: 1.05rem; }
       .cover-grid,
       .two-col,
-      .issue-layout,
+      .learning-layout,
       .decision {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -1116,9 +1142,9 @@
       <span class="slide-number">01 / 12</span>
       <div class="slide-inner cover-grid">
         <div class="cover-copy">
-          <p class="kicker">GlueSQL · First Contribution Study</p>
-          <h1>SQL 한 줄은 어디에서 <span class="accent">거절</span>되어야 할까?</h1>
-          <p class="lead">GlueSQL TableFactor로 살펴본 Parser와 Translator의 경계</p>
+          <p class="kicker">GlueSQL · Reading SQL Internals</p>
+          <h1>SQL 한 줄은 GlueSQL 안에서 어떻게 <span class="accent">읽힐까?</span></h1>
+          <p class="lead">TableFactor의 <code class="mono">args</code>를 따라가며 이해한 Parser와 Translator</p>
           <div class="cover-meta">
             <span>2026.08.03</span>
             <span>진현준</span>
@@ -1131,7 +1157,7 @@ FROM GLUE_TABLES<span class="arg">(1)</span>;</code>
           <span class="question-mark">?</span>
         </div>
       </div>
-      <aside class="notes">오늘은 새로운 SQL 기능을 구현한 이야기가 아닙니다. GlueSQL을 처음 접한 뒤, 지원하지 않는 SQL 입력이 어느 단계에서 거절되어야 하는지 질문하면서 찾은 첫 기여 후보를 공유하겠습니다.</aside>
+      <aside class="notes">오늘은 기여할 이슈를 선언하는 발표가 아닙니다. TableFactor의 args라는 작은 파라미터를 출발점으로 SQL 한 줄이 GlueSQL 내부에서 어떻게 읽히는지 이해해 본 과정을 공유하겠습니다.</aside>
     </section>
 
     <section class="slide" data-title="질문이 관심이 되기까지">
@@ -1157,10 +1183,10 @@ FROM GLUE_TABLES<span class="arg">(1)</span>;</code>
               <p><code class="mono">_</code>를 <code class="mono">None</code>으로 바꾸면 무엇이 달라질까?</p>
             </div>
           </div>
-          <div class="statement">내 관심은 “SQL 문법 추가”보다 <span class="accent">SQL 입력의 지원 경계</span>에 가까웠다.</div>
+          <div class="statement">내 현재 관심은 기능 추가보다 <span class="accent">SQL이 내부 표현으로 바뀌는 과정</span>을 읽는 데 가까웠다.</div>
         </div>
       </div>
-      <aside class="notes">다른 발표처럼 처음부터 거대한 관심 분야를 정하지 못했습니다. 대신 제가 반복해서 물었던 질문을 모아보니 SQL 입력이 내부 표현으로 바뀌는 경계, 특히 Translator의 책임에 관심이 있다는 것을 알게 됐습니다.</aside>
+      <aside class="notes">처음부터 기여 분야를 정하지는 못했습니다. 대신 반복해서 물었던 질문을 모아보니 SQL이 Rust 자료구조로 바뀌는 과정 자체에 관심이 있다는 것을 알게 됐습니다. 이 정도의 방향만 있어도 다음 학습을 고르기에는 충분합니다.</aside>
     </section>
 
     <section class="slide" data-title="SQL 한 줄의 전체 흐름">
@@ -1417,96 +1443,106 @@ Foo(1)</pre>
       <aside class="notes">DELECT는 SQL grammar에 없는 단어라 Parser가 거절합니다. GLUE_TABLES(1)은 sqlparser가 표현 가능한 SQL 구조지만 GlueSQL에는 해당 기능이 없으므로 Translator가 거절해야 합니다. SERIES(3)은 지원되므로 이후 단계로 갑니다.</aside>
     </section>
 
-    <section class="slide" data-title="첫 기여 후보 #1904">
+    <section class="slide learning-slide" data-title="이 실험의 범위">
       <span class="slide-number">09 / 12</span>
-      <div class="slide-inner issue-layout">
+      <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">08 · Contribution Candidate</p>
-          <h2>첫 기여 후보 <span class="blue">#1904</span></h2>
-          <p class="lead">지원하지 않는 Table Function 인자를 SQL translation 단계에서 거절하는 Issue입니다.</p>
-          <div class="issue-status">
-            <div>STATE</div><div>Open</div>
-            <div>ASSIGNEE</div><div>없음</div>
-            <div>COMMENTS</div><div>0</div>
-            <div>LINKED PR</div><div>없음</div>
-            <div>LOCAL HEAD</div><div class="mono">1f6edce4</div>
-            <div>VALIDATION</div><div>통과</div>
-          </div>
+          <p class="kicker">08 · Learning Boundary</p>
+          <h2>하나를 이해했다고 바로 <span class="blue">기여 주제</span>가 정해지는 것은 아니다</h2>
+          <p class="lead">이번 실험은 Parser와 Translator의 한 경계를 이해한 사례입니다. GlueSQL 전체의 우선순위나 내가 맡을 이슈까지 결정한 것은 아닙니다.</p>
         </div>
-        <a class="issue-image" href="https://github.com/gluesql/gluesql/issues/1904" target="_blank" rel="noreferrer" aria-label="GitHub Issue 1904 열기">
-          <img src="https://opengraph.githubassets.com/1/gluesql/gluesql/issues/1904" alt="GlueSQL GitHub Issue 1904 미리보기">
-        </a>
+        <div class="learning-layout">
+          <article class="learning-panel">
+            <span class="label">WHAT I CAN EXPLAIN</span>
+            <h3>이번에 확인한 것</h3>
+            <ol class="learning-list">
+              <li><span><code class="mono">args</code>의 <code class="mono">None</code>과 <code class="mono">Some</code>이 SQL 모양과 연결된다.</span></li>
+              <li><span>Rust의 <code class="mono">match</code> 순서가 지원 입력과 오류 입력을 나눈다.</span></li>
+              <li><span>문법 오류와 미지원 기능 오류는 서로 다른 단계에서 발생한다.</span></li>
+            </ol>
+          </article>
+          <article class="learning-panel">
+            <span class="label">WHAT I STILL NEED</span>
+            <h3>아직 더 살펴볼 것</h3>
+            <ol class="learning-list">
+              <li><span>Planner와 Executor까지 이어지는 실제 호출 흐름</span></li>
+              <li><span>SQL fixture와 unit test를 나누는 프로젝트 기준</span></li>
+              <li><span>문서, 테스트, 코어 코드 중 내가 편하게 시작할 영역</span></li>
+            </ol>
+          </article>
+        </div>
+        <div class="statement">지금 필요한 결정은 이슈 번호가 아니라 <span class="teal">다음에 무엇을 읽어볼지</span>다.</div>
       </div>
-      <aside class="notes">Issue는 현재도 Open이고 담당자, 댓글, 연결 PR이 없습니다. 최신 main에도 기존 패턴이 남아 있습니다. 다만 바로 PR을 올리기보다 오늘 발표에서 설명할 수 있을 정도로 이해했는지 먼저 검증하려고 합니다.</aside>
+      <aside class="notes">로컬에서 한 변경은 학습 사례로는 유효하지만, 곧바로 제가 맡을 기여 주제라는 뜻은 아닙니다. 지금은 무엇을 설명할 수 있고 무엇을 더 배워야 하는지 구분하는 단계입니다.</aside>
     </section>
 
-    <section class="slide" data-title="관심 분야와 기여 방향">
+    <section class="slide" data-title="낮은 허들로 이어갈 탐색">
       <span class="slide-number">10 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">09 · My Direction</p>
-          <h2>내가 관심 있는 것과 기여하고 싶은 것</h2>
+          <p class="kicker">09 · Lower The Barrier</p>
+          <h2>기여를 고르기 전에, 더 쉽게 시작할 수 있는 세 방향</h2>
         </div>
         <div class="interest-box">
-          <span class="mono teal">INTEREST STATEMENT</span>
-          <p class="quote">“GlueSQL이 지원하지 않는 SQL을 조용히 받아들이지 않도록 <span class="accent">Translator의 경계</span>를 명확하게 만드는 일”</p>
+          <span class="mono teal">CURRENT INTEREST</span>
+          <p class="quote">“SQL이 Rust 자료구조로 바뀌면서 <span class="accent">입력의 의미가 어떻게 보존되는지</span> 이해하고 싶다.”</p>
         </div>
         <div class="scope-grid">
           <div class="scope">
-            <span>NOW · FIRST TARGET</span>
-            <p>#1904 Table Function args 오류 처리와 회귀 테스트</p>
+            <span>EXPLORE 01 · TEST</span>
+            <p>기존 SQL fixture 하나를 골라 입력과 기대 결과를 끝까지 읽기</p>
           </div>
           <div class="scope">
-            <span>NEXT · LEARNING</span>
-            <p>#1961 TableFactor의 evaluability를 Planner가 검사하는 방식</p>
+            <span>EXPLORE 02 · ERROR</span>
+            <p>CLI에서 ParserError와 TranslateError 예제를 각각 모아 비교하기</p>
           </div>
           <div class="scope">
-            <span>LATER · DIRECTION</span>
-            <p>SQL syntax coverage와 validation consistency를 함께 살펴보기</p>
+            <span>EXPLORE 03 · DOCS</span>
+            <p>초보자가 막힌 실행·Storage·오류 설명을 문서 개선점으로 기록하기</p>
           </div>
         </div>
       </div>
-      <aside class="notes">관심 분야를 아주 크게 정할 필요는 없다고 생각했습니다. 지금의 문장은 SQL translation과 validation correctness입니다. 첫 범위는 #1904이고, 다음 학습은 최근 병합된 #1961을 통해 Planner와의 경계를 읽는 것입니다.</aside>
+      <aside class="notes">세 방향은 모두 이슈를 맡거나 코어 코드를 바꾸지 않고 시작할 수 있습니다. 테스트 읽기, 오류 비교, 문서 개선점 기록을 해 본 뒤 어느 활동이 가장 재미있고 이해가 잘 되는지 보고 기여 영역을 정하겠습니다.</aside>
     </section>
 
-    <section class="slide" data-title="발표 이후 기여 계획">
+    <section class="slide" data-title="발표 이후 학습 계획">
       <span class="slide-number">11 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">10 · Action Plan</p>
-          <h2>발표 이후, 기여까지의 순서</h2>
-          <p class="lead">기능을 넓히기보다 작은 계약 하나를 끝까지 이해하고 제출합니다.</p>
+          <p class="kicker">10 · Learning Plan</p>
+          <h2>발표 이후, 부담 없이 탐색을 이어가는 순서</h2>
+          <p class="lead">지금은 PR을 목표로 두지 않고, 작은 읽기와 실행을 반복하며 관심 방향을 확인합니다.</p>
         </div>
         <div class="roadmap">
           <div class="roadmap-step">
-            <span class="day">01 · EXPLAIN</span>
-            <h3>내 말로 설명</h3>
-            <p>None, Some, wildcard와 TranslateError의 이유를 정리합니다.</p>
+            <span class="day">01 · REPLAY</span>
+            <h3>예제 재실행</h3>
+            <p>발표에 사용한 SQL을 CLI에서 다시 실행하고 결과를 기록합니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">02 · CLAIM</span>
-            <h3>Issue 댓글</h3>
-            <p>#1904 작업 의사와 변경 범위를 maintainer에게 공유합니다.</p>
+            <span class="day">02 · READ</span>
+            <h3>테스트 하나 읽기</h3>
+            <p>SQL fixture 하나가 어떤 기능과 오류를 보장하는지 살펴봅니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">03 · TEST</span>
-            <h3>테스트 위치 검토</h3>
-            <p>Unit test와 SQL fixture 중 프로젝트 방향에 맞는 위치를 확인합니다.</p>
+            <span class="day">03 · TRACE</span>
+            <h3>호출 한 줄 추적</h3>
+            <p>테스트가 Parser, Translator, Planner 중 어디를 지나가는지 찾습니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">04 · VERIFY</span>
-            <h3>최신 main 검증</h3>
-            <p>Clippy, fmt, focused test와 기존 정상 입력을 다시 확인합니다.</p>
+            <span class="day">04 · NOTE</span>
+            <h3>막힌 지점 기록</h3>
+            <p>설명이 부족했던 부분을 초보자 관점의 문서 후보로 모읍니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">05 · CONTRIBUTE</span>
-            <h3>작은 PR</h3>
-            <p>문제, 원인, 변경, 테스트가 한눈에 보이는 PR을 제출합니다.</p>
+            <span class="day">05 · REFLECT</span>
+            <h3>관심 비교</h3>
+            <p>테스트, 오류, 문서 중 더 알아보고 싶은 영역을 선택합니다.</p>
           </div>
         </div>
-        <div class="statement">완료 기준은 “코드를 바꿨다”가 아니라 <span class="teal">왜 이 단계에서 거절하는지 설명할 수 있다</span>입니다.</div>
+        <div class="statement">완료 기준은 이슈를 고르는 것이 아니라 <span class="teal">내가 어떤 작업을 더 궁금해하는지 말할 수 있는 것</span>입니다.</div>
       </div>
-      <aside class="notes">발표 직후 바로 PR을 만드는 것이 아니라 Issue에 먼저 작업 의사를 남기고 테스트 위치를 확인하겠습니다. 최근 SQL test가 fixture로 이동했기 때문에 maintainer가 선호하는 위치를 확인하는 것이 안전합니다.</aside>
+      <aside class="notes">이 순서는 기여 절차가 아니라 학습 절차입니다. 모두 로컬에서 할 수 있고 다른 사람의 작업과 겹치지 않습니다. 이 과정을 거친 뒤에야 문서, 테스트, 코어 로직 중 실제 기여 방향을 결정하겠습니다.</aside>
     </section>
 
     <section class="slide" data-title="결론">
@@ -1514,11 +1550,11 @@ Foo(1)</pre>
       <div class="slide-inner decision">
         <div class="decision-copy">
           <p class="kicker">Conclusion</p>
-          <h2>작은 오류 경계 하나가 <span class="accent">첫 기여 방향</span>이 되었다</h2>
+          <h2>아직 고르지 않았다. 대신 <span class="accent">보는 법</span>을 배웠다</h2>
           <div class="decision-points">
             <p><b>1</b><span>Parser는 SQL을 읽고, Translator는 GlueSQL의 지원 범위를 결정한다.</span></p>
-            <p><b>2</b><span>지원하지 않는 입력을 조용히 무시하지 않는 것도 중요한 기능이다.</span></p>
-            <p><b>3</b><span>첫 기여는 #1904를 이해하고 검증하는 작은 변경부터 시작한다.</span></p>
+            <p><b>2</b><span>작은 파라미터 하나를 따라가도 프로젝트 구조를 배울 수 있다.</span></p>
+            <p><b>3</b><span>다음에는 테스트, 오류, 문서를 낮은 허들부터 탐색한다.</span></p>
           </div>
         </div>
         <div class="qr-panel">
@@ -1526,7 +1562,7 @@ Foo(1)</pre>
           <a href="https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/" target="_blank" rel="noreferrer">jinhyunjun.github.io/my-website/<br>gluesql-2026-08-03/</a>
         </div>
       </div>
-      <aside class="notes">제가 찾은 첫 관심 분야는 Translator의 지원 경계입니다. #1904를 통해 작은 범위를 정확히 이해하고, 이후 Planner와 validation으로 확장해 보겠습니다. 질문 부탁드립니다.</aside>
+      <aside class="notes">아직 어떤 이슈에 기여할지는 정하지 않았습니다. 이번 발표의 결과는 기여 대상을 고른 것이 아니라, 작은 코드에서 질문을 만들고 전체 구조로 확장하는 방법을 배운 것입니다. 질문 부탁드립니다.</aside>
     </section>
   </main>
 

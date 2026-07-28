@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GlueSQL의 TableFactor 처리와 첫 기여 후보 #1904를 통해 살펴보는 Parser와 Translator의 경계">
+  <meta name="author" content="진현준">
+  <meta property="og:title" content="SQL 한 줄은 어디에서 거절되어야 할까?">
+  <meta property="og:description" content="GlueSQL의 TableFactor 처리와 첫 기여 후보 #1904">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/gluesql/gluesql/issues/1904">
+  <title>SQL 한 줄은 어디에서 거절되어야 할까? | GlueSQL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f6f4ef;
+      --paper-strong: #fffdf8;
+      --ink: #17191d;
+      --muted: #626770;
+      --line: #cbc8bf;
+      --teal: #0f766e;
+      --teal-soft: #d8eee9;
+      --coral: #d85843;
+      --coral-soft: #f6ded8;
+      --blue: #3156a3;
+      --blue-soft: #dce5f8;
+      --yellow: #e5b92f;
+      --yellow-soft: #f8edbd;
+      --green: #297044;
+      --code: #171b21;
+      --code-text: #eef3f8;
+      --shadow: 0 16px 46px rgba(23, 25, 29, 0.12);
+      --radius: 8px;
+      --slide-pad-x: 5.5rem;
+      --slide-pad-y: 4.5rem;
+      --font-body: "Noto Sans KR", system-ui, sans-serif;
+      --font-mono: "IBM Plex Mono", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .deck {
+      position: relative;
+    }
+
+    .slide {
+      position: relative;
+      min-height: 100svh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: grid;
+      place-items: center;
+      padding: var(--slide-pad-y) var(--slide-pad-x);
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .slide-inner {
+      width: min(1400px, 100%);
+      min-height: calc(100svh - (var(--slide-pad-y) * 2));
+      display: grid;
+      align-content: center;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide-number {
+      position: absolute;
+      top: 2rem;
+      right: 2.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0;
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 2rem;
+      height: 3px;
+      background: currentColor;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      word-break: keep-all;
+    }
+
+    h1 {
+      max-width: 12ch;
+      font-size: 4.8rem;
+      line-height: 1.08;
+      font-weight: 900;
+    }
+
+    h2 {
+      max-width: 19ch;
+      font-size: 3.35rem;
+      line-height: 1.16;
+      font-weight: 850;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .lead {
+      max-width: 52ch;
+      color: var(--muted);
+      font-size: 1.25rem;
+      line-height: 1.75;
+    }
+
+    .accent {
+      color: var(--coral);
+    }
+
+    .teal {
+      color: var(--teal);
+    }
+
+    .blue {
+      color: var(--blue);
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    .cover {
+      background: var(--paper-strong);
+    }
+
+    .cover::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 1rem;
+      background: var(--teal);
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
+      gap: 4.5rem;
+      align-items: center;
+    }
+
+    .cover-copy {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .cover-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1.25rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .query-hero {
+      position: relative;
+      padding: 2rem;
+      border: 1px solid #2e353e;
+      border-radius: var(--radius);
+      background: var(--code);
+      color: var(--code-text);
+      box-shadow: var(--shadow);
+      font-family: var(--font-mono);
+    }
+
+    .query-hero::before {
+      content: "QUERY / 01";
+      display: block;
+      margin-bottom: 2rem;
+      color: #7ed8ca;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .query-hero code {
+      font-size: 1.55rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .query-hero .arg {
+      color: #f0c95f;
+      border-bottom: 3px solid var(--coral);
+    }
+
+    .question-mark {
+      position: absolute;
+      right: -1.5rem;
+      bottom: -3.4rem;
+      color: var(--coral);
+      font-family: var(--font-mono);
+      font-size: 9rem;
+      font-weight: 700;
+      line-height: 1;
+      opacity: 0.95;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 4.5rem;
+      align-items: center;
+    }
+
+    .stack {
+      display: grid;
+      gap: 1.4rem;
+    }
+
+    .journey {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .journey-row {
+      display: grid;
+      grid-template-columns: 7rem minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1.15rem 0;
+      border-bottom: 1px solid var(--line);
+      align-items: baseline;
+    }
+
+    .journey-row strong {
+      font-family: var(--font-mono);
+      color: var(--blue);
+      font-size: 0.82rem;
+    }
+
+    .journey-row p {
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+
+    .statement {
+      padding: 2rem 2.2rem;
+      border-left: 8px solid var(--coral);
+      background: var(--coral-soft);
+      font-size: 1.45rem;
+      line-height: 1.65;
+      font-weight: 700;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.7rem;
+      align-items: stretch;
+    }
+
+    .stage {
+      position: relative;
+      display: grid;
+      align-content: start;
+      gap: 0.65rem;
+      min-height: 11rem;
+      padding: 1.2rem 1rem;
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--stage-color, var(--teal));
+      border-radius: var(--radius);
+      background: var(--paper-strong);
+    }
+
+    .stage:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -1rem;
+      transform: translateY(-50%);
+      width: 1.3rem;
+      height: 1.3rem;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .stage .index {
+      font-family: var(--font-mono);
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+
+    .stage b {
+      font-size: 1.05rem;
+    }
+
+    .stage small {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .stage.parser { --stage-color: var(--blue); }
+    .stage.translator { --stage-color: var(--coral); }
+    .stage.planner { --stage-color: var(--yellow); }
+    .stage.executor { --stage-color: var(--teal); }
+    .stage.storage { --stage-color: var(--green); }
+
+    .boundary-note {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .boundary-note > div {
+      padding: 1.15rem 1.3rem;
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+      border-radius: var(--radius);
+    }
+
+    .boundary-note strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.94rem;
+    }
+
+    .boundary-note p {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.6;
+    }
+
+    .experiment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .experiment {
+      display: grid;
+      gap: 1.1rem;
+      padding: 1.5rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper-strong);
+    }
+
+    .experiment.ok {
+      border-top: 7px solid var(--green);
+    }
+
+    .experiment.warn {
+      border-top: 7px solid var(--coral);
+    }
+
+    .experiment code {
+      min-height: 4rem;
+      font-family: var(--font-mono);
+      font-size: 1.02rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .result {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .result .mark {
+      width: 1.5rem;
+      height: 1.5rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--green);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .warn .result .mark {
+      background: var(--coral);
+    }
+
+    .parameter-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 3px solid var(--ink);
+      background: var(--paper-strong);
+    }
+
+    .parameter-table th,
+    .parameter-table td {
+      padding: 1.15rem 1.2rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .parameter-table th {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .parameter-table td:first-child,
+    .parameter-table td:nth-child(2) {
+      font-family: var(--font-mono);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .pill.some {
+      background: var(--yellow-soft);
+      color: #755300;
+    }
+
+    .code-panel {
+      overflow: hidden;
+      border: 1px solid #303741;
+      border-radius: var(--radius);
+      background: var(--code);
+      color: var(--code-text);
+      box-shadow: var(--shadow);
+    }
+
+    .code-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid #303741;
+      color: #9eabb9;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    pre {
+      margin: 0;
+      padding: 1.35rem 1.5rem;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 0.94rem;
+      line-height: 1.75;
+      white-space: pre-wrap;
+    }
+
+    .code-key { color: #75d4c6; }
+    .code-string { color: #f3ca6a; }
+    .code-error { color: #ff917f; }
+    .code-muted { color: #8793a1; }
+    .diff-minus { color: #ff917f; }
+    .diff-plus { color: #7ed8a1; }
+
+    .cause-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .cause-step {
+      position: relative;
+      padding: 1.4rem;
+      border-top: 5px solid var(--coral);
+      background: var(--coral-soft);
+    }
+
+    .cause-step:nth-child(2) {
+      border-color: var(--yellow);
+      background: var(--yellow-soft);
+    }
+
+    .cause-step:nth-child(3) {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .cause-step span {
+      display: block;
+      margin-bottom: 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .cause-step p {
+      font-size: 1rem;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .test-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .test-metric {
+      padding: 1.25rem;
+      border-right: 1px solid var(--line);
+    }
+
+    .test-metric:last-child {
+      border-right: 0;
+    }
+
+    .test-metric strong {
+      display: block;
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+    }
+
+    .test-metric span {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .error-lanes {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .error-lane {
+      display: grid;
+      grid-template-columns: 11rem minmax(0, 1fr) 10rem;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem 1.2rem;
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .error-lane code {
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+    }
+
+    .error-lane .path {
+      position: relative;
+      height: 0.5rem;
+      background: var(--teal-soft);
+    }
+
+    .error-lane .path::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: var(--stop, 50%);
+      width: 1.1rem;
+      height: 1.1rem;
+      border: 4px solid var(--paper-strong);
+      border-radius: 50%;
+      background: var(--lane-color, var(--coral));
+      transform: translate(-50%, -50%);
+    }
+
+    .error-lane .error-name {
+      color: var(--lane-color, var(--coral));
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .issue-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .issue-status {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      border-top: 3px solid var(--ink);
+    }
+
+    .issue-status div {
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .issue-status div:nth-child(odd) {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .issue-status div:nth-child(even) {
+      font-weight: 700;
+    }
+
+    .issue-image {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .issue-image img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .interest-box {
+      display: grid;
+      gap: 1.2rem;
+      padding: 2.4rem;
+      border: 2px solid var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .interest-box .quote {
+      max-width: 31ch;
+      font-size: 2.2rem;
+      line-height: 1.45;
+      font-weight: 850;
+    }
+
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .scope {
+      padding: 1.4rem;
+      border-top: 6px solid var(--scope-color, var(--teal));
+      background: var(--paper-strong);
+    }
+
+    .scope:nth-child(2) { --scope-color: var(--coral); }
+    .scope:nth-child(3) { --scope-color: var(--blue); }
+
+    .scope span {
+      display: block;
+      margin-bottom: 0.7rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .scope p {
+      font-size: 1rem;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      border-top: 3px solid var(--ink);
+    }
+
+    .roadmap-step {
+      min-height: 12rem;
+      padding: 1.35rem 1.1rem;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .roadmap-step:last-child {
+      border-right: 0;
+    }
+
+    .roadmap-step .day {
+      color: var(--coral);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .roadmap-step h3 {
+      margin: 0.7rem 0;
+      font-size: 1rem;
+    }
+
+    .roadmap-step p {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .decision {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+      gap: 3.5rem;
+      align-items: end;
+    }
+
+    .decision-copy {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .decision-copy h2 {
+      max-width: 14ch;
+      font-size: 4rem;
+    }
+
+    .decision-points {
+      display: grid;
+      gap: 0;
+      border-top: 3px solid var(--ink);
+    }
+
+    .decision-points p {
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0.8rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.55;
+    }
+
+    .decision-points b {
+      color: var(--teal);
+      font-family: var(--font-mono);
+    }
+
+    .qr-panel {
+      display: grid;
+      justify-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    #qrcode {
+      width: 190px;
+      min-height: 190px;
+      display: grid;
+      place-items: center;
+    }
+
+    #qrcode img,
+    #qrcode canvas {
+      width: 190px;
+      height: 190px;
+    }
+
+    .qr-panel a {
+      color: var(--blue);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .notes {
+      display: none;
+    }
+
+    .speaker-panel {
+      position: fixed;
+      z-index: 90;
+      right: 1rem;
+      bottom: 5.25rem;
+      width: min(440px, calc(100vw - 2rem));
+      max-height: 45svh;
+      overflow: auto;
+      padding: 1.2rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.98);
+      box-shadow: var(--shadow);
+      display: none;
+    }
+
+    .speaker-panel.open {
+      display: block;
+    }
+
+    .speaker-panel h3 {
+      margin-bottom: 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--teal);
+    }
+
+    .speaker-panel p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.75;
+    }
+
+    .controls {
+      position: fixed;
+      z-index: 100;
+      right: 1rem;
+      bottom: 1rem;
+      display: flex;
+      gap: 0.45rem;
+      align-items: center;
+      padding: 0.45rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.94);
+      box-shadow: 0 8px 24px rgba(23, 25, 29, 0.1);
+      backdrop-filter: blur(12px);
+    }
+
+    .control-button {
+      width: 2.7rem;
+      height: 2.7rem;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 6px;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .control-button:hover,
+    .control-button.active {
+      color: white;
+      background: var(--teal);
+    }
+
+    .control-button:disabled {
+      cursor: default;
+      opacity: 0.28;
+    }
+
+    .control-button svg {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+
+    .counter {
+      min-width: 4.4rem;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-align: center;
+    }
+
+    .progress {
+      position: fixed;
+      z-index: 101;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: rgba(23, 25, 29, 0.08);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: var(--coral);
+      transition: width 220ms ease;
+    }
+
+    .overview {
+      position: fixed;
+      z-index: 95;
+      inset: 0;
+      padding: 4rem;
+      overflow: auto;
+      background: rgba(23, 25, 29, 0.95);
+      display: none;
+    }
+
+    .overview.open {
+      display: block;
+    }
+
+    .overview-grid {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .overview-item {
+      min-height: 11rem;
+      padding: 1.2rem;
+      border: 1px solid #454b55;
+      border-radius: var(--radius);
+      color: white;
+      background: #22262d;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .overview-item:hover {
+      border-color: #7ed8ca;
+      background: #2a3038;
+    }
+
+    .overview-item span {
+      display: block;
+      margin-bottom: 0.7rem;
+      color: #7ed8ca;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+
+    .overview-item strong {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+      :root {
+        --slide-pad-x: 3rem;
+        --slide-pad-y: 3.8rem;
+      }
+
+      h1 { font-size: 4rem; }
+      h2 { font-size: 2.8rem; }
+      .pipeline { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .stage:not(:last-child)::after { display: none; }
+      .roadmap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .roadmap-step:nth-child(3) { border-right: 0; }
+      .roadmap-step:last-child { border-right: 1px solid var(--line); }
+    }
+
+    @media (max-width: 820px) {
+      :root {
+        --slide-pad-x: 1.3rem;
+        --slide-pad-y: 4rem;
+      }
+
+      .slide {
+        min-height: 100svh;
+        padding-bottom: 6.5rem;
+        overflow: visible;
+        scroll-snap-align: none;
+      }
+
+      .slide-inner {
+        min-height: auto;
+      }
+
+      html {
+        scroll-snap-type: none;
+      }
+
+      h1 { font-size: 3.25rem; }
+      h2 { font-size: 2.3rem; }
+      .lead { font-size: 1.05rem; }
+      .cover-grid,
+      .two-col,
+      .issue-layout,
+      .decision {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .query-hero code { font-size: 1.15rem; }
+      .question-mark { display: none; }
+      .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .experiment-grid,
+      .cause-map,
+      .scope-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .boundary-note { grid-template-columns: 1fr; }
+      .test-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .test-metric:nth-child(2) { border-right: 0; }
+      .test-metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .error-lane { grid-template-columns: 1fr; }
+      .error-lane .error-name { text-align: left; }
+      .roadmap { grid-template-columns: 1fr; }
+      .roadmap-step { min-height: auto; border-right: 1px solid var(--line); }
+      .decision-copy h2 { font-size: 3rem; }
+      .overview { padding: 3.5rem 1rem 6rem; }
+      .overview-grid { grid-template-columns: 1fr; }
+      .controls { right: 0.7rem; bottom: 0.7rem; }
+      .control-button { width: 2.45rem; height: 2.45rem; }
+      .counter { min-width: 3.5rem; }
+    }
+
+    @media (max-width: 520px) {
+      h1 { font-size: 2.55rem; }
+      h2 { font-size: 2rem; }
+      .slide-number { top: 1.2rem; right: 1.2rem; }
+      .pipeline { grid-template-columns: 1fr; }
+      .parameter-table { font-size: 0.82rem; }
+      .parameter-table th,
+      .parameter-table td { padding: 0.8rem 0.55rem; }
+      pre { font-size: 0.78rem; padding: 1rem; }
+      .interest-box { padding: 1.4rem; }
+      .interest-box .quote { font-size: 1.6rem; }
+      .controls .notes-toggle,
+      .controls .fullscreen-toggle { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .progress-bar { transition: none; }
+    }
+
+    @media print {
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+
+      html,
+      body {
+        background: white;
+        scroll-snap-type: none;
+      }
+
+      .slide {
+        min-height: 9in;
+        height: 9in;
+        width: 16in;
+        page-break-after: always;
+        break-after: page;
+        border: 0;
+      }
+
+      .controls,
+      .progress,
+      .overview,
+      .speaker-panel {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <main class="deck" id="deck">
+    <section class="slide cover" data-title="표지">
+      <span class="slide-number">01 / 12</span>
+      <div class="slide-inner cover-grid">
+        <div class="cover-copy">
+          <p class="kicker">GlueSQL · First Contribution Study</p>
+          <h1>SQL 한 줄은 어디에서 <span class="accent">거절</span>되어야 할까?</h1>
+          <p class="lead">GlueSQL TableFactor로 살펴본 Parser와 Translator의 경계</p>
+          <div class="cover-meta">
+            <span>2026.08.03</span>
+            <span>진현준</span>
+            <span>OSSCA 2026 · GlueSQL</span>
+          </div>
+        </div>
+        <div class="query-hero" aria-label="발표에서 다룰 SQL 예제">
+          <code>SELECT *
+FROM GLUE_TABLES<span class="arg">(1)</span>;</code>
+          <span class="question-mark">?</span>
+        </div>
+      </div>
+      <aside class="notes">오늘은 새로운 SQL 기능을 구현한 이야기가 아닙니다. GlueSQL을 처음 접한 뒤, 지원하지 않는 SQL 입력이 어느 단계에서 거절되어야 하는지 질문하면서 찾은 첫 기여 후보를 공유하겠습니다.</aside>
+    </section>
+
+    <section class="slide" data-title="질문이 관심이 되기까지">
+      <span class="slide-number">02 / 12</span>
+      <div class="slide-inner two-col">
+        <div class="stack">
+          <p class="kicker">01 · Starting Point</p>
+          <h2>관심 분야가 없었던 게 아니라, <span class="teal">질문의 이름</span>을 몰랐다</h2>
+          <p class="lead">처음에는 “GlueSQL이 데이터베이스인가?”에서 시작했습니다. 반복해서 궁금했던 것은 데이터 자체보다 SQL이 내부에서 해석되고 거절되는 과정이었습니다.</p>
+        </div>
+        <div class="stack">
+          <div class="journey">
+            <div class="journey-row">
+              <strong>QUESTION 01</strong>
+              <p>MemoryStorage와 SledStorage는 왜 결과가 다르게 남을까?</p>
+            </div>
+            <div class="journey-row">
+              <strong>QUESTION 02</strong>
+              <p>Parser와 Translator는 왜 별도 단계일까?</p>
+            </div>
+            <div class="journey-row">
+              <strong>QUESTION 03</strong>
+              <p><code class="mono">_</code>를 <code class="mono">None</code>으로 바꾸면 무엇이 달라질까?</p>
+            </div>
+          </div>
+          <div class="statement">내 관심은 “SQL 문법 추가”보다 <span class="accent">SQL 입력의 지원 경계</span>에 가까웠다.</div>
+        </div>
+      </div>
+      <aside class="notes">다른 발표처럼 처음부터 거대한 관심 분야를 정하지 못했습니다. 대신 제가 반복해서 물었던 질문을 모아보니 SQL 입력이 내부 표현으로 바뀌는 경계, 특히 Translator의 책임에 관심이 있다는 것을 알게 됐습니다.</aside>
+    </section>
+
+    <section class="slide" data-title="SQL 한 줄의 전체 흐름">
+      <span class="slide-number">03 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">02 · Vertical Slice</p>
+          <h2>SQL 한 줄이 지나가는 길</h2>
+          <p class="lead">이번 발표에서는 전체 코드를 넓게 읽기보다, 하나의 입력이 Payload로 돌아오기까지 세로로 추적했습니다.</p>
+        </div>
+        <div class="pipeline" aria-label="GlueSQL SQL 실행 파이프라인">
+          <div class="stage" style="--stage-color: var(--ink)">
+            <span class="index">00</span>
+            <b>CLI</b>
+            <small>SQL 문자열 입력</small>
+          </div>
+          <div class="stage parser">
+            <span class="index">01</span>
+            <b>Parser</b>
+            <small>sqlparser AST</small>
+          </div>
+          <div class="stage translator">
+            <span class="index">02</span>
+            <b>Translator</b>
+            <small>GlueSQL AST</small>
+          </div>
+          <div class="stage planner">
+            <span class="index">03</span>
+            <b>Planner</b>
+            <small>StatementPlan</small>
+          </div>
+          <div class="stage executor">
+            <span class="index">04</span>
+            <b>Executor</b>
+            <small>실제 연산</small>
+          </div>
+          <div class="stage storage">
+            <span class="index">05</span>
+            <b>Storage</b>
+            <small>원본 데이터 접근</small>
+          </div>
+          <div class="stage" style="--stage-color: var(--blue)">
+            <span class="index">06</span>
+            <b>Payload</b>
+            <small>실행 결과 반환</small>
+          </div>
+        </div>
+        <div class="boundary-note">
+          <div>
+            <strong>이번에 본 경계</strong>
+            <p>Parser는 SQL 문법 구조를 만들고, Translator는 그 구조를 GlueSQL이 지원하는 내부 표현으로 옮깁니다.</p>
+          </div>
+          <div>
+            <strong>다음에 볼 경계</strong>
+            <p>Planner가 Context와 Storage 스키마를 이용해 실제 평가 가능성을 검사하는 과정입니다.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">Glue::plan_with_params가 핵심 연결점입니다. parse, translate, storage.plan 순으로 이어지고 execute가 Storage를 사용해 Payload를 만듭니다. 이번 발표는 그중 Parser와 Translator 사이를 좁게 봅니다.</aside>
+    </section>
+
+    <section class="slide" data-title="관심이 생긴 SQL">
+      <span class="slide-number">04 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">03 · The Trigger</p>
+          <h2>관심이 생긴 세 개의 TableFactor</h2>
+          <p class="lead">괄호가 있다는 점은 같지만 GlueSQL이 책임지는 의미는 서로 다릅니다.</p>
+        </div>
+        <div class="experiment-grid">
+          <article class="experiment ok">
+            <h3>지원되는 Table Function</h3>
+            <code>SELECT * FROM SERIES(3);</code>
+            <div class="result"><span class="mark">✓</span><span>인자 3을 실제 크기로 사용</span></div>
+          </article>
+          <article class="experiment warn">
+            <h3>Dictionary Table + 인자</h3>
+            <code>SELECT * FROM GLUE_TABLES(1);</code>
+            <div class="result"><span class="mark">!</span><span>인자를 받을 기능이 없음</span></div>
+          </article>
+          <article class="experiment warn">
+            <h3>일반 Table + 인자</h3>
+            <code>SELECT * FROM Foo(1);</code>
+            <div class="result"><span class="mark">!</span><span>지원하지 않는 Table Function</span></div>
+          </article>
+        </div>
+        <div class="statement">기존 코드는 두 번째와 세 번째 입력의 괄호 안 정보를 <span class="accent">조용히 버릴 수 있었다.</span></div>
+      </div>
+      <aside class="notes">SERIES는 실제로 인자를 사용하는 기능입니다. 반면 GLUE_TABLES는 Dictionary table이고 Foo는 일반 table입니다. 기존 main에서는 unsupported args가 있어도 일반 table 또는 dictionary로 번역될 수 있었습니다.</aside>
+    </section>
+
+    <section class="slide" data-title="args 파라미터 읽기">
+      <span class="slide-number">05 / 12</span>
+      <div class="slide-inner two-col">
+        <div class="stack">
+          <p class="kicker">04 · Rust Parameter</p>
+          <h2><code class="mono">args</code>는 값보다 먼저 <span class="blue">존재 여부</span>를 말한다</h2>
+          <p class="lead"><code class="mono">Option&lt;TableFunctionArgs&gt;</code>이므로 괄호가 없으면 <code class="mono">None</code>, 있으면 <code class="mono">Some(...)</code>입니다.</p>
+        </div>
+        <table class="parameter-table">
+          <thead>
+            <tr>
+              <th>SQL</th>
+              <th>args</th>
+              <th>GlueSQL 의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GLUE_TABLES</td>
+              <td><span class="pill">None</span></td>
+              <td>Dictionary table</td>
+            </tr>
+            <tr>
+              <td>GLUE_TABLES(1)</td>
+              <td><span class="pill some">Some(1)</span></td>
+              <td>지원하지 않는 인자</td>
+            </tr>
+            <tr>
+              <td>SERIES(3)</td>
+              <td><span class="pill some">Some(3)</span></td>
+              <td>지원되는 크기 인자</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="code-panel">
+          <div class="code-head"><span>core/src/translate/query.rs</span><span>match input</span></div>
+          <pre><span class="code-key">match</span> (object_name.as_str(), args) {
+    <span class="code-muted">// table name + argument presence</span>
+}</pre>
+        </div>
+      </div>
+      <aside class="notes">제가 처음 이해하기 어려웠던 부분입니다. args는 Option이기 때문에 None과 Some으로 인자의 유무를 표현합니다. 내부 값을 아직 보지 않더라도 존재 여부만으로 지원 여부를 판단할 수 있습니다.</aside>
+    </section>
+
+    <section class="slide" data-title="기존 코드의 문제">
+      <span class="slide-number">06 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">05 · Root Cause</p>
+          <h2><code class="mono">_</code>는 편리했지만, 기능 계약까지 지워버렸다</h2>
+        </div>
+        <div class="two-col">
+          <div class="code-panel">
+            <div class="code-head"><span>upstream/main</span><span>before</span></div>
+            <pre><span class="code-key">match</span> (object_name.as_str(), args) {
+    (<span class="code-string">"SERIES"</span>, <span class="code-key">Some</span>(...)) =&gt; ...
+
+    (<span class="code-string">"GLUE_TABLES"</span>, _) =&gt;
+        TableFactor::Dictionary { ... },
+
+    _ =&gt; TableFactor::Table { ... },
+}</pre>
+          </div>
+          <div class="stack">
+            <div class="cause-map">
+              <div class="cause-step">
+                <span>STEP 01</span>
+                <p><code class="mono">_</code>가 <code class="mono">None</code>과 <code class="mono">Some</code>을 모두 받음</p>
+              </div>
+              <div class="cause-step">
+                <span>STEP 02</span>
+                <p>Dictionary와 일반 Table AST에는 인자를 보관할 필드가 없음</p>
+              </div>
+              <div class="cause-step">
+                <span>STEP 03</span>
+                <p>입력의 괄호와 인자가 오류 없이 사라짐</p>
+              </div>
+            </div>
+            <div class="statement">문법적으로 읽을 수 있다는 것과 GlueSQL이 지원한다는 것은 다르다.</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">핵심은 Rust의 언더스코어가 나쁘다는 것이 아닙니다. 이 위치에서 언더스코어가 GlueSQL의 기능 계약보다 넓은 값을 받아들이는 것이 문제입니다. 이후 AST가 인자를 보관하지 않으므로 입력 정보가 사라집니다.</aside>
+    </section>
+
+    <section class="slide" data-title="로컬에서 시도한 변경">
+      <span class="slide-number">07 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">06 · Local Experiment</p>
+          <h2>지원하는 입력은 통과시키고, 나머지는 명시적으로 거절한다</h2>
+        </div>
+        <div class="two-col">
+          <div class="code-panel">
+            <div class="code-head"><span>study/table-function-args</span><span>local diff</span></div>
+            <pre><span class="diff-minus">- ("GLUE_TABLES", _) =&gt; ...</span>
+<span class="diff-plus">+ ("GLUE_TABLES", None) =&gt; ...</span>
+
+<span class="diff-plus">+ (_, Some(_)) =&gt; Err(</span>
+<span class="diff-plus">+   UnsupportedQueryTableFactor(...)</span>
+<span class="diff-plus">+ )</span></pre>
+          </div>
+          <div class="stack">
+            <div class="test-strip">
+              <div class="test-metric">
+                <strong>5</strong>
+                <span>Translate tests</span>
+              </div>
+              <div class="test-metric">
+                <strong>0</strong>
+                <span>Failures</span>
+              </div>
+              <div class="test-metric">
+                <strong>0</strong>
+                <span>Clippy warnings</span>
+              </div>
+              <div class="test-metric">
+                <strong>1</strong>
+                <span>Modified file</span>
+              </div>
+            </div>
+            <div class="code-panel">
+              <div class="code-head"><span>regression cases</span><span>local only</span></div>
+              <pre>GLUE_OBJECTS(1)
+GLUE_TABLES(1)
+GLUE_INDEXES(1)
+GLUE_TABLE_COLUMNS(1)
+Foo(1)</pre>
+            </div>
+          </div>
+        </div>
+        <p class="lead"><strong>현재 상태:</strong> 최신 main 동기화와 로컬 검증 완료. 커밋·Push·PR은 아직 하지 않았습니다.</p>
+      </div>
+      <aside class="notes">수정 범위는 query.rs 한 파일입니다. Dictionary는 None일 때만 허용하고, SERIES에서 처리되지 않은 Some args는 명시적 TranslateError로 보냅니다. 현재는 학습용 로컬 변경이고 기여로 제출하지 않았습니다.</aside>
+    </section>
+
+    <section class="slide" data-title="오류가 발생해야 하는 단계">
+      <span class="slide-number">08 / 12</span>
+      <div class="slide-inner two-col">
+        <div class="stack">
+          <p class="kicker">07 · Error Boundary</p>
+          <h2>왜 <span class="accent">ParserError</span>가 아니라 <span class="teal">TranslateError</span>일까?</h2>
+          <p class="lead">SQL 문법 자체가 잘못된 경우와, 문법은 맞지만 GlueSQL이 지원하지 않는 경우를 구분해야 합니다.</p>
+        </div>
+        <div class="error-lanes">
+          <div class="error-lane" style="--stop: 18%; --lane-color: var(--coral)">
+            <code>DELECT FROM test</code>
+            <div class="path"></div>
+            <span class="error-name">ParserError</span>
+          </div>
+          <div class="error-lane" style="--stop: 45%; --lane-color: var(--teal)">
+            <code>GLUE_TABLES(1)</code>
+            <div class="path"></div>
+            <span class="error-name">TranslateError</span>
+          </div>
+          <div class="error-lane" style="--stop: 90%; --lane-color: var(--blue)">
+            <code>SERIES(3)</code>
+            <div class="path"></div>
+            <span class="error-name">Execute</span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">DELECT는 SQL grammar에 없는 단어라 Parser가 거절합니다. GLUE_TABLES(1)은 sqlparser가 표현 가능한 SQL 구조지만 GlueSQL에는 해당 기능이 없으므로 Translator가 거절해야 합니다. SERIES(3)은 지원되므로 이후 단계로 갑니다.</aside>
+    </section>
+
+    <section class="slide" data-title="첫 기여 후보 #1904">
+      <span class="slide-number">09 / 12</span>
+      <div class="slide-inner issue-layout">
+        <div class="stack">
+          <p class="kicker">08 · Contribution Candidate</p>
+          <h2>첫 기여 후보 <span class="blue">#1904</span></h2>
+          <p class="lead">지원하지 않는 Table Function 인자를 SQL translation 단계에서 거절하는 Issue입니다.</p>
+          <div class="issue-status">
+            <div>STATE</div><div>Open</div>
+            <div>ASSIGNEE</div><div>없음</div>
+            <div>COMMENTS</div><div>0</div>
+            <div>LINKED PR</div><div>없음</div>
+            <div>LOCAL HEAD</div><div class="mono">1f6edce4</div>
+            <div>VALIDATION</div><div>통과</div>
+          </div>
+        </div>
+        <a class="issue-image" href="https://github.com/gluesql/gluesql/issues/1904" target="_blank" rel="noreferrer" aria-label="GitHub Issue 1904 열기">
+          <img src="https://opengraph.githubassets.com/1/gluesql/gluesql/issues/1904" alt="GlueSQL GitHub Issue 1904 미리보기">
+        </a>
+      </div>
+      <aside class="notes">Issue는 현재도 Open이고 담당자, 댓글, 연결 PR이 없습니다. 최신 main에도 기존 패턴이 남아 있습니다. 다만 바로 PR을 올리기보다 오늘 발표에서 설명할 수 있을 정도로 이해했는지 먼저 검증하려고 합니다.</aside>
+    </section>
+
+    <section class="slide" data-title="관심 분야와 기여 방향">
+      <span class="slide-number">10 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">09 · My Direction</p>
+          <h2>내가 관심 있는 것과 기여하고 싶은 것</h2>
+        </div>
+        <div class="interest-box">
+          <span class="mono teal">INTEREST STATEMENT</span>
+          <p class="quote">“GlueSQL이 지원하지 않는 SQL을 조용히 받아들이지 않도록 <span class="accent">Translator의 경계</span>를 명확하게 만드는 일”</p>
+        </div>
+        <div class="scope-grid">
+          <div class="scope">
+            <span>NOW · FIRST TARGET</span>
+            <p>#1904 Table Function args 오류 처리와 회귀 테스트</p>
+          </div>
+          <div class="scope">
+            <span>NEXT · LEARNING</span>
+            <p>#1961 TableFactor의 evaluability를 Planner가 검사하는 방식</p>
+          </div>
+          <div class="scope">
+            <span>LATER · DIRECTION</span>
+            <p>SQL syntax coverage와 validation consistency를 함께 살펴보기</p>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">관심 분야를 아주 크게 정할 필요는 없다고 생각했습니다. 지금의 문장은 SQL translation과 validation correctness입니다. 첫 범위는 #1904이고, 다음 학습은 최근 병합된 #1961을 통해 Planner와의 경계를 읽는 것입니다.</aside>
+    </section>
+
+    <section class="slide" data-title="발표 이후 기여 계획">
+      <span class="slide-number">11 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">10 · Action Plan</p>
+          <h2>발표 이후, 기여까지의 순서</h2>
+          <p class="lead">기능을 넓히기보다 작은 계약 하나를 끝까지 이해하고 제출합니다.</p>
+        </div>
+        <div class="roadmap">
+          <div class="roadmap-step">
+            <span class="day">01 · EXPLAIN</span>
+            <h3>내 말로 설명</h3>
+            <p>None, Some, wildcard와 TranslateError의 이유를 정리합니다.</p>
+          </div>
+          <div class="roadmap-step">
+            <span class="day">02 · CLAIM</span>
+            <h3>Issue 댓글</h3>
+            <p>#1904 작업 의사와 변경 범위를 maintainer에게 공유합니다.</p>
+          </div>
+          <div class="roadmap-step">
+            <span class="day">03 · TEST</span>
+            <h3>테스트 위치 검토</h3>
+            <p>Unit test와 SQL fixture 중 프로젝트 방향에 맞는 위치를 확인합니다.</p>
+          </div>
+          <div class="roadmap-step">
+            <span class="day">04 · VERIFY</span>
+            <h3>최신 main 검증</h3>
+            <p>Clippy, fmt, focused test와 기존 정상 입력을 다시 확인합니다.</p>
+          </div>
+          <div class="roadmap-step">
+            <span class="day">05 · CONTRIBUTE</span>
+            <h3>작은 PR</h3>
+            <p>문제, 원인, 변경, 테스트가 한눈에 보이는 PR을 제출합니다.</p>
+          </div>
+        </div>
+        <div class="statement">완료 기준은 “코드를 바꿨다”가 아니라 <span class="teal">왜 이 단계에서 거절하는지 설명할 수 있다</span>입니다.</div>
+      </div>
+      <aside class="notes">발표 직후 바로 PR을 만드는 것이 아니라 Issue에 먼저 작업 의사를 남기고 테스트 위치를 확인하겠습니다. 최근 SQL test가 fixture로 이동했기 때문에 maintainer가 선호하는 위치를 확인하는 것이 안전합니다.</aside>
+    </section>
+
+    <section class="slide" data-title="결론">
+      <span class="slide-number">12 / 12</span>
+      <div class="slide-inner decision">
+        <div class="decision-copy">
+          <p class="kicker">Conclusion</p>
+          <h2>작은 오류 경계 하나가 <span class="accent">첫 기여 방향</span>이 되었다</h2>
+          <div class="decision-points">
+            <p><b>1</b><span>Parser는 SQL을 읽고, Translator는 GlueSQL의 지원 범위를 결정한다.</span></p>
+            <p><b>2</b><span>지원하지 않는 입력을 조용히 무시하지 않는 것도 중요한 기능이다.</span></p>
+            <p><b>3</b><span>첫 기여는 #1904를 이해하고 검증하는 작은 변경부터 시작한다.</span></p>
+          </div>
+        </div>
+        <div class="qr-panel">
+          <div id="qrcode" aria-label="발표자료 링크 QR 코드"></div>
+          <a href="https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/" target="_blank" rel="noreferrer">jinhyunjun.github.io/my-website/<br>gluesql-2026-08-03/</a>
+        </div>
+      </div>
+      <aside class="notes">제가 찾은 첫 관심 분야는 Translator의 지원 경계입니다. #1904를 통해 작은 범위를 정확히 이해하고, 이후 Planner와 validation으로 확장해 보겠습니다. 질문 부탁드립니다.</aside>
+    </section>
+  </main>
+
+  <div class="speaker-panel" id="speakerPanel" aria-live="polite">
+    <h3>발표자 노트</h3>
+    <p id="speakerText"></p>
+  </div>
+
+  <div class="overview" id="overview" aria-hidden="true">
+    <div class="overview-grid" id="overviewGrid"></div>
+  </div>
+
+  <nav class="controls" aria-label="슬라이드 제어">
+    <button class="control-button" id="prevButton" type="button" title="이전 슬라이드" aria-label="이전 슬라이드">
+      <i data-lucide="arrow-left"></i>
+    </button>
+    <span class="counter" id="counter" aria-live="polite">01 / 12</span>
+    <button class="control-button" id="nextButton" type="button" title="다음 슬라이드" aria-label="다음 슬라이드">
+      <i data-lucide="arrow-right"></i>
+    </button>
+    <button class="control-button" id="overviewButton" type="button" title="전체 슬라이드" aria-label="전체 슬라이드">
+      <i data-lucide="layout-grid"></i>
+    </button>
+    <button class="control-button notes-toggle" id="notesButton" type="button" title="발표자 노트" aria-label="발표자 노트">
+      <i data-lucide="notebook-text"></i>
+    </button>
+    <button class="control-button fullscreen-toggle" id="fullscreenButton" type="button" title="전체 화면" aria-label="전체 화면">
+      <i data-lucide="maximize"></i>
+    </button>
+  </nav>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    (() => {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const progressBar = document.getElementById("progressBar");
+      const counter = document.getElementById("counter");
+      const prevButton = document.getElementById("prevButton");
+      const nextButton = document.getElementById("nextButton");
+      const overviewButton = document.getElementById("overviewButton");
+      const notesButton = document.getElementById("notesButton");
+      const fullscreenButton = document.getElementById("fullscreenButton");
+      const overview = document.getElementById("overview");
+      const overviewGrid = document.getElementById("overviewGrid");
+      const speakerPanel = document.getElementById("speakerPanel");
+      const speakerText = document.getElementById("speakerText");
+      let currentIndex = 0;
+
+      const pad = (value) => String(value).padStart(2, "0");
+
+      function goTo(index, behavior = "smooth") {
+        const safeIndex = Math.max(0, Math.min(slides.length - 1, index));
+        slides[safeIndex].scrollIntoView({ behavior, block: "start" });
+      }
+
+      function update(index) {
+        currentIndex = index;
+        const current = slides[index];
+        const progress = ((index + 1) / slides.length) * 100;
+        progressBar.style.width = `${progress}%`;
+        counter.textContent = `${pad(index + 1)} / ${pad(slides.length)}`;
+        prevButton.disabled = index === 0;
+        nextButton.disabled = index === slides.length - 1;
+        const note = current.querySelector(".notes");
+        speakerText.textContent = note ? note.textContent.trim() : "";
+        history.replaceState(null, "", `#${index + 1}`);
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        update(slides.indexOf(visible.target));
+      }, { threshold: [0.55, 0.75] });
+
+      slides.forEach((slide) => observer.observe(slide));
+
+      prevButton.addEventListener("click", () => goTo(currentIndex - 1));
+      nextButton.addEventListener("click", () => goTo(currentIndex + 1));
+
+      notesButton.addEventListener("click", () => {
+        const isOpen = speakerPanel.classList.toggle("open");
+        notesButton.classList.toggle("active", isOpen);
+      });
+
+      overviewButton.addEventListener("click", () => {
+        const isOpen = overview.classList.toggle("open");
+        overview.setAttribute("aria-hidden", String(!isOpen));
+        overviewButton.classList.toggle("active", isOpen);
+      });
+
+      overview.addEventListener("click", (event) => {
+        if (event.target === overview) {
+          overview.classList.remove("open");
+          overview.setAttribute("aria-hidden", "true");
+          overviewButton.classList.remove("active");
+        }
+      });
+
+      fullscreenButton.addEventListener("click", async () => {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        fullscreenButton.classList.toggle("active", Boolean(document.fullscreenElement));
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "PageDown") {
+          event.preventDefault();
+          goTo(currentIndex + 1);
+        }
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp") {
+          event.preventDefault();
+          goTo(currentIndex - 1);
+        }
+        if (event.key === "Home") {
+          event.preventDefault();
+          goTo(0);
+        }
+        if (event.key === "End") {
+          event.preventDefault();
+          goTo(slides.length - 1);
+        }
+        if (event.key.toLowerCase() === "o") {
+          overviewButton.click();
+        }
+        if (event.key.toLowerCase() === "n") {
+          notesButton.click();
+        }
+        if (event.key === "Escape" && overview.classList.contains("open")) {
+          overviewButton.click();
+        }
+      });
+
+      slides.forEach((slide, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "overview-item";
+        button.innerHTML = `<span>${pad(index + 1)} / ${pad(slides.length)}</span><strong>${slide.dataset.title}</strong>`;
+        button.addEventListener("click", () => {
+          overview.classList.remove("open");
+          overview.setAttribute("aria-hidden", "true");
+          overviewButton.classList.remove("active");
+          goTo(index, "auto");
+        });
+        overviewGrid.appendChild(button);
+      });
+
+      const initialIndex = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1) || 1) - 1));
+      update(initialIndex);
+      requestAnimationFrame(() => goTo(initialIndex, "auto"));
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      if (window.QRCode) {
+        new QRCode(document.getElementById("qrcode"), {
+          text: "https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/",
+          width: 190,
+          height: 190,
+          colorDark: "#17191d",
+          colorLight: "#fffdf8",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

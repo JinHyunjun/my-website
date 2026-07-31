@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="TableFactor의 args를 따라가며 이해한 GlueSQL의 Parser와 Translator">
+  <meta name="description" content="GlueSQL 초보 기여자가 실행 경험에서 첫 탐색 후보를 고르는 과정">
   <meta name="author" content="진현준">
-  <meta property="og:title" content="SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까?">
-  <meta property="og:description" content="TableFactor의 args를 따라가며 이해한 SQL 해석 과정">
+  <meta property="og:title" content="초보자는 GlueSQL에 어디서 기여할 수 있을까?">
+  <meta property="og:description" content="실행 경험, 후보 비교, 중복 확인으로 좁힌 첫 기여 탐색">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://opengraph.githubassets.com/1/gluesql/gluesql">
-  <title>SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까? | GlueSQL</title>
+  <title>초보자는 GlueSQL에 어디서 기여할 수 있을까? | GlueSQL</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -750,6 +750,403 @@
       font-weight: 650;
     }
 
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 3px solid var(--ink);
+      background: var(--paper-strong);
+    }
+
+    .evidence-card {
+      min-height: 9.5rem;
+      padding: 1.35rem;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .evidence-card:last-child {
+      border-right: 0;
+    }
+
+    .evidence-card strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 2rem;
+    }
+
+    .evidence-card b {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-size: 1rem;
+    }
+
+    .evidence-card span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .criterion {
+      display: grid;
+      grid-template-columns: 4.4rem minmax(0, 1fr);
+      gap: 1.1rem;
+      align-items: start;
+      padding: 1.45rem;
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--criterion-color, var(--teal));
+      background: var(--paper-strong);
+    }
+
+    .criterion:nth-child(2) { --criterion-color: var(--coral); }
+    .criterion:nth-child(3) { --criterion-color: var(--blue); }
+    .criterion:nth-child(4) { --criterion-color: var(--yellow); }
+
+    .criterion .code {
+      color: var(--criterion-color, var(--teal));
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .criterion h3 {
+      margin-bottom: 0.4rem;
+      font-size: 1.08rem;
+    }
+
+    .criterion p {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+
+    .track-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border-top: 3px solid var(--ink);
+    }
+
+    .track {
+      min-height: 14rem;
+      padding: 1.45rem 1.2rem;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .track:last-child {
+      border-right: 0;
+    }
+
+    .track .level {
+      display: inline-block;
+      margin-bottom: 1.1rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .track:nth-child(3) .level,
+    .track:nth-child(4) .level {
+      color: #7a3b2e;
+      background: var(--coral-soft);
+    }
+
+    .track h3 {
+      margin-bottom: 0.65rem;
+      font-size: 1.12rem;
+    }
+
+    .track p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    .candidate-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 3px solid var(--ink);
+      background: var(--paper-strong);
+      table-layout: fixed;
+    }
+
+    .candidate-table th,
+    .candidate-table td {
+      padding: 0.72rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      overflow-wrap: anywhere;
+    }
+
+    .candidate-table th {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .candidate-table td {
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .candidate-table td:first-child {
+      width: 26%;
+      font-weight: 750;
+    }
+
+    .candidate-table tr.recommended {
+      background: var(--teal-soft);
+    }
+
+    .score,
+    .state-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.65rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .score.easy { color: var(--green); background: #dcefe2; }
+    .score.mid { color: #755300; background: var(--yellow-soft); }
+    .score.hard { color: #7a3b2e; background: var(--coral-soft); }
+    .state-tag { color: var(--blue); background: var(--blue-soft); }
+    .state-tag.focus { color: var(--green); background: #dcefe2; }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .issue-sheet {
+      display: grid;
+      align-content: start;
+      gap: 1rem;
+      padding: 1.7rem;
+      border: 1px solid var(--line);
+      border-top: 8px solid var(--teal);
+      background: var(--paper-strong);
+    }
+
+    .issue-sheet .issue-id {
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .issue-sheet h3 {
+      font-size: 1.5rem;
+    }
+
+    .issue-sheet code {
+      padding: 0.9rem;
+      background: var(--code);
+      color: var(--code-text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      overflow-wrap: anywhere;
+    }
+
+    .reason-list {
+      display: grid;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+      list-style: none;
+    }
+
+    .reason-list li {
+      display: grid;
+      grid-template-columns: 1.5rem minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .reason-list li::before {
+      content: "✓";
+      color: var(--teal);
+      font-weight: 900;
+    }
+
+    .file-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .file-node {
+      position: relative;
+      min-height: 12rem;
+      padding: 1.3rem;
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--node-color, var(--teal));
+      background: var(--paper-strong);
+    }
+
+    .file-node:nth-child(2) { --node-color: var(--blue); }
+    .file-node:nth-child(3) { --node-color: var(--yellow); }
+    .file-node:nth-child(4) { --node-color: var(--coral); }
+
+    .file-node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -1rem;
+      width: 1.2rem;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    .file-node span {
+      display: block;
+      margin-bottom: 0.75rem;
+      color: var(--node-color, var(--teal));
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .file-node code {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .file-node p {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .path-compare {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .path-row {
+      display: grid;
+      grid-template-columns: 8rem minmax(0, 1fr);
+      gap: 1.2rem;
+      align-items: stretch;
+    }
+
+    .path-label {
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      color: white;
+      background: var(--path-color, var(--blue));
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .path-steps {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .path-step {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 6.5rem;
+      padding: 0.9rem 0.55rem;
+      border-right: 1px solid var(--line);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .path-step:last-child {
+      border-right: 0;
+    }
+
+    .path-step.skip {
+      color: var(--muted);
+      background: #eceae4;
+      text-decoration: line-through;
+    }
+
+    .guardrail-grid,
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .guardrail,
+    .report-item {
+      padding: 1.4rem;
+      border-top: 6px solid var(--item-color, var(--teal));
+      background: var(--paper-strong);
+    }
+
+    .guardrail:nth-child(2),
+    .report-item:nth-child(2) { --item-color: var(--blue); }
+    .guardrail:nth-child(3),
+    .report-item:nth-child(3) { --item-color: var(--coral); }
+
+    .guardrail span,
+    .report-item span {
+      display: block;
+      margin-bottom: 0.7rem;
+      color: var(--item-color, var(--teal));
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .guardrail h3,
+    .report-item h3 {
+      margin-bottom: 0.55rem;
+      font-size: 1.05rem;
+    }
+
+    .guardrail p,
+    .report-item p {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
     .roadmap {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1021,6 +1418,9 @@
       h2 { font-size: 2.8rem; }
       .pipeline { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .stage:not(:last-child)::after { display: none; }
+      .track-grid,
+      .file-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .file-node::after { display: none !important; }
       .roadmap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .roadmap-step:nth-child(3) { border-right: 0; }
       .roadmap-step:last-child { border-right: 1px solid var(--line); }
@@ -1053,7 +1453,8 @@
       .cover-grid,
       .two-col,
       .learning-layout,
-      .decision {
+      .decision,
+      .focus-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
       }
@@ -1063,10 +1464,22 @@
       .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .experiment-grid,
       .cause-map,
-      .scope-grid {
+      .scope-grid,
+      .criteria-grid,
+      .track-grid,
+      .file-flow,
+      .guardrail-grid,
+      .report-grid {
         grid-template-columns: 1fr;
       }
 
+      .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .evidence-card:nth-child(2) { border-right: 0; }
+      .path-row { grid-template-columns: 1fr; }
+      .path-steps { grid-template-columns: 1fr; }
+      .path-step { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .path-step:last-child { border-bottom: 0; }
+      .candidate-table { table-layout: auto; }
       .boundary-note { grid-template-columns: 1fr; }
       .test-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .test-metric:nth-child(2) { border-right: 0; }
@@ -1091,11 +1504,15 @@
       .parameter-table { font-size: 0.82rem; }
       .parameter-table th,
       .parameter-table td { padding: 0.8rem 0.55rem; }
+      .candidate-table th,
+      .candidate-table td { padding: 0.6rem 0.45rem; font-size: 0.68rem; }
+      .evidence-grid { grid-template-columns: 1fr; }
+      .evidence-card { border-right: 0; }
+      .criterion { grid-template-columns: 1fr; }
       pre { font-size: 0.78rem; padding: 1rem; }
       .interest-box { padding: 1.4rem; }
       .interest-box .quote { font-size: 1.6rem; }
-      .controls .notes-toggle,
-      .controls .fullscreen-toggle { display: none; }
+      .controls { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1143,408 +1560,399 @@
       <span class="slide-number">01 / 12</span>
       <div class="slide-inner cover-grid">
         <div class="cover-copy">
-          <p class="kicker">GlueSQL · Reading SQL Internals</p>
-          <h1>SQL 한 줄은 GlueSQL 안에서 어떻게 <span class="accent">읽힐까?</span></h1>
-          <p class="lead">TableFactor의 <code class="mono">args</code>를 따라가며 이해한 Parser와 Translator</p>
+          <p class="kicker">GlueSQL · First Contribution Research</p>
+          <h1>초보자는 GlueSQL에 <span class="accent">어디서 기여</span>할 수 있을까?</h1>
+          <p class="lead">실행 경험을 근거로 후보를 비교하고, 첫 탐색 대상을 좁힌 과정</p>
           <div class="cover-meta">
             <span>2026.08.03</span>
             <span>진현준</span>
             <span>OSSCA 2026 · GlueSQL</span>
           </div>
         </div>
-        <div class="query-hero" aria-label="발표에서 다룰 SQL 예제">
-          <code>SELECT *
-FROM GLUE_TABLES<span class="arg">(1)</span>;</code>
+        <div class="query-hero" aria-label="첫 탐색 후보 코드">
+          <code>values(vec![
+  "1, 'Jin'",
+  "2, 'GlueSQL'"
+])
+.<span class="arg">execute</span>(&amp;mut glue);</code>
           <span class="question-mark">?</span>
         </div>
       </div>
-      <aside class="notes">오늘은 기여할 이슈를 선언하는 발표가 아닙니다. TableFactor의 args라는 작은 파라미터를 출발점으로 SQL 한 줄이 GlueSQL 내부에서 어떻게 읽히는지 이해해 본 과정을 공유하겠습니다.</aside>
+      <aside class="notes">처음에는 무엇에 기여할지 몰랐습니다. 이번 발표에서는 그 상태에서 멈추지 않고, 제가 실제로 실행한 것에서 기준을 만들고 GitHub 후보를 비교해 첫 탐색 대상을 좁힌 과정을 말씀드리겠습니다. 오늘 특정 이슈를 맡겠다고 선언하는 발표는 아닙니다.</aside>
     </section>
 
-    <section class="slide" data-title="질문이 관심이 되기까지">
+    <section class="slide" data-title="현재까지 만든 근거">
       <span class="slide-number">02 / 12</span>
-      <div class="slide-inner two-col">
+      <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">01 · Starting Point</p>
-          <h2>관심 분야가 없었던 게 아니라, <span class="teal">질문의 이름</span>을 몰랐다</h2>
-          <p class="lead">처음에는 “GlueSQL이 데이터베이스인가?”에서 시작했습니다. 반복해서 궁금했던 것은 데이터 자체보다 SQL이 내부에서 해석되고 거절되는 과정이었습니다.</p>
+          <p class="kicker">01 · Evidence, Not Guesswork</p>
+          <h2>막막함을 줄인 것은 <span class="teal">직접 실행한 기록</span>이었다</h2>
+          <p class="lead">기여 분야를 먼저 정하기보다, CLI·Storage·코드·테스트를 한 번씩 통과하며 판단 재료를 만들었습니다.</p>
         </div>
-        <div class="stack">
-          <div class="journey">
-            <div class="journey-row">
-              <strong>QUESTION 01</strong>
-              <p>MemoryStorage와 SledStorage는 왜 결과가 다르게 남을까?</p>
-            </div>
-            <div class="journey-row">
-              <strong>QUESTION 02</strong>
-              <p>Parser와 Translator는 왜 별도 단계일까?</p>
-            </div>
-            <div class="journey-row">
-              <strong>QUESTION 03</strong>
-              <p><code class="mono">_</code>를 <code class="mono">None</code>으로 바꾸면 무엇이 달라질까?</p>
-            </div>
-          </div>
-          <div class="statement">내 현재 관심은 기능 추가보다 <span class="accent">SQL이 내부 표현으로 바뀌는 과정</span>을 읽는 데 가까웠다.</div>
+        <div class="evidence-grid">
+          <article class="evidence-card">
+            <strong>2</strong>
+            <b>Storage 비교</b>
+            <span>Memory는 종료 시 소멸, Sled는 지정 경로에서 재시작 후에도 유지</span>
+          </article>
+          <article class="evidence-card">
+            <strong>5</strong>
+            <b>SQL 동작</b>
+            <span>CREATE·INSERT·SELECT·UPDATE·DELETE를 CLI에서 직접 검증</span>
+          </article>
+          <article class="evidence-card">
+            <strong>515</strong>
+            <b>Core 테스트 통과</b>
+            <span>로컬 table function 인자 실험과 관련 검증 완료</span>
+          </article>
+          <article class="evidence-card">
+            <strong>196</strong>
+            <b>Fixture 통과</b>
+            <span>MemoryStorage 기준 공통 SQL fixture가 모두 통과</span>
+          </article>
         </div>
+        <div class="statement">로컬 <code class="mono">args</code> 실험은 기여 주제가 아니라, <span class="accent">코드를 읽고 테스트하는 방법을 익힌 증거</span>로 남긴다.</div>
       </div>
-      <aside class="notes">처음부터 기여 분야를 정하지는 못했습니다. 대신 반복해서 물었던 질문을 모아보니 SQL이 Rust 자료구조로 바뀌는 과정 자체에 관심이 있다는 것을 알게 됐습니다. 이 정도의 방향만 있어도 다음 학습을 고르기에는 충분합니다.</aside>
+      <aside class="notes">제가 한 일은 단순 SQL 연습에서 끝나지 않았습니다. Memory와 Sled의 생명주기를 비교했고, CRUD를 실행했고, table function 인자 경계를 로컬에서 수정해 관련 테스트와 Clippy까지 통과했습니다. 이 실험을 PR로 바로 내지는 않지만, 다음 후보를 판단할 수 있는 기반이 됐습니다.</aside>
     </section>
 
-    <section class="slide" data-title="SQL 한 줄의 전체 흐름">
+    <section class="slide" data-title="첫 이슈의 기준">
       <span class="slide-number">03 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">02 · Vertical Slice</p>
-          <h2>SQL 한 줄이 지나가는 길</h2>
-          <p class="lead">이번 발표에서는 전체 코드를 넓게 읽기보다, 하나의 입력이 Payload로 돌아오기까지 세로로 추적했습니다.</p>
+          <p class="kicker">02 · Selection Criteria</p>
+          <h2>“쉬워 보인다”보다 중요한 <span class="blue">네 가지 기준</span></h2>
+          <p class="lead">초보자의 첫 기여는 코드 줄 수가 아니라 재현성, 범위, 선례, 중복 여부로 판단해야 했습니다.</p>
         </div>
-        <div class="pipeline" aria-label="GlueSQL SQL 실행 파이프라인">
-          <div class="stage" style="--stage-color: var(--ink)">
-            <span class="index">00</span>
-            <b>CLI</b>
-            <small>SQL 문자열 입력</small>
-          </div>
-          <div class="stage parser">
-            <span class="index">01</span>
-            <b>Parser</b>
-            <small>sqlparser AST</small>
-          </div>
-          <div class="stage translator">
-            <span class="index">02</span>
-            <b>Translator</b>
-            <small>GlueSQL AST</small>
-          </div>
-          <div class="stage planner">
-            <span class="index">03</span>
-            <b>Planner</b>
-            <small>StatementPlan</small>
-          </div>
-          <div class="stage executor">
-            <span class="index">04</span>
-            <b>Executor</b>
-            <small>실제 연산</small>
-          </div>
-          <div class="stage storage">
-            <span class="index">05</span>
-            <b>Storage</b>
-            <small>원본 데이터 접근</small>
-          </div>
-          <div class="stage" style="--stage-color: var(--blue)">
-            <span class="index">06</span>
-            <b>Payload</b>
-            <small>실행 결과 반환</small>
-          </div>
-        </div>
-        <div class="boundary-note">
-          <div>
-            <strong>이번에 본 경계</strong>
-            <p>Parser는 SQL 문법 구조를 만들고, Translator는 그 구조를 GlueSQL이 지원하는 내부 표현으로 옮깁니다.</p>
-          </div>
-          <div>
-            <strong>다음에 볼 경계</strong>
-            <p>Planner가 Context와 Storage 스키마를 이용해 실제 평가 가능성을 검사하는 과정입니다.</p>
-          </div>
+        <div class="criteria-grid">
+          <article class="criterion">
+            <span class="code">01</span>
+            <div><h3>직접 재현 가능한가</h3><p>CLI나 기존 테스트로 현재 동작과 기대 결과를 확인할 수 있어야 합니다.</p></div>
+          </article>
+          <article class="criterion">
+            <span class="code">02</span>
+            <div><h3>변경 범위가 작은가</h3><p>파일 수와 책임 경계를 설명할 수 있는 크기로 시작합니다.</p></div>
+          </article>
+          <article class="criterion">
+            <span class="code">03</span>
+            <div><h3>따라갈 선례가 있는가</h3><p>비슷한 테스트나 문서가 있어 프로젝트 방식을 배울 수 있어야 합니다.</p></div>
+          </article>
+          <article class="criterion">
+            <span class="code">04</span>
+            <div><h3>다른 작업과 겹치지 않는가</h3><p>Assignee, 댓글, 연결 PR, 같은 파일을 만지는 활성 PR을 확인합니다.</p></div>
+          </article>
         </div>
       </div>
-      <aside class="notes">Glue::plan_with_params가 핵심 연결점입니다. parse, translate, storage.plan 순으로 이어지고 execute가 Storage를 사용해 Payload를 만듭니다. 이번 발표는 그중 Parser와 Translator 사이를 좁게 봅니다.</aside>
+      <aside class="notes">good first issue 라벨만 보고 고르면 이미 누군가 진행 의사를 남겼거나 실제 구현 범위가 넓을 수 있습니다. 그래서 제가 직접 재현할 수 있는지, 변경 파일을 설명할 수 있는지, 기존 예제가 있는지, 현재 누가 작업 중인지 네 가지를 기준으로 삼았습니다.</aside>
     </section>
 
-    <section class="slide" data-title="관심이 생긴 SQL">
+    <section class="slide" data-title="기여 난이도 지도">
       <span class="slide-number">04 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">03 · The Trigger</p>
-          <h2>관심이 생긴 세 개의 TableFactor</h2>
-          <p class="lead">괄호가 있다는 점은 같지만 GlueSQL이 책임지는 의미는 서로 다릅니다.</p>
+          <p class="kicker">03 · Contribution Landscape</p>
+          <h2>GlueSQL 기여는 한 종류가 아니라 <span class="teal">난이도 경사</span>가 있다</h2>
+          <p class="lead">첫 PR은 가장 왼쪽에서 시작해도 충분합니다. 중요한 것은 테스트와 문서가 실제 코드 동작을 근거로 한다는 점입니다.</p>
         </div>
-        <div class="experiment-grid">
-          <article class="experiment ok">
-            <h3>지원되는 Table Function</h3>
-            <code>SELECT * FROM SERIES(3);</code>
-            <div class="result"><span class="mark">✓</span><span>인자 3을 실제 크기로 사용</span></div>
+        <div class="track-grid">
+          <article class="track">
+            <span class="level">ENTRY 1</span>
+            <h3>문서 보완</h3>
+            <p>현재 Todo 페이지를 실제 API와 테스트 결과에 맞게 설명합니다.</p>
           </article>
-          <article class="experiment warn">
-            <h3>Dictionary Table + 인자</h3>
-            <code>SELECT * FROM GLUE_TABLES(1);</code>
-            <div class="result"><span class="mark">!</span><span>인자를 받을 기능이 없음</span></div>
+          <article class="track">
+            <span class="level">ENTRY 2</span>
+            <h3>테스트·예제 추가</h3>
+            <p>기존 패턴을 따라 지원 동작과 오류 경계를 실행 가능한 사례로 남깁니다.</p>
           </article>
-          <article class="experiment warn">
-            <h3>일반 Table + 인자</h3>
-            <code>SELECT * FROM Foo(1);</code>
-            <div class="result"><span class="mark">!</span><span>지원하지 않는 Table Function</span></div>
+          <article class="track">
+            <span class="level">ENTRY 3</span>
+            <h3>Fixture 도구 개선</h3>
+            <p>테스트 문법, assertion, parser 규칙과 호환성을 함께 다룹니다.</p>
+          </article>
+          <article class="track">
+            <span class="level">ENTRY 4</span>
+            <h3>Core 기능 변경</h3>
+            <p>Translator·Planner·Executor의 계약과 여러 Storage에 미치는 영향을 검증합니다.</p>
           </article>
         </div>
-        <div class="statement">기존 코드는 두 번째와 세 번째 입력의 괄호 안 정보를 <span class="accent">조용히 버릴 수 있었다.</span></div>
+        <div class="statement">문서와 테스트는 코어보다 덜 중요한 일이 아니라, <span class="teal">동작을 이해했다는 검증 가능한 결과</span>다.</div>
       </div>
-      <aside class="notes">SERIES는 실제로 인자를 사용하는 기능입니다. 반면 GLUE_TABLES는 Dictionary table이고 Foo는 일반 table입니다. 기존 main에서는 unsupported args가 있어도 일반 table 또는 dictionary로 번역될 수 있었습니다.</aside>
+      <aside class="notes">GlueSQL에는 문서, 테스트, fixture 도구, 코어 기능처럼 여러 기여 층이 있습니다. 초보자에게 문서와 테스트가 좋은 이유는 쉬워서만이 아닙니다. 구현을 읽고 실제 결과를 확인해야 정확하게 쓸 수 있기 때문에 구조를 배우는 입구가 됩니다.</aside>
     </section>
 
-    <section class="slide" data-title="args 파라미터 읽기">
+    <section class="slide" data-title="후보 비교">
       <span class="slide-number">05 / 12</span>
-      <div class="slide-inner two-col">
+      <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">04 · Rust Parameter</p>
-          <h2><code class="mono">args</code>는 값보다 먼저 <span class="blue">존재 여부</span>를 말한다</h2>
-          <p class="lead"><code class="mono">Option&lt;TableFunctionArgs&gt;</code>이므로 괄호가 없으면 <code class="mono">None</code>, 있으면 <code class="mono">Some(...)</code>입니다.</p>
+          <p class="kicker">04 · Live GitHub Review</p>
+          <h2>현재 열린 후보를 같은 기준으로 비교했다</h2>
+          <p class="lead">난이도만이 아니라 중복 위험과 결정이 필요한 범위까지 함께 봤습니다.</p>
         </div>
-        <table class="parameter-table">
+        <table class="candidate-table" aria-label="GlueSQL 초보 기여 후보 비교">
           <thead>
             <tr>
-              <th>SQL</th>
-              <th>args</th>
-              <th>GlueSQL 의미</th>
+              <th>후보</th>
+              <th>난이도</th>
+              <th>현재 상태</th>
+              <th>초보자 관점 판단</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>GLUE_TABLES</td>
-              <td><span class="pill">None</span></td>
-              <td>Dictionary table</td>
+            <tr class="recommended">
+              <td>#1676 Data Injection 문서+테스트</td>
+              <td><span class="score easy">2 / 5</span></td>
+              <td><span class="state-tag focus">첫 탐색</span></td>
+              <td>Todo와 기존 예제가 모두 있고 활성 관련 PR을 찾지 못함</td>
             </tr>
             <tr>
-              <td>GLUE_TABLES(1)</td>
-              <td><span class="pill some">Some(1)</span></td>
-              <td>지원하지 않는 인자</td>
+              <td>#1408 Storage 지원 기능 표</td>
+              <td><span class="score mid">3 / 5</span></td>
+              <td><span class="state-tag">후속 문서</span></td>
+              <td>경험과 잘 맞지만 모든 Storage 검증 범위가 큼</td>
             </tr>
             <tr>
-              <td>SERIES(3)</td>
-              <td><span class="pill some">Some(3)</span></td>
-              <td>지원되는 크기 인자</td>
+              <td>#1946 빈 결과 type assertion</td>
+              <td><span class="score mid">3 / 5</span></td>
+              <td><span class="state-tag">설계 토론</span></td>
+              <td>코드보다 “무엇이 맞는 동작인가” 합의가 먼저 필요</td>
+            </tr>
+            <tr>
+              <td>#1947 fixture의 literal pipe</td>
+              <td><span class="score hard">4 / 5</span></td>
+              <td><span class="state-tag">후속 구현</span></td>
+              <td>escape 규칙과 이전 fixture 호환성을 함께 설계해야 함</td>
+            </tr>
+            <tr>
+              <td>#1011 LIKE ESCAPE</td>
+              <td><span class="score mid">3 / 5</span></td>
+              <td><span class="state-tag">보류</span></td>
+              <td>기존 참여 의사 댓글이 있어 중복 확인이 먼저 필요</td>
             </tr>
           </tbody>
         </table>
-        <div class="code-panel">
-          <div class="code-head"><span>core/src/translate/query.rs</span><span>match input</span></div>
-          <pre><span class="code-key">match</span> (object_name.as_str(), args) {
-    <span class="code-muted">// table name + argument presence</span>
-}</pre>
-        </div>
       </div>
-      <aside class="notes">제가 처음 이해하기 어려웠던 부분입니다. args는 Option이기 때문에 None과 Some으로 인자의 유무를 표현합니다. 내부 값을 아직 보지 않더라도 존재 여부만으로 지원 여부를 판단할 수 있습니다.</aside>
+      <aside class="notes">다섯 후보를 비교했습니다. Storage 표는 제 경험과 맞지만 전체 기능 확인이 큽니다. 1946은 동작 정책 합의가 먼저이고, 1947은 fixture parser 규칙을 바꿔야 합니다. 1011은 good first issue지만 기존 참여 의사가 있습니다. 그래서 첫 탐색은 1676의 Data Injection 한 항목으로 좁혔습니다.</aside>
     </section>
 
-    <section class="slide" data-title="기존 코드의 문제">
+    <section class="slide" data-title="추천 후보">
       <span class="slide-number">06 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">05 · Root Cause</p>
-          <h2><code class="mono">_</code>는 편리했지만, 기능 계약까지 지워버렸다</h2>
+          <p class="kicker">05 · Recommended Exploration</p>
+          <h2>#1676 전체가 아니라 <span class="accent">Data Injection 하나</span></h2>
+          <p class="lead">큰 문서 이슈를 통째로 맡지 않고, 익숙한 <code class="mono">VALUES</code> 예제 한 묶음으로 범위를 제한합니다.</p>
         </div>
-        <div class="two-col">
-          <div class="code-panel">
-            <div class="code-head"><span>upstream/main</span><span>before</span></div>
-            <pre><span class="code-key">match</span> (object_name.as_str(), args) {
-    (<span class="code-string">"SERIES"</span>, <span class="code-key">Some</span>(...)) =&gt; ...
-
-    (<span class="code-string">"GLUE_TABLES"</span>, _) =&gt;
-        TableFactor::Dictionary { ... },
-
-    _ =&gt; TableFactor::Table { ... },
-}</pre>
-          </div>
+        <div class="focus-grid">
+          <article class="issue-sheet">
+            <span class="issue-id">ISSUE #1676 · DOCUMENTATION</span>
+            <h3>Query Builder: Data Injection</h3>
+            <code>docs/docs/query-builder/statements/querying/data-injection.md</code>
+            <p class="lead">현재 내용은 제목과 <code class="mono">Todo</code>, <code class="mono">VALUES</code> 한 줄뿐입니다.</p>
+          </article>
           <div class="stack">
-            <div class="cause-map">
-              <div class="cause-step">
-                <span>STEP 01</span>
-                <p><code class="mono">_</code>가 <code class="mono">None</code>과 <code class="mono">Some</code>을 모두 받음</p>
-              </div>
-              <div class="cause-step">
-                <span>STEP 02</span>
-                <p>Dictionary와 일반 Table AST에는 인자를 보관할 필드가 없음</p>
-              </div>
-              <div class="cause-step">
-                <span>STEP 03</span>
-                <p>입력의 괄호와 인자가 오류 없이 사라짐</p>
-              </div>
-            </div>
-            <div class="statement">문법적으로 읽을 수 있다는 것과 GlueSQL이 지원한다는 것은 다르다.</div>
+            <ul class="reason-list">
+              <li><span>CLI에서 이미 다뤄 본 값 입력과 결과 조회에 연결된다.</span></li>
+              <li><span><code class="mono">values.rs</code>와 기존 Query Builder 테스트가 선례를 제공한다.</span></li>
+              <li><span>문서와 테스트가 함께 움직이는 GlueSQL 방식을 배울 수 있다.</span></li>
+              <li><span>현재 이슈는 미할당이고 연결된 브랜치나 PR이 없다.</span></li>
+              <li><span>활성 문서 PR #1935는 Data Injection 페이지를 수정하지 않는다.</span></li>
+            </ul>
+            <div class="statement">추천은 “바로 구현”이 아니라 <span class="teal">Maintainer에게 이 하위 항목의 진행 가능 여부를 확인할 가치가 가장 높다</span>는 뜻이다.</div>
           </div>
         </div>
       </div>
-      <aside class="notes">핵심은 Rust의 언더스코어가 나쁘다는 것이 아닙니다. 이 위치에서 언더스코어가 GlueSQL의 기능 계약보다 넓은 값을 받아들이는 것이 문제입니다. 이후 AST가 인자를 보관하지 않으므로 입력 정보가 사라집니다.</aside>
+      <aside class="notes">1676에는 여러 Todo 문서가 묶여 있습니다. 저는 그중 Data Injection 하나만 봅니다. 현재 문서는 사실상 비어 있고, values 구현과 테스트가 이미 있어 읽을 선례가 있습니다. 이슈가 미할당이고 관련 PR도 없지만, 큰 이슈의 하위 항목이므로 먼저 댓글로 범위를 확인해야 합니다.</aside>
     </section>
 
-    <section class="slide" data-title="로컬에서 시도한 변경">
+    <section class="slide" data-title="예상 변경 지도">
       <span class="slide-number">07 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">06 · Local Experiment</p>
-          <h2>지원하는 입력은 통과시키고, 나머지는 명시적으로 거절한다</h2>
+          <p class="kicker">06 · Small Change Map</p>
+          <h2>예상 범위를 <span class="blue">네 개의 파일 역할</span>로 설명할 수 있다</h2>
+          <p class="lead">아직 코드를 바꾸기 전이지만, 어디에 무엇을 추가해야 하는지는 기존 패턴으로 확인했습니다.</p>
         </div>
-        <div class="two-col">
-          <div class="code-panel">
-            <div class="code-head"><span>study/table-function-args</span><span>local diff</span></div>
-            <pre><span class="diff-minus">- ("GLUE_TABLES", _) =&gt; ...</span>
-<span class="diff-plus">+ ("GLUE_TABLES", None) =&gt; ...</span>
-
-<span class="diff-plus">+ (_, Some(_)) =&gt; Err(</span>
-<span class="diff-plus">+   UnsupportedQueryTableFactor(...)</span>
-<span class="diff-plus">+ )</span></pre>
-          </div>
-          <div class="stack">
-            <div class="test-strip">
-              <div class="test-metric">
-                <strong>5</strong>
-                <span>Translate tests</span>
-              </div>
-              <div class="test-metric">
-                <strong>0</strong>
-                <span>Failures</span>
-              </div>
-              <div class="test-metric">
-                <strong>0</strong>
-                <span>Clippy warnings</span>
-              </div>
-              <div class="test-metric">
-                <strong>1</strong>
-                <span>Modified file</span>
-              </div>
-            </div>
-            <div class="code-panel">
-              <div class="code-head"><span>regression cases</span><span>local only</span></div>
-              <pre>GLUE_OBJECTS(1)
-GLUE_TABLES(1)
-GLUE_INDEXES(1)
-GLUE_TABLE_COLUMNS(1)
-Foo(1)</pre>
-            </div>
-          </div>
+        <div class="file-flow">
+          <article class="file-node">
+            <span>01 · NEW TEST</span>
+            <code>test-suite/src/query_builder/statements/querying/data_injection.rs</code>
+            <p><code class="mono">values(...).execute(glue)</code>의 입력과 Payload를 검증</p>
+          </article>
+          <article class="file-node">
+            <span>02 · MODULE</span>
+            <code>test-suite/src/query_builder/statements/querying.rs</code>
+            <p>새 테스트 모듈을 Querying 범위에 공개</p>
+          </article>
+          <article class="file-node">
+            <span>03 · REGISTER</span>
+            <code>test-suite/src/lib.rs</code>
+            <p>공통 Storage 테스트 매크로에 새 사례를 등록</p>
+          </article>
+          <article class="file-node">
+            <span>04 · DOCUMENT</span>
+            <code>docs/docs/query-builder/statements/querying/data-injection.md</code>
+            <p>검증된 코드와 결과 표, 설명으로 Todo를 교체</p>
+          </article>
         </div>
-        <p class="lead"><strong>현재 상태:</strong> 최신 main 동기화와 로컬 검증 완료. 커밋·Push·PR은 아직 하지 않았습니다.</p>
+        <div class="test-strip">
+          <div class="test-metric"><strong>1</strong><span>new test case</span></div>
+          <div class="test-metric"><strong>2</strong><span>registration edits</span></div>
+          <div class="test-metric"><strong>1</strong><span>documentation page</span></div>
+          <div class="test-metric"><strong>0</strong><span>planned core edits</span></div>
+        </div>
       </div>
-      <aside class="notes">수정 범위는 query.rs 한 파일입니다. Dictionary는 None일 때만 허용하고, SERIES에서 처리되지 않은 Some args는 명시적 TranslateError로 보냅니다. 현재는 학습용 로컬 변경이고 기여로 제출하지 않았습니다.</aside>
+      <aside class="notes">예상 변경은 테스트 파일 하나, 모듈 등록, 공통 스토리지 테스트 등록, 문서 한 페이지입니다. 핵심 코어 로직 변경은 계획하지 않습니다. 이 정도면 각 파일의 역할을 설명할 수 있고, 리뷰에서도 범위를 쉽게 확인할 수 있습니다.</aside>
     </section>
 
-    <section class="slide" data-title="오류가 발생해야 하는 단계">
+    <section class="slide" data-title="새로 배우는 실행 경로">
       <span class="slide-number">08 / 12</span>
-      <div class="slide-inner two-col">
+      <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">07 · Error Boundary</p>
-          <h2>왜 <span class="accent">ParserError</span>가 아니라 <span class="teal">TranslateError</span>일까?</h2>
-          <p class="lead">SQL 문법 자체가 잘못된 경우와, 문법은 맞지만 GlueSQL이 지원하지 않는 경우를 구분해야 합니다.</p>
+          <p class="kicker">07 · Architecture Payoff</p>
+          <h2>이 후보는 두 번째 실행 입구를 보여준다</h2>
+          <p class="lead">SQL 문자열과 Query Builder는 같은 실행기로 향하지만, 앞부분의 경로가 다릅니다.</p>
         </div>
-        <div class="error-lanes">
-          <div class="error-lane" style="--stop: 18%; --lane-color: var(--coral)">
-            <code>DELECT FROM test</code>
-            <div class="path"></div>
-            <span class="error-name">ParserError</span>
+        <div class="path-compare">
+          <div class="path-row" style="--path-color: var(--blue)">
+            <div class="path-label">SQL TEXT</div>
+            <div class="path-steps">
+              <div class="path-step">Parser</div>
+              <div class="path-step">Translator</div>
+              <div class="path-step">StatementPlan</div>
+              <div class="path-step">Storage Planner</div>
+              <div class="path-step">Executor → Payload</div>
+            </div>
           </div>
-          <div class="error-lane" style="--stop: 45%; --lane-color: var(--teal)">
-            <code>GLUE_TABLES(1)</code>
-            <div class="path"></div>
-            <span class="error-name">TranslateError</span>
-          </div>
-          <div class="error-lane" style="--stop: 90%; --lane-color: var(--blue)">
-            <code>SERIES(3)</code>
-            <div class="path"></div>
-            <span class="error-name">Execute</span>
+          <div class="path-row" style="--path-color: var(--teal)">
+            <div class="path-label">QUERY BUILDER</div>
+            <div class="path-steps">
+              <div class="path-step">Rust Builder API</div>
+              <div class="path-step skip">Parser·Translator</div>
+              <div class="path-step">Build → StatementPlan</div>
+              <div class="path-step">Storage Planner</div>
+              <div class="path-step">Executor → Payload</div>
+            </div>
           </div>
         </div>
+        <div class="statement">첫 기여 후보가 곧 다음 학습 주제다. <span class="teal">Query Builder가 SQL 문자열 경로를 어떻게 우회하는지</span> 코드로 확인할 수 있다.</div>
       </div>
-      <aside class="notes">DELECT는 SQL grammar에 없는 단어라 Parser가 거절합니다. GLUE_TABLES(1)은 sqlparser가 표현 가능한 SQL 구조지만 GlueSQL에는 해당 기능이 없으므로 Translator가 거절해야 합니다. SERIES(3)은 지원되므로 이후 단계로 갑니다.</aside>
+      <aside class="notes">제가 지금까지 배운 Parser, Translator 경로만이 GlueSQL의 전부는 아닙니다. Query Builder의 Execute trait은 Build로 StatementPlan을 만든 뒤 storage.plan과 execute_stmt로 갑니다. 그래서 이 문서 테스트는 코어를 크게 바꾸지 않으면서 GlueSQL의 두 번째 입력 경로를 배우게 해 줍니다.</aside>
     </section>
 
-    <section class="slide learning-slide" data-title="이 실험의 범위">
+    <section class="slide" data-title="중복 방지">
       <span class="slide-number">09 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">08 · Learning Boundary</p>
-          <h2>하나를 이해했다고 바로 <span class="blue">기여 주제</span>가 정해지는 것은 아니다</h2>
-          <p class="lead">이번 실험은 Parser와 Translator의 한 경계를 이해한 사례입니다. GlueSQL 전체의 우선순위나 내가 맡을 이슈까지 결정한 것은 아닙니다.</p>
+          <p class="kicker">08 · Avoiding Duplicate Work</p>
+          <h2>코드를 쓰기 전 세 번 확인한다</h2>
+          <p class="lead">미할당 이슈도 누군가 준비 중일 수 있으므로, GitHub 화면과 실제 변경 파일을 함께 봅니다.</p>
         </div>
-        <div class="learning-layout">
-          <article class="learning-panel">
-            <span class="label">WHAT I CAN EXPLAIN</span>
-            <h3>이번에 확인한 것</h3>
-            <ol class="learning-list">
-              <li><span><code class="mono">args</code>의 <code class="mono">None</code>과 <code class="mono">Some</code>이 SQL 모양과 연결된다.</span></li>
-              <li><span>Rust의 <code class="mono">match</code> 순서가 지원 입력과 오류 입력을 나눈다.</span></li>
-              <li><span>문법 오류와 미지원 기능 오류는 서로 다른 단계에서 발생한다.</span></li>
-            </ol>
+        <div class="guardrail-grid">
+          <article class="guardrail">
+            <span>CHECK 01</span>
+            <h3>이슈 활동</h3>
+            <p>Assignee, 최근 댓글, Development의 연결 브랜치·PR을 확인합니다.</p>
           </article>
-          <article class="learning-panel">
-            <span class="label">WHAT I STILL NEED</span>
-            <h3>아직 더 살펴볼 것</h3>
-            <ol class="learning-list">
-              <li><span>Planner와 Executor까지 이어지는 실제 호출 흐름</span></li>
-              <li><span>SQL fixture와 unit test를 나누는 프로젝트 기준</span></li>
-              <li><span>문서, 테스트, 코어 코드 중 내가 편하게 시작할 영역</span></li>
-            </ol>
+          <article class="guardrail">
+            <span>CHECK 02</span>
+            <h3>활성 PR 파일</h3>
+            <p>문서 PR #1935처럼 같은 영역을 수정하는 작업의 정확한 파일 목록을 비교합니다.</p>
+          </article>
+          <article class="guardrail">
+            <span>CHECK 03</span>
+            <h3>범위 확인 댓글</h3>
+            <p>“Data Injection 한 항목의 테스트와 문서를 진행해도 될까요?”라고 먼저 묻습니다.</p>
           </article>
         </div>
-        <div class="statement">지금 정할 것은 이슈 번호가 아니라 <span class="teal">첫 기여의 방식</span>이다.</div>
+        <div class="two-col">
+          <div class="code-panel">
+            <div class="code-head"><span>proposed issue comment</span><span>before coding</span></div>
+            <pre>I'd like to work on the Data Injection sub-item only.
+My planned scope is one Query Builder test example
+and the matching documentation page.
+Is this scope available?</pre>
+          </div>
+          <div class="statement">확인 전에는 학습과 재현까지만 진행하고, <span class="accent">기여 브랜치와 구현은 합의 후</span> 시작한다.</div>
+        </div>
       </div>
-      <aside class="notes">로컬에서 한 변경은 학습 사례로는 유효하지만, 곧바로 제가 맡을 기여 주제라는 뜻은 아닙니다. 대신 이번 경험을 통해 기능부터 고르기보다 재현, 테스트, 설명을 먼저 만드는 방식으로 접근하겠다는 기준을 세웠습니다.</aside>
+      <aside class="notes">중복을 피하기 위해 세 번 확인합니다. 이슈의 assignee와 댓글, 연결 PR을 보고, 같은 파일을 만지는 활성 PR을 봅니다. 마지막으로 Data Injection 한 항목의 범위를 댓글로 확인합니다. 답변 전에는 테스트 실행과 코드 읽기까지만 합니다.</aside>
     </section>
 
-    <section class="slide" data-title="내가 선택한 기여 방식">
+    <section class="slide" data-title="다음 실행 순서">
       <span class="slide-number">10 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">09 · Contribution Strategy</p>
-          <h2>문서와 테스트부터, 코어 변경은 이해한 만큼만</h2>
-        </div>
-        <div class="interest-box">
-          <span class="mono teal">MY CONTRIBUTION UNIT</span>
-          <p class="quote">“기능 하나”보다 작은 <span class="accent">재현 가능한 SQL 한 줄</span>에서 시작한다.</p>
-        </div>
-        <div class="scope-grid">
-          <div class="scope">
-            <span>STEP 01 · REPRODUCE</span>
-            <p>CLI에서 입력, 실제 결과, 기대 결과를 누구나 다시 실행할 수 있게 기록하기</p>
-          </div>
-          <div class="scope">
-            <span>STEP 02 · COVER</span>
-            <p>기존 SQL fixture를 읽고 같은 동작을 보장하는 가장 작은 테스트 찾기</p>
-          </div>
-          <div class="scope">
-            <span>STEP 03 · EXPLAIN</span>
-            <p>왜 그 결과가 나오는지 초보자도 따라갈 수 있는 문서와 예제로 설명하기</p>
-          </div>
-        </div>
-        <div class="statement">코어 코드는 재현과 테스트가 준비되고, 프로젝트 방향을 확인한 뒤 <span class="teal">필요한 만큼만</span> 바꾼다.</div>
-      </div>
-      <aside class="notes">제가 선택한 것은 특정 기능이 아니라 기여 방식입니다. SQL 한 줄을 CLI에서 재현하고, 기존 fixture가 어떤 동작을 보장하는지 읽고, 초보자도 이해할 수 있게 설명하겠습니다. 코어 변경은 이 근거가 준비되고 메인테이너와 범위를 확인한 뒤에만 진행하겠습니다.</aside>
-    </section>
-
-    <section class="slide" data-title="첫 기여 준비 순서">
-      <span class="slide-number">11 / 12</span>
-      <div class="slide-inner">
-        <div class="stack">
-          <p class="kicker">10 · First Contribution Loop</p>
-          <h2>이슈를 고르기 전에 한 번 완주할 작은 루프</h2>
-          <p class="lead">이 다섯 단계를 한 SQL 사례로 끝까지 해 보면, 문서와 테스트 중 어디서 실제 기여를 시작할지 근거가 생깁니다.</p>
+          <p class="kicker">09 · Five-Step Trial</p>
+          <h2>발표 뒤에 진행할 <span class="teal">작은 완주 루프</span></h2>
+          <p class="lead">첫 목표는 PR이 아니라, 이 후보가 정말 내 수준과 프로젝트 방향에 맞는지 검증하는 것입니다.</p>
         </div>
         <div class="roadmap">
           <div class="roadmap-step">
-            <span class="day">01 · CHOOSE</span>
-            <h3>SQL 하나 선택</h3>
-            <p>지원, 오류, Storage 중 궁금한 동작을 한 문장으로 좁힙니다.</p>
+            <span class="day">01 · RUN</span>
+            <h3>기존 values 테스트 실행</h3>
+            <p>현재 API와 Payload 형태를 로컬에서 확인합니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">02 · REPLAY</span>
-            <h3>CLI에서 재현</h3>
-            <p>명령, 출력, Storage 조건을 함께 남겨 같은 결과를 재현합니다.</p>
+            <span class="day">02 · READ</span>
+            <h3>완성 문서 비교</h3>
+            <p>Data Aggregation 문서와 테스트의 연결 방식을 읽습니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">03 · READ</span>
-            <h3>fixture 읽기</h3>
-            <p>가장 가까운 SQL fixture가 무엇을 기대하는지 해석합니다.</p>
+            <span class="day">03 · DEFINE</span>
+            <h3>최소 예제 정의</h3>
+            <p>VALUES 입력, 실행 결과, 설명 범위를 한 문장으로 정합니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">04 · TRACE</span>
-            <h3>단계와 코드 연결</h3>
-            <p>Parser, Translator, Planner 중 책임지는 위치만 좁게 찾습니다.</p>
+            <span class="day">04 · ASK</span>
+            <h3>Maintainer 확인</h3>
+            <p>#1676에 하위 항목 범위와 중복 여부를 질문합니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">05 · SHARE</span>
-            <h3>근거부터 공유</h3>
-            <p>재현 기록과 예상 범위를 팀에 먼저 공유해 중복을 피합니다.</p>
+            <span class="day">05 · DECIDE</span>
+            <h3>진행 또는 전환</h3>
+            <p>합의되면 구현하고, 겹치면 #1408의 작은 조사로 전환합니다.</p>
           </div>
         </div>
-        <div class="statement">완료 기준은 PR이 아니라 <span class="teal">현재 동작과 기대 동작을 근거로 설명할 수 있는 것</span>입니다.</div>
+        <div class="statement">중단 기준도 정한다. 범위가 커지거나 코어 변경이 필요하면 <span class="accent">다시 쪼개고 질문한다.</span></div>
       </div>
-      <aside class="notes">발표 이후에는 한 SQL 사례를 선택해 이 작은 루프를 완주하겠습니다. CLI 재현, fixture 읽기, 책임 단계 추적까지 마친 뒤 근거를 팀에 공유하면 이미 진행 중인 사람과 겹치지 않고, 문서나 테스트로 시작할 수 있습니다.</aside>
+      <aside class="notes">다음 행동은 구체적입니다. 기존 values 테스트를 실행하고, 완성된 Data Aggregation 문서를 비교하고, 최소 예제를 정의합니다. 그 뒤에 Maintainer에게 묻습니다. 가능하면 기여 브랜치를 만들고, 겹치거나 범위가 커지면 Storage 문서 조사의 작은 단위로 전환합니다.</aside>
+    </section>
+
+    <section class="slide" data-title="중간보고서에 남길 것">
+      <span class="slide-number">11 / 12</span>
+      <div class="slide-inner">
+        <div class="stack">
+          <p class="kicker">10 · Midterm Report</p>
+          <h2>PR 개수만이 아니라 <span class="blue">근거 있는 성장 과정</span>을 기록한다</h2>
+          <p class="lead">중간보고서는 환경 구축부터 후보 선정까지, 완료한 일과 아직 하지 않은 일을 분리해 보여줍니다.</p>
+        </div>
+        <div class="report-grid">
+          <article class="report-item">
+            <span>EVIDENCE</span>
+            <h3>실행과 검증</h3>
+            <p>CRUD, Memory·Sled 비교, 515 Core tests, 196 fixtures, Clippy 결과</p>
+          </article>
+          <article class="report-item">
+            <span>LEARNING</span>
+            <h3>구조 이해</h3>
+            <p>SQL pipeline, Storage·Payload 구분, 로컬 table function 인자 실험</p>
+          </article>
+          <article class="report-item">
+            <span>NEXT STEP</span>
+            <h3>기여 후보 조사</h3>
+            <p>후보 5개 비교, 중복 확인, #1676 Data Injection 탐색 계획</p>
+          </article>
+        </div>
+        <div class="test-strip">
+          <div class="test-metric"><strong>0</strong><span>upstream PR, honestly stated</span></div>
+          <div class="test-metric"><strong>1</strong><span>local learning branch</span></div>
+          <div class="test-metric"><strong>4</strong><span>evidence screenshots needed</span></div>
+          <div class="test-metric"><strong>8/9</strong><span>report deadline</span></div>
+        </div>
+        <div class="statement">“아직 기여하지 못했다”에서 끝내지 않고, <span class="teal">기여할 수 있는 상태를 어떻게 만들었는지</span> 보여준다.</div>
+      </div>
+      <aside class="notes">중간보고서에는 PR 0건을 솔직히 적습니다. 대신 실행과 검증 수치, 배운 구조, 후보를 좁힌 기준을 근거로 제시합니다. 남은 일은 Sled 재시작, 테스트 결과, 모임 사진 같은 캡처를 보완하고, 발표 피드백과 Maintainer 확인 결과를 추가하는 것입니다.</aside>
     </section>
 
     <section class="slide" data-title="결론">
@@ -1552,19 +1960,20 @@ Foo(1)</pre>
       <div class="slide-inner decision">
         <div class="decision-copy">
           <p class="kicker">Conclusion</p>
-          <h2>이슈는 아직, <span class="accent">기여 방식</span>은 정했다</h2>
+          <h2>막막함에서 <span class="accent">검증 가능한 후보</span>까지</h2>
           <div class="decision-points">
-            <p><b>1</b><span>SQL 한 줄을 기준으로 실행 흐름을 세로로 읽는다.</span></p>
-            <p><b>2</b><span>재현 기록과 fixture 테스트, 문서를 먼저 만든다.</span></p>
-            <p><b>3</b><span>합의된 범위 안에서만 작은 코어 변경으로 확장한다.</span></p>
+            <p><b>1</b><span>실행 경험을 기여 판단의 근거로 바꿨다.</span></p>
+            <p><b>2</b><span>후보를 재현성·범위·선례·중복으로 비교했다.</span></p>
+            <p><b>3</b><span>#1676 Data Injection을 첫 탐색 대상으로 좁혔다.</span></p>
           </div>
+          <p class="lead">다음 결정은 추측이 아니라 기존 테스트 실행과 Maintainer의 범위 확인 뒤에 내립니다.</p>
         </div>
         <div class="qr-panel">
           <div id="qrcode" aria-label="발표자료 링크 QR 코드"></div>
           <a href="https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/" target="_blank" rel="noreferrer">jinhyunjun.github.io/my-website/<br>gluesql-2026-08-03/</a>
         </div>
       </div>
-      <aside class="notes">아직 어떤 이슈에 기여할지는 정하지 않았습니다. 하지만 접근 방식은 정했습니다. 재현 가능한 SQL, 기존 테스트, 초보자 관점의 설명을 먼저 만들고, 이해와 합의가 생긴 범위에서만 코어 변경으로 확장하겠습니다. 질문 부탁드립니다.</aside>
+      <aside class="notes">처음에는 기여할 주제가 없다고만 느꼈습니다. 지금은 실제 실행을 근거로 네 가지 기준을 만들고 후보를 비교했습니다. 첫 탐색 대상은 1676의 Data Injection 문서와 테스트입니다. 아직 확정 기여는 아니며, 기존 테스트 실행과 Maintainer 확인을 거쳐 다음 결정을 내리겠습니다. 질문 부탁드립니다.</aside>
     </section>
   </main>
 

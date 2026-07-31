@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GlueSQL 2026년 8월 3일 발표 대본">
-  <title>GlueSQL 발표 대본 | 2026.08.03</title>
+  <meta name="description" content="GlueSQL 초보 기여 후보 분석 발표 대본">
+  <title>GlueSQL 첫 기여 후보 분석 발표 대본 | 2026.08.03</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -369,156 +369,156 @@
     </nav>
 
     <header>
-      <span class="eyebrow">2026.08.03 · 진현준 · 약 8분</span>
-      <h1>SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까?</h1>
-      <p class="subtitle">슬라이드 12장에 맞춘 발표 대본입니다. 문장을 전부 외우기보다 각 장의 첫 문장과 강조 문장만 익히면 자연스럽게 이어집니다.</p>
+      <span class="eyebrow">2026.08.03 · 진현준 · 약 9분</span>
+      <h1>초보자는 GlueSQL에 어디서 기여할 수 있을까?</h1>
+      <p class="subtitle">슬라이드 12장에 맞춘 발표 대본입니다. “무엇을 모르는가”보다 “어떤 근거로 후보를 좁혔는가”가 중심입니다.</p>
       <div class="summary">
         <div>
           <strong>오늘의 주장</strong>
-          <p>특정 이슈보다 먼저 기여 방식을 정했다.</p>
+          <p>실행 경험을 기여 후보를 판단하는 기준으로 바꿨다.</p>
         </div>
         <div>
-          <strong>기여 방식</strong>
-          <p>재현 → 테스트 → 설명 → 작은 코어 변경</p>
+          <strong>첫 탐색 후보</strong>
+          <p>#1676의 Data Injection 문서와 Query Builder 테스트</p>
         </div>
         <div>
-          <strong>말하지 않을 것</strong>
-          <p>아직 맡지 않은 기능을 기여하겠다고 선언하지 않는다.</p>
+          <strong>아직 하지 않은 것</strong>
+          <p>이슈 선점, 기여 브랜치 생성, upstream PR 제출</p>
         </div>
       </div>
-      <p class="latest"><strong>2026년 7월 31일 기준:</strong> 최근 main 변경도 지원하지 않는 <code>CREATE TABLE</code> 옵션을 Translator 오류로 명확히 하고 unit test와 SQL fixture를 함께 추가했습니다. 이 패턴을 내 첫 기여 방식의 참고 사례로 삼되, 해당 이슈를 맡겠다는 뜻은 아닙니다.</p>
+      <p class="latest"><strong>2026년 7월 31일 조사 기준:</strong> #1676은 미할당이고 연결된 브랜치나 PR이 없습니다. 활성 문서 PR #1935가 여러 문서를 수정하지만 Data Injection 페이지는 포함하지 않습니다. 다만 큰 이슈의 하위 항목이므로 구현 전 Maintainer 확인이 필요합니다.</p>
     </header>
 
     <div class="scripts">
       <article class="script" id="slide-1">
         <div class="script-meta">
           <span class="slide-label">Slide 01 · 표지</span>
-          <span class="time">약 30초</span>
+          <span class="time">약 35초</span>
         </div>
         <div class="script-body">
-          <h2>발표의 범위를 먼저 제한하기</h2>
-          <p class="say">안녕하세요, 진현준입니다. 저는 아직 어떤 이슈에 기여하겠다고 결정하지 않았습니다. 오늘은 그 결정을 억지로 내리는 대신, <span class="emphasis">SQL 한 줄이 GlueSQL 내부에서 어떻게 읽히는지</span>를 따라가며 제가 어떤 방식으로 첫 기여를 준비할지 말씀드리겠습니다. 출발점은 <code>GLUE_TABLES(1)</code>이라는 작은 SQL과 Rust의 <code>args</code> 파라미터였습니다.</p>
-          <p class="cue">첫 문장에서 “이슈 발표가 아니다”를 분명히 말하고 다음 장으로 이동합니다.</p>
+          <h2>막막함에서 후보를 좁힌 과정이라고 소개하기</h2>
+          <p class="say">안녕하세요, 진현준입니다. 지난 발표자료에서는 아직 무엇에 기여할지 모르겠다는 이야기가 중심이었습니다. 이번에는 거기서 한 단계 더 나아가, 제가 실제로 실행한 경험을 기준으로 만들고 현재 GitHub 후보들을 비교했습니다. 그 결과 <span class="emphasis">첫 탐색 대상으로 좁힌 항목과 그 이유</span>를 말씀드리겠습니다. 아직 이슈를 맡았거나 PR을 준비 중이라는 뜻은 아닙니다.</p>
+          <p class="cue">“첫 탐색 후보”와 “확정 기여”를 처음부터 구분합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-2">
         <div class="script-meta">
-          <span class="slide-label">Slide 02 · 관심의 출발점</span>
-          <span class="time">약 40초</span>
+          <span class="slide-label">Slide 02 · 실행 근거</span>
+          <span class="time">약 50초</span>
         </div>
         <div class="script-body">
-          <h2>관심 분야 대신 반복한 질문을 보여주기</h2>
-          <p class="say">처음에는 GlueSQL이 데이터베이스인지, Storage를 바꾸면 왜 데이터가 남는지 같은 기본 질문부터 시작했습니다. 그다음 Parser와 Translator가 왜 나뉘는지, 코드의 언더스코어를 <code>None</code>으로 바꾸면 왜 동작이 달라지는지가 궁금해졌습니다. 질문들을 모아 보니 저는 Storage 구현 자체보다, <span class="emphasis">사용자가 입력한 SQL의 의미가 Rust 자료구조로 옮겨지는 과정</span>에 더 관심이 있다는 것을 알게 됐습니다.</p>
-          <p class="cue">오른쪽 질문 세 개를 위에서 아래로 짚습니다.</p>
+          <h2>이미 한 일을 숫자와 연결하기</h2>
+          <p class="say">먼저 제가 어디까지 왔는지 정리했습니다. MemoryStorage와 SledStorage를 비교해 프로세스 종료와 데이터 영속성의 차이를 확인했고, CLI에서 CRUD 다섯 동작을 실행했습니다. table function 인자 경계를 로컬 학습 브랜치에서 수정해 보면서 Core 테스트 515개와 MemoryStorage fixture 196개를 통과시켰고 Clippy와 Formatter도 확인했습니다. 이 로컬 변경 자체를 기여 주제로 밀지는 않겠습니다. 대신 <span class="emphasis">코드를 읽고 테스트로 검증할 수 있다는 근거</span>로 사용했습니다.</p>
+          <p class="cue">네 개 숫자를 왼쪽부터 읽고 로컬 실험의 위치를 분명히 합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-3">
         <div class="script-meta">
-          <span class="slide-label">Slide 03 · 전체 흐름</span>
-          <span class="time">약 55초</span>
+          <span class="slide-label">Slide 03 · 선정 기준</span>
+          <span class="time">약 50초</span>
         </div>
         <div class="script-body">
-          <h2>아는 범위와 아직 모르는 범위를 구분하기</h2>
-          <p class="say">GlueSQL CLI에 SQL 문자열을 입력하면 Parser가 먼저 sqlparser의 AST를 만듭니다. Translator는 그 AST를 GlueSQL이 사용하는 내부 AST로 옮기면서 지원하지 않는 구조를 거절합니다. Planner는 Storage의 스키마와 실행 문맥을 이용해 식과 참조를 검증하고 실행 가능한 계획으로 낮춥니다. Executor는 그 계획에 따라 Storage에서 원본 데이터를 읽거나 변경하고, 마지막에 Payload를 반환합니다. 여기서 Planner를 MySQL의 비용 기반 옵티마이저와 완전히 같은 것으로 이해하면 안 됩니다. 이번 발표에서 제가 실제로 확인한 범위는 <span class="emphasis">Parser와 Translator의 경계</span>까지입니다.</p>
-          <p class="cue">파이프라인을 왼쪽에서 오른쪽으로 한 번 훑고, Parser와 Translator에서 잠깐 멈춥니다.</p>
+          <h2>good first issue보다 구체적인 기준을 말하기</h2>
+          <p class="say">초보자에게 쉬운 이슈가 무엇인지 판단하기 위해 네 가지 기준을 만들었습니다. 첫째, CLI나 테스트로 현재 동작을 직접 재현할 수 있어야 합니다. 둘째, 변경할 파일과 책임 경계를 설명할 수 있을 만큼 범위가 작아야 합니다. 셋째, 따라갈 기존 테스트나 문서가 있어야 합니다. 넷째, Assignee뿐 아니라 댓글과 활성 PR까지 확인해 다른 사람의 작업과 겹치지 않아야 합니다. <span class="emphasis">코드 줄 수보다 불확실성이 얼마나 작은가</span>를 본 것입니다.</p>
+          <p class="cue">네 기준을 각각 한 문장으로 끊어 말합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-4">
         <div class="script-meta">
-          <span class="slide-label">Slide 04 · 세 입력 비교</span>
+          <span class="slide-label">Slide 04 · 기여 난이도 지도</span>
           <span class="time">약 45초</span>
         </div>
         <div class="script-body">
-          <h2>겉모양은 같아도 의미가 다름을 설명하기</h2>
-          <p class="say"><code>SERIES(3)</code>은 GlueSQL이 지원하는 table function이라 숫자 3을 실제 크기로 사용합니다. 반면 <code>GLUE_TABLES</code>는 메타데이터를 보여 주는 dictionary table이라 인자를 받을 이유가 없습니다. 일반 테이블인 <code>Foo</code>도 함수처럼 호출하는 기능은 지원하지 않습니다. 세 SQL 모두 괄호 모양은 비슷하지만, GlueSQL이 허용해야 하는 입력은 첫 번째뿐입니다. 제가 본 기존 코드에서는 나머지 입력의 인자가 조용히 사라질 수 있었습니다.</p>
-          <p class="cue">“괄호가 같다고 기능이 같은 것은 아니다”를 강조합니다.</p>
+          <h2>문서부터 시작하는 이유를 낮은 가치로 설명하지 않기</h2>
+          <p class="say">GlueSQL 기여는 문서, 테스트와 예제, fixture 도구, Core 기능 변경으로 난이도가 올라갑니다. 첫 PR은 문서나 테스트에서 시작해도 충분합니다. 다만 문서를 단순 번역하거나 추측으로 쓰는 것은 아닙니다. 실제 Query Builder API를 실행하고 Payload를 확인한 뒤 그 결과를 설명해야 합니다. 그래서 문서와 테스트는 코어보다 덜 중요한 일이 아니라, <span class="emphasis">현재 동작을 이해했다는 검증 가능한 산출물</span>입니다.</p>
+          <p class="cue">왼쪽에서 오른쪽으로 난이도가 높아진다는 점만 짚습니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-5">
         <div class="script-meta">
-          <span class="slide-label">Slide 05 · args</span>
-          <span class="time">약 45초</span>
+          <span class="slide-label">Slide 05 · 후보 비교</span>
+          <span class="time">약 70초</span>
         </div>
         <div class="script-body">
-          <h2>Rust의 Option을 SQL 모양과 연결하기</h2>
-          <p class="say"><code>args</code>의 타입은 <code>Option&lt;TableFunctionArgs&gt;</code>입니다. 그래서 괄호가 없으면 <code>None</code>, 괄호가 있으면 <code>Some</code>으로 표현됩니다. 여기서 중요한 점은 숫자 1이나 3의 값뿐 아니라, <span class="emphasis">인자가 존재한다는 사실 자체</span>가 이미 SQL의 의미라는 것입니다. Translator는 테이블 이름과 이 존재 여부를 함께 보고 dictionary인지, 지원되는 function인지, 거절할 입력인지 구분할 수 있습니다.</p>
-          <p class="cue">표의 <code>None</code>과 <code>Some</code> 열을 번갈아 가리킵니다.</p>
+          <h2>왜 다른 후보를 지금 선택하지 않았는지 설명하기</h2>
+          <p class="say">현재 열린 후보 다섯 개를 비교했습니다. #1408의 Storage 기능 표는 제 Memory와 Sled 경험과 잘 맞지만 모든 Storage의 trait 지원 여부를 검증해야 해서 범위가 큽니다. #1946은 빈 SELECT에서 type assertion이 통과하는 문제인데, 어떤 동작을 정답으로 할지 합의가 먼저입니다. #1947은 fixture 표 안의 세로 막대를 처리하는 문제로 escape 규칙과 이전 파일의 호환성을 설계해야 합니다. #1011은 good first issue지만 기존에 진행 의사를 밝힌 댓글이 있습니다. 이에 비해 #1676의 Data Injection은 <span class="emphasis">Todo, 기존 예제, 작은 파일 범위, 낮은 중복 위험</span>을 함께 갖췄습니다.</p>
+          <p class="cue">모든 후보를 자세히 읽기보다 마지막 비교 문장에 힘을 줍니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-6">
         <div class="script-meta">
-          <span class="slide-label">Slide 06 · 원인</span>
-          <span class="time">약 45초</span>
+          <span class="slide-label">Slide 06 · 추천 후보</span>
+          <span class="time">약 55초</span>
         </div>
         <div class="script-body">
-          <h2>언더스코어 자체가 문제가 아님을 분명히 하기</h2>
-          <p class="say">Rust의 match에서 언더스코어는 어떤 값이 와도 받겠다는 뜻입니다. 따라서 <code>("GLUE_TABLES", _)</code>는 <code>None</code>뿐 아니라 <code>Some(1)</code>도 받습니다. 문제는 언더스코어 문법 자체가 아니라, 이 위치에서 GlueSQL의 기능 계약보다 넓은 입력을 허용했다는 점입니다. 이후 Dictionary AST에는 인자를 저장할 필드가 없기 때문에 입력 정보가 사라집니다. 즉, <span class="emphasis">Parser가 읽을 수 있는 SQL과 GlueSQL이 지원하는 SQL은 다릅니다.</span></p>
-          <p class="cue">마지막 강조 문장은 천천히 말합니다.</p>
+          <h2>#1676 전체가 아닌 하위 항목 하나라고 강조하기</h2>
+          <p class="say">#1676은 Query Builder 문서 Todo가 여러 개 묶인 큰 이슈입니다. 제가 보는 것은 그 전체가 아니라 Data Injection 한 항목입니다. 해당 문서는 현재 제목과 Todo, VALUES 한 줄만 있습니다. 반면 Core의 <code>values</code> 구현과 test-suite의 기존 예제가 있어 따라갈 선례가 있습니다. 활성 문서 PR #1935도 이 페이지를 수정하지 않습니다. 다만 미할당이라는 사실만으로 바로 시작하지 않고, <span class="emphasis">Data Injection 하위 항목만 진행해도 되는지 먼저 확인</span>하겠습니다.</p>
+          <p class="cue">“추천은 구현 시작이 아니라 확인할 가치가 가장 높다는 뜻”이라고 덧붙입니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-7">
         <div class="script-meta">
-          <span class="slide-label">Slide 07 · 로컬 실험</span>
-          <span class="time">약 45초</span>
+          <span class="slide-label">Slide 07 · 변경 지도</span>
+          <span class="time">약 55초</span>
         </div>
         <div class="script-body">
-          <h2>기여가 아니라 학습 실험이라고 선 긋기</h2>
-          <p class="say">로컬 학습 브랜치에서는 Dictionary가 <code>None</code>일 때만 통과하도록 바꾸고, 처리되지 않은 <code>Some</code>은 명시적인 TranslateError로 보내 봤습니다. 그리고 괄호가 비어 있거나 값이 있는 경우를 테스트에 추가했습니다. 테스트는 통과했지만 이것을 바로 PR로 만들지는 않았습니다. 요구사항의 우선순위와 다른 작업과의 관계를 확인하지 않았기 때문입니다. 이 변경의 가치는 <span class="emphasis">코드를 제출한 것보다 입력과 내부 표현의 경계를 직접 검증한 것</span>에 있습니다.</p>
-          <p class="cue">“현재 로컬 실험이며 제출하지 않았다”를 빠뜨리지 않습니다.</p>
+          <h2>파일 네 개의 역할로 범위를 설명하기</h2>
+          <p class="say">기존 패턴을 보면 예상 변경 범위는 네 역할로 나뉩니다. 첫째, Data Injection 테스트 파일을 추가해 <code>values(...).execute(glue)</code>의 입력과 Payload를 검증합니다. 둘째, querying 모듈에 새 테스트를 공개합니다. 셋째, test-suite의 공통 Storage 테스트에 등록합니다. 넷째, 검증된 코드와 결과 표로 Todo 문서를 교체합니다. 계획상 Core 수정은 없습니다. <span class="emphasis">새 테스트 하나, 등록 두 곳, 문서 한 페이지</span>라서 리뷰 가능한 범위입니다.</p>
+          <p class="cue">각 상자의 파일명보다 아래 역할을 먼저 말합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-8">
         <div class="script-meta">
-          <span class="slide-label">Slide 08 · 오류 단계</span>
-          <span class="time">약 45초</span>
+          <span class="slide-label">Slide 08 · 실행 경로</span>
+          <span class="time">약 55초</span>
         </div>
         <div class="script-body">
-          <h2>ParserError와 TranslateError를 한 문장으로 구분하기</h2>
-          <p class="say"><code>DELECT</code>는 SQL 문법에 없는 단어이므로 Parser가 AST를 만들지 못하고 ParserError가 납니다. 반면 <code>GLUE_TABLES(1)</code>은 sqlparser가 표현할 수 있는 SQL 구조이지만 GlueSQL에는 그런 기능이 없으므로 Translator가 거절해야 합니다. <code>SERIES(3)</code>은 지원되는 입력이라 이후 Planner와 Executor로 이동합니다. 정리하면 <span class="emphasis">문장 자체를 읽지 못하면 Parser, 읽었지만 GlueSQL의 지원 범위가 아니면 Translator</span>입니다.</p>
-          <p class="cue">세 줄의 멈추는 위치를 차례대로 보여 줍니다.</p>
+          <h2>이 기여 후보가 무엇을 새로 가르치는지 설명하기</h2>
+          <p class="say">이 후보가 좋은 또 하나의 이유는 제가 아는 GlueSQL 흐름을 확장해 주기 때문입니다. SQL 문자열은 Parser와 Translator를 지나 StatementPlan으로 갑니다. Query Builder는 Rust API의 <code>Build</code> 구현으로 StatementPlan을 직접 만들고, 그다음 Storage Planner와 Executor로 들어갑니다. 즉 Parser와 Translator를 거치지 않는 두 번째 입력 경로입니다. 문서와 테스트를 작성하면서 <span class="emphasis">Query Builder가 같은 실행기로 합류하는 지점</span>을 실제 코드로 확인할 수 있습니다.</p>
+          <p class="cue">Parser·Translator에 취소선이 있는 이유를 꼭 설명합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-9">
         <div class="script-meta">
-          <span class="slide-label">Slide 09 · 학습 경계</span>
-          <span class="time">약 40초</span>
+          <span class="slide-label">Slide 09 · 중복 방지</span>
+          <span class="time">약 50초</span>
         </div>
         <div class="script-body">
-          <h2>모르는 것을 숨기지 않고 다음 기준으로 바꾸기</h2>
-          <p class="say">이 실험으로 <code>args</code>, match 순서, 오류 단계는 설명할 수 있게 됐습니다. 하지만 Planner 이후의 세부 호출과 프로젝트가 테스트를 나누는 기준은 아직 더 읽어야 합니다. 그래서 하나를 이해했다고 특정 기여 이슈를 선언하지 않겠습니다. 대신 저는 <span class="emphasis">기능보다 먼저 기여 방식을 정하기로 했습니다.</span> 재현 가능한 근거를 만들고, 테스트를 읽고, 다른 사람이 이해할 수 있게 설명하는 방식입니다.</p>
-          <p class="cue">왼쪽은 배운 것, 오른쪽은 다음 학습이라는 구조만 간단히 짚습니다.</p>
+          <h2>확인 절차를 기여 활동의 일부로 말하기</h2>
+          <p class="say">실제 코드를 쓰기 전에는 세 번 확인합니다. 이슈의 Assignee, 최근 댓글, 연결 PR을 보고, 활성 PR이 수정하는 정확한 파일 목록도 비교합니다. 마지막으로 이슈에 Data Injection 한 항목의 테스트와 문서를 진행해도 되는지 묻습니다. 답변 전에는 기존 테스트 실행과 코드 읽기까지만 합니다. 이렇게 해야 미할당 이슈라도 누군가 준비 중인 작업과 겹치는 위험을 줄일 수 있습니다. <span class="emphasis">질문은 막혀서 하는 일이 아니라 범위를 합의하는 기여 절차</span>입니다.</p>
+          <p class="cue">영문 댓글 예시는 읽지 말고 질문의 핵심만 한국어로 말합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-10">
         <div class="script-meta">
-          <span class="slide-label">Slide 10 · 기여 방식</span>
+          <span class="slide-label">Slide 10 · 다음 실행 순서</span>
           <span class="time">약 55초</span>
         </div>
         <div class="script-body">
-          <h2>발표의 핵심 결론을 말하기</h2>
-          <p class="say">제가 선택한 첫 기여 방식은 <span class="emphasis">문서와 테스트 우선</span>입니다. 먼저 SQL 한 줄을 CLI에서 누구나 재현할 수 있게 입력, 실제 결과, 기대 결과를 적습니다. 다음으로 가장 가까운 SQL fixture를 찾아 이미 어떤 동작을 보장하는지 읽습니다. 마지막으로 초보자가 막히지 않도록 동작 이유를 문서나 예제로 설명합니다. 코어 코드는 이 세 가지 근거가 준비되고 프로젝트 방향을 확인한 뒤 필요한 만큼만 바꾸겠습니다. 문서와 테스트는 준비 운동이 아니라 동작 계약을 명확히 하는 실제 기여입니다.</p>
-          <p class="cue">“문서와 테스트도 실제 기여”를 확실하게 말합니다.</p>
+          <h2>발표 후 바로 할 일을 실행 단위로 말하기</h2>
+          <p class="say">다음 순서는 다섯 단계입니다. 먼저 기존 values 테스트를 실행해 현재 API와 Payload를 확인합니다. 다음으로 완성된 Data Aggregation 문서와 테스트를 비교해 프로젝트 문서 형식을 익힙니다. 그 뒤 최소 예제의 입력과 기대 결과를 한 문장으로 정하고, #1676에 범위를 질문합니다. 합의되면 별도 기여 브랜치에서 구현하고, 이미 겹치거나 범위가 커지면 #1408 Storage 문서의 더 작은 조사 단위로 전환합니다. <span class="emphasis">진행 기준뿐 아니라 중단과 전환 기준도 미리 정했습니다.</span></p>
+          <p class="cue">Run, Read, Define, Ask, Decide 순으로 손가락을 이동합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-11">
         <div class="script-meta">
-          <span class="slide-label">Slide 11 · 실행 계획</span>
+          <span class="slide-label">Slide 11 · 중간보고서</span>
           <span class="time">약 50초</span>
         </div>
         <div class="script-body">
-          <h2>발표 이후 무엇을 할지 구체적으로 말하기</h2>
-          <p class="say">발표 이후에는 한 SQL 사례로 이 작은 루프를 완주하겠습니다. 먼저 궁금한 동작을 하나 고르고, SledStorage를 포함한 실행 조건과 CLI 출력을 남깁니다. 그다음 관련 fixture를 읽고 Parser, Translator, Planner 중 어느 단계가 책임지는지만 좁게 추적합니다. 마지막에는 재현 결과와 예상 범위를 팀에 먼저 공유하겠습니다. 이렇게 하면 이미 작업 중인 PR과 겹치는 것을 피하고, 문서 수정인지 테스트 보강인지도 근거를 가지고 결정할 수 있습니다.</p>
-          <p class="cue">다섯 단계의 영문 키워드만 차례로 읽어도 흐름이 살아납니다.</p>
+          <h2>기여 건수와 준비 성과를 분리해 보고하기</h2>
+          <p class="say">중간보고서에는 upstream PR 0건을 그대로 적겠습니다. 대신 환경 구축, CRUD, Memory와 Sled 비교, Core 테스트 515개, fixture 196개, 로컬 학습 브랜치와 후보 다섯 개 비교를 증거로 남깁니다. 완료한 일과 아직 하지 않은 일을 구분하고, Sled 재시작 화면, 테스트 통과 화면, 모임 증빙을 추가하겠습니다. 이렇게 하면 “아직 기여하지 못했다”가 아니라 <span class="emphasis">기여할 수 있는 상태를 어떻게 만들었는지</span>를 보여줄 수 있습니다.</p>
+          <p class="cue">PR 0건을 작게 말하지 말고 솔직한 현재 상태로 말합니다.</p>
         </div>
       </article>
 
@@ -528,9 +528,9 @@
           <span class="time">약 35초</span>
         </div>
         <div class="script-body">
-          <h2>“미정”이 아니라 “방식 결정”으로 끝내기</h2>
-          <p class="say">정리하겠습니다. 저는 아직 맡을 이슈를 정하지 않았습니다. 대신 SQL 한 줄을 기준으로 실행 흐름을 세로로 읽고, 재현 기록과 fixture 테스트, 초보자 관점의 문서를 먼저 만드는 기여 방식을 정했습니다. 그리고 이해와 합의가 생긴 범위에서만 작은 코어 변경으로 확장하겠습니다. 이번 발표는 기여 대상을 고른 결과가 아니라, <span class="emphasis">겹치지 않고 배우면서 기여하는 기준을 만든 과정</span>입니다. 감사합니다.</p>
-          <p class="cue">마지막 문장 뒤에 한 박자 쉬고 “질문 부탁드립니다”라고 덧붙입니다.</p>
+          <h2>후보는 구체적으로, 약속은 신중하게 끝내기</h2>
+          <p class="say">정리하겠습니다. 저는 실행 경험을 기여 판단의 근거로 바꿨고, 재현성, 범위, 선례, 중복이라는 기준으로 후보를 비교했습니다. 그 결과 #1676의 Data Injection 문서와 Query Builder 테스트를 첫 탐색 대상으로 좁혔습니다. 아직 확정 기여는 아닙니다. 기존 테스트를 실행하고 Maintainer에게 범위를 확인한 뒤 다음 결정을 내리겠습니다. <span class="emphasis">막막함에서 검증 가능한 후보까지 왔다는 것</span>이 이번 발표의 결론입니다. 감사합니다.</p>
+          <p class="cue">한 박자 쉬고 “질문 부탁드립니다”로 마칩니다.</p>
         </div>
       </article>
     </div>
@@ -539,52 +539,56 @@
       <section>
         <h2>용어 메모</h2>
         <dl>
-          <dt>AST</dt>
-          <dd>SQL 문자열을 프로그램이 다룰 수 있도록 구조화한 트리입니다.</dd>
-          <dt>Translator</dt>
-          <dd>sqlparser AST를 GlueSQL 내부 표현으로 옮기며 지원 범위를 확인합니다.</dd>
+          <dt>Query Builder</dt>
+          <dd>SQL 문자열 대신 Rust API를 조합해 GlueSQL의 실행 계획을 만드는 인터페이스입니다.</dd>
+          <dt>StatementPlan</dt>
+          <dd>Planner와 Executor가 사용할 수 있도록 표현식과 문장을 실행 가능한 형태로 담은 구조입니다.</dd>
           <dt>Fixture</dt>
-          <dd>SQL 입력과 기대 Payload 또는 오류를 한 파일에 적은 회귀 테스트 사례입니다.</dd>
+          <dd>SQL 입력과 기대 Payload 또는 오류를 함께 기록한 회귀 테스트 자산입니다.</dd>
           <dt>Payload</dt>
-          <dd>SELECT 결과, 생성·수정 행 수처럼 실행 뒤 사용자에게 돌아오는 결과입니다.</dd>
+          <dd>SELECT 결과, 생성·수정 행 수처럼 실행 뒤 호출자에게 돌아오는 결과입니다.</dd>
         </dl>
       </section>
 
       <section>
         <h2>발표 중 지킬 선</h2>
         <dl>
-          <dt>Planner를 과장하지 않기</dt>
-          <dd>현재 이해 범위에서는 스키마와 문맥을 이용해 검증하고 실행 계획으로 낮추는 단계라고 설명합니다.</dd>
-          <dt>로컬 실험을 PR처럼 말하지 않기</dt>
-          <dd>학습을 위한 변경이며 upstream에 제출하지 않았다고 명확히 밝힙니다.</dd>
-          <dt>특정 이슈를 약속하지 않기</dt>
-          <dd>문서·테스트 우선이라는 접근 방식만 확정했다고 말합니다.</dd>
+          <dt>#1676을 맡았다고 말하지 않기</dt>
+          <dd>현재는 첫 탐색 후보이며 Maintainer에게 하위 범위 확인 전입니다.</dd>
+          <dt>Core 변경이 없다고 단정하지 않기</dt>
+          <dd>현재 예상 범위에는 없지만 테스트 중 필요가 발견되면 다시 범위를 합의합니다.</dd>
+          <dt>문서를 쉬운 일로만 표현하지 않기</dt>
+          <dd>API 실행과 테스트 결과를 근거로 정확한 사용법을 고정하는 기여라고 설명합니다.</dd>
         </dl>
       </section>
 
       <section class="qa">
         <h2>예상 질문과 답변</h2>
         <div class="qa-item">
-          <strong>Q. 그래서 정확히 어떤 기능에 기여할 예정인가요?</strong>
-          <p>A. 아직 기능은 정하지 않았습니다. 먼저 한 SQL 사례의 재현, fixture 확인, 책임 단계 추적을 완료한 뒤 팀과 겹치지 않는 문서나 테스트 범위를 정하겠습니다.</p>
+          <strong>Q. 그래서 #1676에 기여하겠다는 뜻인가요?</strong>
+          <p>A. 아직 확정이 아닙니다. Data Injection 한 항목을 첫 탐색 대상으로 정했고, 기존 테스트 실행과 Maintainer의 범위 확인 후에만 구현을 시작합니다.</p>
         </div>
         <div class="qa-item">
-          <strong>Q. 문서와 테스트도 충분한 오픈소스 기여인가요?</strong>
-          <p>A. 네. SQL fixture는 지원 동작과 오류를 고정해 회귀를 막고, 문서는 사용자와 다음 기여자가 같은 동작을 재현하게 합니다. 둘 다 코드의 계약을 명확히 합니다.</p>
+          <strong>Q. Data Injection은 정확히 무엇인가요?</strong>
+          <p>A. Query Builder의 <code>values(...)</code>를 사용해 테이블 없이 값 행을 직접 만들고 실행하는 사용법입니다. SQL의 <code>VALUES (1, 'Jin')</code>에 대응합니다.</p>
         </div>
         <div class="qa-item">
-          <strong>Q. 왜 <code>GLUE_TABLES(1)</code>은 ParserError가 아닌가요?</strong>
-          <p>A. sqlparser가 테이블 함수 모양으로 AST를 만들 수 있기 때문입니다. 문법 구조는 유효하지만 GlueSQL이 지원하지 않으므로 Translator 오류가 알맞습니다.</p>
+          <strong>Q. Parser와 Translator를 공부했는데 왜 Query Builder로 바꿨나요?</strong>
+          <p>A. 바꾼 것이 아니라 학습 범위를 확장한 것입니다. Query Builder도 결국 Storage Planner와 Executor에 합류하므로, 기존 지식을 활용하면서 새로운 입력 경로를 배울 수 있습니다.</p>
         </div>
         <div class="qa-item">
-          <strong>Q. 최근 main 업데이트와 이번 발표는 어떤 관계인가요?</strong>
-          <p>A. 최근 변경도 지원하지 않는 <code>CREATE TABLE</code> 옵션을 Translator에서 명시적으로 거절하고 unit test와 SQL fixture를 함께 추가했습니다. 제가 맡을 작업은 아니지만, 재현에서 오류 계약과 테스트로 이어지는 좋은 참고 사례입니다.</p>
+          <strong>Q. 왜 #1408 Storage 문서를 먼저 하지 않나요?</strong>
+          <p>A. 개인 경험과는 잘 맞지만 정확한 기능 표를 만들려면 여러 Storage trait과 테스트를 전부 검증해야 합니다. 첫 PR로는 범위가 크고, 더 작은 하위 조사로 쪼갤 합의가 필요합니다.</p>
+        </div>
+        <div class="qa-item">
+          <strong>Q. upstream PR이 0건인데 중간보고서에 쓸 것이 충분한가요?</strong>
+          <p>A. 기여 건수는 0건으로 명확히 적습니다. 대신 재현 가능한 실행 기록, 테스트 수치, 로컬 실험, 이슈 중복 조사, 다음 후보의 파일 범위를 정량 근거로 제시합니다.</p>
         </div>
       </section>
     </div>
 
     <footer>
-      <p>발표자료와 대본은 2026년 7월 31일 GlueSQL 저장소 상태를 기준으로 작성했습니다.</p>
+      <p>발표자료와 대본은 2026년 7월 31일 GlueSQL 저장소와 공개 GitHub 이슈 상태를 기준으로 작성했습니다.</p>
     </footer>
   </main>
 </body>

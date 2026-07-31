@@ -10,6 +10,7 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://opengraph.githubassets.com/1/gluesql/gluesql">
   <title>SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까? | GlueSQL</title>
+  <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1471,78 +1472,79 @@ Foo(1)</pre>
             </ol>
           </article>
         </div>
-        <div class="statement">지금 필요한 결정은 이슈 번호가 아니라 <span class="teal">다음에 무엇을 읽어볼지</span>다.</div>
+        <div class="statement">지금 정할 것은 이슈 번호가 아니라 <span class="teal">첫 기여의 방식</span>이다.</div>
       </div>
-      <aside class="notes">로컬에서 한 변경은 학습 사례로는 유효하지만, 곧바로 제가 맡을 기여 주제라는 뜻은 아닙니다. 지금은 무엇을 설명할 수 있고 무엇을 더 배워야 하는지 구분하는 단계입니다.</aside>
+      <aside class="notes">로컬에서 한 변경은 학습 사례로는 유효하지만, 곧바로 제가 맡을 기여 주제라는 뜻은 아닙니다. 대신 이번 경험을 통해 기능부터 고르기보다 재현, 테스트, 설명을 먼저 만드는 방식으로 접근하겠다는 기준을 세웠습니다.</aside>
     </section>
 
-    <section class="slide" data-title="낮은 허들로 이어갈 탐색">
+    <section class="slide" data-title="내가 선택한 기여 방식">
       <span class="slide-number">10 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">09 · Lower The Barrier</p>
-          <h2>기여를 고르기 전에, 더 쉽게 시작할 수 있는 세 방향</h2>
+          <p class="kicker">09 · Contribution Strategy</p>
+          <h2>문서와 테스트부터, 코어 변경은 이해한 만큼만</h2>
         </div>
         <div class="interest-box">
-          <span class="mono teal">CURRENT INTEREST</span>
-          <p class="quote">“SQL이 Rust 자료구조로 바뀌면서 <span class="accent">입력의 의미가 어떻게 보존되는지</span> 이해하고 싶다.”</p>
+          <span class="mono teal">MY CONTRIBUTION UNIT</span>
+          <p class="quote">“기능 하나”보다 작은 <span class="accent">재현 가능한 SQL 한 줄</span>에서 시작한다.</p>
         </div>
         <div class="scope-grid">
           <div class="scope">
-            <span>EXPLORE 01 · TEST</span>
-            <p>기존 SQL fixture 하나를 골라 입력과 기대 결과를 끝까지 읽기</p>
+            <span>STEP 01 · REPRODUCE</span>
+            <p>CLI에서 입력, 실제 결과, 기대 결과를 누구나 다시 실행할 수 있게 기록하기</p>
           </div>
           <div class="scope">
-            <span>EXPLORE 02 · ERROR</span>
-            <p>CLI에서 ParserError와 TranslateError 예제를 각각 모아 비교하기</p>
+            <span>STEP 02 · COVER</span>
+            <p>기존 SQL fixture를 읽고 같은 동작을 보장하는 가장 작은 테스트 찾기</p>
           </div>
           <div class="scope">
-            <span>EXPLORE 03 · DOCS</span>
-            <p>초보자가 막힌 실행·Storage·오류 설명을 문서 개선점으로 기록하기</p>
+            <span>STEP 03 · EXPLAIN</span>
+            <p>왜 그 결과가 나오는지 초보자도 따라갈 수 있는 문서와 예제로 설명하기</p>
           </div>
         </div>
+        <div class="statement">코어 코드는 재현과 테스트가 준비되고, 프로젝트 방향을 확인한 뒤 <span class="teal">필요한 만큼만</span> 바꾼다.</div>
       </div>
-      <aside class="notes">세 방향은 모두 이슈를 맡거나 코어 코드를 바꾸지 않고 시작할 수 있습니다. 테스트 읽기, 오류 비교, 문서 개선점 기록을 해 본 뒤 어느 활동이 가장 재미있고 이해가 잘 되는지 보고 기여 영역을 정하겠습니다.</aside>
+      <aside class="notes">제가 선택한 것은 특정 기능이 아니라 기여 방식입니다. SQL 한 줄을 CLI에서 재현하고, 기존 fixture가 어떤 동작을 보장하는지 읽고, 초보자도 이해할 수 있게 설명하겠습니다. 코어 변경은 이 근거가 준비되고 메인테이너와 범위를 확인한 뒤에만 진행하겠습니다.</aside>
     </section>
 
-    <section class="slide" data-title="발표 이후 학습 계획">
+    <section class="slide" data-title="첫 기여 준비 순서">
       <span class="slide-number">11 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">10 · Learning Plan</p>
-          <h2>발표 이후, 부담 없이 탐색을 이어가는 순서</h2>
-          <p class="lead">지금은 PR을 목표로 두지 않고, 작은 읽기와 실행을 반복하며 관심 방향을 확인합니다.</p>
+          <p class="kicker">10 · First Contribution Loop</p>
+          <h2>이슈를 고르기 전에 한 번 완주할 작은 루프</h2>
+          <p class="lead">이 다섯 단계를 한 SQL 사례로 끝까지 해 보면, 문서와 테스트 중 어디서 실제 기여를 시작할지 근거가 생깁니다.</p>
         </div>
         <div class="roadmap">
           <div class="roadmap-step">
-            <span class="day">01 · REPLAY</span>
-            <h3>예제 재실행</h3>
-            <p>발표에 사용한 SQL을 CLI에서 다시 실행하고 결과를 기록합니다.</p>
+            <span class="day">01 · CHOOSE</span>
+            <h3>SQL 하나 선택</h3>
+            <p>지원, 오류, Storage 중 궁금한 동작을 한 문장으로 좁힙니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">02 · READ</span>
-            <h3>테스트 하나 읽기</h3>
-            <p>SQL fixture 하나가 어떤 기능과 오류를 보장하는지 살펴봅니다.</p>
+            <span class="day">02 · REPLAY</span>
+            <h3>CLI에서 재현</h3>
+            <p>명령, 출력, Storage 조건을 함께 남겨 같은 결과를 재현합니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">03 · TRACE</span>
-            <h3>호출 한 줄 추적</h3>
-            <p>테스트가 Parser, Translator, Planner 중 어디를 지나가는지 찾습니다.</p>
+            <span class="day">03 · READ</span>
+            <h3>fixture 읽기</h3>
+            <p>가장 가까운 SQL fixture가 무엇을 기대하는지 해석합니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">04 · NOTE</span>
-            <h3>막힌 지점 기록</h3>
-            <p>설명이 부족했던 부분을 초보자 관점의 문서 후보로 모읍니다.</p>
+            <span class="day">04 · TRACE</span>
+            <h3>단계와 코드 연결</h3>
+            <p>Parser, Translator, Planner 중 책임지는 위치만 좁게 찾습니다.</p>
           </div>
           <div class="roadmap-step">
-            <span class="day">05 · REFLECT</span>
-            <h3>관심 비교</h3>
-            <p>테스트, 오류, 문서 중 더 알아보고 싶은 영역을 선택합니다.</p>
+            <span class="day">05 · SHARE</span>
+            <h3>근거부터 공유</h3>
+            <p>재현 기록과 예상 범위를 팀에 먼저 공유해 중복을 피합니다.</p>
           </div>
         </div>
-        <div class="statement">완료 기준은 이슈를 고르는 것이 아니라 <span class="teal">내가 어떤 작업을 더 궁금해하는지 말할 수 있는 것</span>입니다.</div>
+        <div class="statement">완료 기준은 PR이 아니라 <span class="teal">현재 동작과 기대 동작을 근거로 설명할 수 있는 것</span>입니다.</div>
       </div>
-      <aside class="notes">이 순서는 기여 절차가 아니라 학습 절차입니다. 모두 로컬에서 할 수 있고 다른 사람의 작업과 겹치지 않습니다. 이 과정을 거친 뒤에야 문서, 테스트, 코어 로직 중 실제 기여 방향을 결정하겠습니다.</aside>
+      <aside class="notes">발표 이후에는 한 SQL 사례를 선택해 이 작은 루프를 완주하겠습니다. CLI 재현, fixture 읽기, 책임 단계 추적까지 마친 뒤 근거를 팀에 공유하면 이미 진행 중인 사람과 겹치지 않고, 문서나 테스트로 시작할 수 있습니다.</aside>
     </section>
 
     <section class="slide" data-title="결론">
@@ -1550,11 +1552,11 @@ Foo(1)</pre>
       <div class="slide-inner decision">
         <div class="decision-copy">
           <p class="kicker">Conclusion</p>
-          <h2>아직 고르지 않았다. 대신 <span class="accent">보는 법</span>을 배웠다</h2>
+          <h2>이슈는 아직, <span class="accent">기여 방식</span>은 정했다</h2>
           <div class="decision-points">
-            <p><b>1</b><span>Parser는 SQL을 읽고, Translator는 GlueSQL의 지원 범위를 결정한다.</span></p>
-            <p><b>2</b><span>작은 파라미터 하나를 따라가도 프로젝트 구조를 배울 수 있다.</span></p>
-            <p><b>3</b><span>다음에는 테스트, 오류, 문서를 낮은 허들부터 탐색한다.</span></p>
+            <p><b>1</b><span>SQL 한 줄을 기준으로 실행 흐름을 세로로 읽는다.</span></p>
+            <p><b>2</b><span>재현 기록과 fixture 테스트, 문서를 먼저 만든다.</span></p>
+            <p><b>3</b><span>합의된 범위 안에서만 작은 코어 변경으로 확장한다.</span></p>
           </div>
         </div>
         <div class="qr-panel">
@@ -1562,7 +1564,7 @@ Foo(1)</pre>
           <a href="https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/" target="_blank" rel="noreferrer">jinhyunjun.github.io/my-website/<br>gluesql-2026-08-03/</a>
         </div>
       </div>
-      <aside class="notes">아직 어떤 이슈에 기여할지는 정하지 않았습니다. 이번 발표의 결과는 기여 대상을 고른 것이 아니라, 작은 코드에서 질문을 만들고 전체 구조로 확장하는 방법을 배운 것입니다. 질문 부탁드립니다.</aside>
+      <aside class="notes">아직 어떤 이슈에 기여할지는 정하지 않았습니다. 하지만 접근 방식은 정했습니다. 재현 가능한 SQL, 기존 테스트, 초보자 관점의 설명을 먼저 만들고, 이해와 합의가 생긴 범위에서만 코어 변경으로 확장하겠습니다. 질문 부탁드립니다.</aside>
     </section>
   </main>
 
@@ -1589,6 +1591,9 @@ Foo(1)</pre>
     <button class="control-button notes-toggle" id="notesButton" type="button" title="발표자 노트" aria-label="발표자 노트">
       <i data-lucide="notebook-text"></i>
     </button>
+    <a class="control-button" href="script.html" title="발표 대본" aria-label="발표 대본">
+      <i data-lucide="scroll-text"></i>
+    </a>
     <button class="control-button fullscreen-toggle" id="fullscreenButton" type="button" title="전체 화면" aria-label="전체 화면">
       <i data-lucide="maximize"></i>
     </button>

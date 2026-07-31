@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GlueSQL 2026년 8월 3일 발표 대본">
+  <title>GlueSQL 발표 대본 | 2026.08.03</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f6f4ef;
+      --surface: #fffdf8;
+      --ink: #17191d;
+      --muted: #626770;
+      --line: #cbc8bf;
+      --teal: #0f766e;
+      --teal-soft: #d8eee9;
+      --coral: #d85843;
+      --coral-soft: #f6ded8;
+      --blue: #3156a3;
+      --blue-soft: #dce5f8;
+      --yellow: #e5b92f;
+      --radius: 8px;
+      --body: "Noto Sans KR", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--body);
+      line-height: 1.8;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.92em;
+    }
+
+    .shell {
+      width: min(1080px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 3rem 0 6rem;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 0;
+      background: rgba(246, 244, 239, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      font-family: var(--mono);
+      color: var(--teal);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .deck-link {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    header {
+      display: grid;
+      gap: 1.3rem;
+      padding: 4.5rem 0 3rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow,
+    .slide-label,
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .eyebrow,
+    .slide-label {
+      color: var(--teal);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+      word-break: keep-all;
+    }
+
+    h1 {
+      max-width: 15ch;
+      font-size: clamp(2.5rem, 7vw, 4.8rem);
+      line-height: 1.12;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      line-height: 1.35;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+    }
+
+    .subtitle {
+      max-width: 58ch;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .summary div {
+      min-height: 8rem;
+      padding: 1.2rem;
+      border-right: 1px solid var(--line);
+    }
+
+    .summary div:last-child {
+      border-right: 0;
+    }
+
+    .summary strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-family: var(--mono);
+      color: var(--coral);
+      font-size: 0.76rem;
+    }
+
+    .summary p {
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .latest {
+      margin-top: 2rem;
+      padding: 1.2rem 1.3rem;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .latest strong {
+      color: var(--blue);
+    }
+
+    .scripts {
+      display: grid;
+      gap: 0;
+      margin-top: 3rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .script {
+      display: grid;
+      grid-template-columns: 10rem minmax(0, 1fr);
+      gap: 2rem;
+      padding: 2.5rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .script-meta {
+      align-self: start;
+      position: sticky;
+      top: 5rem;
+    }
+
+    .time {
+      display: block;
+      margin-top: 0.4rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.76rem;
+    }
+
+    .script-body {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .say {
+      padding: 1.4rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 1.02rem;
+    }
+
+    .cue {
+      padding: 0.8rem 1rem;
+      border-left: 4px solid var(--teal);
+      background: var(--teal-soft);
+      color: #164f4a;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .emphasis {
+      color: var(--coral);
+      font-weight: 800;
+    }
+
+    .reference {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .support {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.2rem;
+      margin-top: 3.5rem;
+    }
+
+    .support section {
+      padding: 1.4rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .support h2 {
+      margin-bottom: 1rem;
+    }
+
+    .support dl {
+      margin: 0;
+    }
+
+    .support dt {
+      margin-top: 1rem;
+      font-weight: 800;
+    }
+
+    .support dt:first-child {
+      margin-top: 0;
+    }
+
+    .support dd {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+    }
+
+    .qa {
+      grid-column: 1 / -1;
+    }
+
+    .qa-item {
+      padding: 1rem 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .qa-item:first-of-type {
+      border-top: 0;
+    }
+
+    .qa-item strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: var(--teal);
+    }
+
+    footer {
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100% - 1.4rem, 1080px);
+        padding-top: 0;
+      }
+
+      header {
+        padding-top: 3rem;
+      }
+
+      .summary,
+      .support {
+        grid-template-columns: 1fr;
+      }
+
+      .summary div {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .summary div:last-child {
+        border-bottom: 0;
+      }
+
+      .script {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+
+      .script-meta {
+        position: static;
+      }
+
+      .qa {
+        grid-column: auto;
+      }
+    }
+
+    @media print {
+      .topbar {
+        position: static;
+      }
+
+      .script {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar" aria-label="발표 문서 이동">
+      <span class="brand">GLUESQL · SPEAKER SCRIPT</span>
+      <a class="deck-link" href="index.html">발표자료 열기</a>
+    </nav>
+
+    <header>
+      <span class="eyebrow">2026.08.03 · 진현준 · 약 8분</span>
+      <h1>SQL 한 줄은 GlueSQL 안에서 어떻게 읽힐까?</h1>
+      <p class="subtitle">슬라이드 12장에 맞춘 발표 대본입니다. 문장을 전부 외우기보다 각 장의 첫 문장과 강조 문장만 익히면 자연스럽게 이어집니다.</p>
+      <div class="summary">
+        <div>
+          <strong>오늘의 주장</strong>
+          <p>특정 이슈보다 먼저 기여 방식을 정했다.</p>
+        </div>
+        <div>
+          <strong>기여 방식</strong>
+          <p>재현 → 테스트 → 설명 → 작은 코어 변경</p>
+        </div>
+        <div>
+          <strong>말하지 않을 것</strong>
+          <p>아직 맡지 않은 기능을 기여하겠다고 선언하지 않는다.</p>
+        </div>
+      </div>
+      <p class="latest"><strong>2026년 7월 31일 기준:</strong> 최근 main 변경도 지원하지 않는 <code>CREATE TABLE</code> 옵션을 Translator 오류로 명확히 하고 unit test와 SQL fixture를 함께 추가했습니다. 이 패턴을 내 첫 기여 방식의 참고 사례로 삼되, 해당 이슈를 맡겠다는 뜻은 아닙니다.</p>
+    </header>
+
+    <div class="scripts">
+      <article class="script" id="slide-1">
+        <div class="script-meta">
+          <span class="slide-label">Slide 01 · 표지</span>
+          <span class="time">약 30초</span>
+        </div>
+        <div class="script-body">
+          <h2>발표의 범위를 먼저 제한하기</h2>
+          <p class="say">안녕하세요, 진현준입니다. 저는 아직 어떤 이슈에 기여하겠다고 결정하지 않았습니다. 오늘은 그 결정을 억지로 내리는 대신, <span class="emphasis">SQL 한 줄이 GlueSQL 내부에서 어떻게 읽히는지</span>를 따라가며 제가 어떤 방식으로 첫 기여를 준비할지 말씀드리겠습니다. 출발점은 <code>GLUE_TABLES(1)</code>이라는 작은 SQL과 Rust의 <code>args</code> 파라미터였습니다.</p>
+          <p class="cue">첫 문장에서 “이슈 발표가 아니다”를 분명히 말하고 다음 장으로 이동합니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-2">
+        <div class="script-meta">
+          <span class="slide-label">Slide 02 · 관심의 출발점</span>
+          <span class="time">약 40초</span>
+        </div>
+        <div class="script-body">
+          <h2>관심 분야 대신 반복한 질문을 보여주기</h2>
+          <p class="say">처음에는 GlueSQL이 데이터베이스인지, Storage를 바꾸면 왜 데이터가 남는지 같은 기본 질문부터 시작했습니다. 그다음 Parser와 Translator가 왜 나뉘는지, 코드의 언더스코어를 <code>None</code>으로 바꾸면 왜 동작이 달라지는지가 궁금해졌습니다. 질문들을 모아 보니 저는 Storage 구현 자체보다, <span class="emphasis">사용자가 입력한 SQL의 의미가 Rust 자료구조로 옮겨지는 과정</span>에 더 관심이 있다는 것을 알게 됐습니다.</p>
+          <p class="cue">오른쪽 질문 세 개를 위에서 아래로 짚습니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-3">
+        <div class="script-meta">
+          <span class="slide-label">Slide 03 · 전체 흐름</span>
+          <span class="time">약 55초</span>
+        </div>
+        <div class="script-body">
+          <h2>아는 범위와 아직 모르는 범위를 구분하기</h2>
+          <p class="say">GlueSQL CLI에 SQL 문자열을 입력하면 Parser가 먼저 sqlparser의 AST를 만듭니다. Translator는 그 AST를 GlueSQL이 사용하는 내부 AST로 옮기면서 지원하지 않는 구조를 거절합니다. Planner는 Storage의 스키마와 실행 문맥을 이용해 식과 참조를 검증하고 실행 가능한 계획으로 낮춥니다. Executor는 그 계획에 따라 Storage에서 원본 데이터를 읽거나 변경하고, 마지막에 Payload를 반환합니다. 여기서 Planner를 MySQL의 비용 기반 옵티마이저와 완전히 같은 것으로 이해하면 안 됩니다. 이번 발표에서 제가 실제로 확인한 범위는 <span class="emphasis">Parser와 Translator의 경계</span>까지입니다.</p>
+          <p class="cue">파이프라인을 왼쪽에서 오른쪽으로 한 번 훑고, Parser와 Translator에서 잠깐 멈춥니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-4">
+        <div class="script-meta">
+          <span class="slide-label">Slide 04 · 세 입력 비교</span>
+          <span class="time">약 45초</span>
+        </div>
+        <div class="script-body">
+          <h2>겉모양은 같아도 의미가 다름을 설명하기</h2>
+          <p class="say"><code>SERIES(3)</code>은 GlueSQL이 지원하는 table function이라 숫자 3을 실제 크기로 사용합니다. 반면 <code>GLUE_TABLES</code>는 메타데이터를 보여 주는 dictionary table이라 인자를 받을 이유가 없습니다. 일반 테이블인 <code>Foo</code>도 함수처럼 호출하는 기능은 지원하지 않습니다. 세 SQL 모두 괄호 모양은 비슷하지만, GlueSQL이 허용해야 하는 입력은 첫 번째뿐입니다. 제가 본 기존 코드에서는 나머지 입력의 인자가 조용히 사라질 수 있었습니다.</p>
+          <p class="cue">“괄호가 같다고 기능이 같은 것은 아니다”를 강조합니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-5">
+        <div class="script-meta">
+          <span class="slide-label">Slide 05 · args</span>
+          <span class="time">약 45초</span>
+        </div>
+        <div class="script-body">
+          <h2>Rust의 Option을 SQL 모양과 연결하기</h2>
+          <p class="say"><code>args</code>의 타입은 <code>Option&lt;TableFunctionArgs&gt;</code>입니다. 그래서 괄호가 없으면 <code>None</code>, 괄호가 있으면 <code>Some</code>으로 표현됩니다. 여기서 중요한 점은 숫자 1이나 3의 값뿐 아니라, <span class="emphasis">인자가 존재한다는 사실 자체</span>가 이미 SQL의 의미라는 것입니다. Translator는 테이블 이름과 이 존재 여부를 함께 보고 dictionary인지, 지원되는 function인지, 거절할 입력인지 구분할 수 있습니다.</p>
+          <p class="cue">표의 <code>None</code>과 <code>Some</code> 열을 번갈아 가리킵니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-6">
+        <div class="script-meta">
+          <span class="slide-label">Slide 06 · 원인</span>
+          <span class="time">약 45초</span>
+        </div>
+        <div class="script-body">
+          <h2>언더스코어 자체가 문제가 아님을 분명히 하기</h2>
+          <p class="say">Rust의 match에서 언더스코어는 어떤 값이 와도 받겠다는 뜻입니다. 따라서 <code>("GLUE_TABLES", _)</code>는 <code>None</code>뿐 아니라 <code>Some(1)</code>도 받습니다. 문제는 언더스코어 문법 자체가 아니라, 이 위치에서 GlueSQL의 기능 계약보다 넓은 입력을 허용했다는 점입니다. 이후 Dictionary AST에는 인자를 저장할 필드가 없기 때문에 입력 정보가 사라집니다. 즉, <span class="emphasis">Parser가 읽을 수 있는 SQL과 GlueSQL이 지원하는 SQL은 다릅니다.</span></p>
+          <p class="cue">마지막 강조 문장은 천천히 말합니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-7">
+        <div class="script-meta">
+          <span class="slide-label">Slide 07 · 로컬 실험</span>
+          <span class="time">약 45초</span>
+        </div>
+        <div class="script-body">
+          <h2>기여가 아니라 학습 실험이라고 선 긋기</h2>
+          <p class="say">로컬 학습 브랜치에서는 Dictionary가 <code>None</code>일 때만 통과하도록 바꾸고, 처리되지 않은 <code>Some</code>은 명시적인 TranslateError로 보내 봤습니다. 그리고 괄호가 비어 있거나 값이 있는 경우를 테스트에 추가했습니다. 테스트는 통과했지만 이것을 바로 PR로 만들지는 않았습니다. 요구사항의 우선순위와 다른 작업과의 관계를 확인하지 않았기 때문입니다. 이 변경의 가치는 <span class="emphasis">코드를 제출한 것보다 입력과 내부 표현의 경계를 직접 검증한 것</span>에 있습니다.</p>
+          <p class="cue">“현재 로컬 실험이며 제출하지 않았다”를 빠뜨리지 않습니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-8">
+        <div class="script-meta">
+          <span class="slide-label">Slide 08 · 오류 단계</span>
+          <span class="time">약 45초</span>
+        </div>
+        <div class="script-body">
+          <h2>ParserError와 TranslateError를 한 문장으로 구분하기</h2>
+          <p class="say"><code>DELECT</code>는 SQL 문법에 없는 단어이므로 Parser가 AST를 만들지 못하고 ParserError가 납니다. 반면 <code>GLUE_TABLES(1)</code>은 sqlparser가 표현할 수 있는 SQL 구조이지만 GlueSQL에는 그런 기능이 없으므로 Translator가 거절해야 합니다. <code>SERIES(3)</code>은 지원되는 입력이라 이후 Planner와 Executor로 이동합니다. 정리하면 <span class="emphasis">문장 자체를 읽지 못하면 Parser, 읽었지만 GlueSQL의 지원 범위가 아니면 Translator</span>입니다.</p>
+          <p class="cue">세 줄의 멈추는 위치를 차례대로 보여 줍니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-9">
+        <div class="script-meta">
+          <span class="slide-label">Slide 09 · 학습 경계</span>
+          <span class="time">약 40초</span>
+        </div>
+        <div class="script-body">
+          <h2>모르는 것을 숨기지 않고 다음 기준으로 바꾸기</h2>
+          <p class="say">이 실험으로 <code>args</code>, match 순서, 오류 단계는 설명할 수 있게 됐습니다. 하지만 Planner 이후의 세부 호출과 프로젝트가 테스트를 나누는 기준은 아직 더 읽어야 합니다. 그래서 하나를 이해했다고 특정 기여 이슈를 선언하지 않겠습니다. 대신 저는 <span class="emphasis">기능보다 먼저 기여 방식을 정하기로 했습니다.</span> 재현 가능한 근거를 만들고, 테스트를 읽고, 다른 사람이 이해할 수 있게 설명하는 방식입니다.</p>
+          <p class="cue">왼쪽은 배운 것, 오른쪽은 다음 학습이라는 구조만 간단히 짚습니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-10">
+        <div class="script-meta">
+          <span class="slide-label">Slide 10 · 기여 방식</span>
+          <span class="time">약 55초</span>
+        </div>
+        <div class="script-body">
+          <h2>발표의 핵심 결론을 말하기</h2>
+          <p class="say">제가 선택한 첫 기여 방식은 <span class="emphasis">문서와 테스트 우선</span>입니다. 먼저 SQL 한 줄을 CLI에서 누구나 재현할 수 있게 입력, 실제 결과, 기대 결과를 적습니다. 다음으로 가장 가까운 SQL fixture를 찾아 이미 어떤 동작을 보장하는지 읽습니다. 마지막으로 초보자가 막히지 않도록 동작 이유를 문서나 예제로 설명합니다. 코어 코드는 이 세 가지 근거가 준비되고 프로젝트 방향을 확인한 뒤 필요한 만큼만 바꾸겠습니다. 문서와 테스트는 준비 운동이 아니라 동작 계약을 명확히 하는 실제 기여입니다.</p>
+          <p class="cue">“문서와 테스트도 실제 기여”를 확실하게 말합니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-11">
+        <div class="script-meta">
+          <span class="slide-label">Slide 11 · 실행 계획</span>
+          <span class="time">약 50초</span>
+        </div>
+        <div class="script-body">
+          <h2>발표 이후 무엇을 할지 구체적으로 말하기</h2>
+          <p class="say">발표 이후에는 한 SQL 사례로 이 작은 루프를 완주하겠습니다. 먼저 궁금한 동작을 하나 고르고, SledStorage를 포함한 실행 조건과 CLI 출력을 남깁니다. 그다음 관련 fixture를 읽고 Parser, Translator, Planner 중 어느 단계가 책임지는지만 좁게 추적합니다. 마지막에는 재현 결과와 예상 범위를 팀에 먼저 공유하겠습니다. 이렇게 하면 이미 작업 중인 PR과 겹치는 것을 피하고, 문서 수정인지 테스트 보강인지도 근거를 가지고 결정할 수 있습니다.</p>
+          <p class="cue">다섯 단계의 영문 키워드만 차례로 읽어도 흐름이 살아납니다.</p>
+        </div>
+      </article>
+
+      <article class="script" id="slide-12">
+        <div class="script-meta">
+          <span class="slide-label">Slide 12 · 결론</span>
+          <span class="time">약 35초</span>
+        </div>
+        <div class="script-body">
+          <h2>“미정”이 아니라 “방식 결정”으로 끝내기</h2>
+          <p class="say">정리하겠습니다. 저는 아직 맡을 이슈를 정하지 않았습니다. 대신 SQL 한 줄을 기준으로 실행 흐름을 세로로 읽고, 재현 기록과 fixture 테스트, 초보자 관점의 문서를 먼저 만드는 기여 방식을 정했습니다. 그리고 이해와 합의가 생긴 범위에서만 작은 코어 변경으로 확장하겠습니다. 이번 발표는 기여 대상을 고른 결과가 아니라, <span class="emphasis">겹치지 않고 배우면서 기여하는 기준을 만든 과정</span>입니다. 감사합니다.</p>
+          <p class="cue">마지막 문장 뒤에 한 박자 쉬고 “질문 부탁드립니다”라고 덧붙입니다.</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="support">
+      <section>
+        <h2>용어 메모</h2>
+        <dl>
+          <dt>AST</dt>
+          <dd>SQL 문자열을 프로그램이 다룰 수 있도록 구조화한 트리입니다.</dd>
+          <dt>Translator</dt>
+          <dd>sqlparser AST를 GlueSQL 내부 표현으로 옮기며 지원 범위를 확인합니다.</dd>
+          <dt>Fixture</dt>
+          <dd>SQL 입력과 기대 Payload 또는 오류를 한 파일에 적은 회귀 테스트 사례입니다.</dd>
+          <dt>Payload</dt>
+          <dd>SELECT 결과, 생성·수정 행 수처럼 실행 뒤 사용자에게 돌아오는 결과입니다.</dd>
+        </dl>
+      </section>
+
+      <section>
+        <h2>발표 중 지킬 선</h2>
+        <dl>
+          <dt>Planner를 과장하지 않기</dt>
+          <dd>현재 이해 범위에서는 스키마와 문맥을 이용해 검증하고 실행 계획으로 낮추는 단계라고 설명합니다.</dd>
+          <dt>로컬 실험을 PR처럼 말하지 않기</dt>
+          <dd>학습을 위한 변경이며 upstream에 제출하지 않았다고 명확히 밝힙니다.</dd>
+          <dt>특정 이슈를 약속하지 않기</dt>
+          <dd>문서·테스트 우선이라는 접근 방식만 확정했다고 말합니다.</dd>
+        </dl>
+      </section>
+
+      <section class="qa">
+        <h2>예상 질문과 답변</h2>
+        <div class="qa-item">
+          <strong>Q. 그래서 정확히 어떤 기능에 기여할 예정인가요?</strong>
+          <p>A. 아직 기능은 정하지 않았습니다. 먼저 한 SQL 사례의 재현, fixture 확인, 책임 단계 추적을 완료한 뒤 팀과 겹치지 않는 문서나 테스트 범위를 정하겠습니다.</p>
+        </div>
+        <div class="qa-item">
+          <strong>Q. 문서와 테스트도 충분한 오픈소스 기여인가요?</strong>
+          <p>A. 네. SQL fixture는 지원 동작과 오류를 고정해 회귀를 막고, 문서는 사용자와 다음 기여자가 같은 동작을 재현하게 합니다. 둘 다 코드의 계약을 명확히 합니다.</p>
+        </div>
+        <div class="qa-item">
+          <strong>Q. 왜 <code>GLUE_TABLES(1)</code>은 ParserError가 아닌가요?</strong>
+          <p>A. sqlparser가 테이블 함수 모양으로 AST를 만들 수 있기 때문입니다. 문법 구조는 유효하지만 GlueSQL이 지원하지 않으므로 Translator 오류가 알맞습니다.</p>
+        </div>
+        <div class="qa-item">
+          <strong>Q. 최근 main 업데이트와 이번 발표는 어떤 관계인가요?</strong>
+          <p>A. 최근 변경도 지원하지 않는 <code>CREATE TABLE</code> 옵션을 Translator에서 명시적으로 거절하고 unit test와 SQL fixture를 함께 추가했습니다. 제가 맡을 작업은 아니지만, 재현에서 오류 계약과 테스트로 이어지는 좋은 참고 사례입니다.</p>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>발표자료와 대본은 2026년 7월 31일 GlueSQL 저장소 상태를 기준으로 작성했습니다.</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GlueSQL Storage 비교와 CLI 실행 명령 초안">
+  <title>GlueSQL Storage 비교와 CLI 명령 | 2026.08.03</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f6f4ef;
+      --surface: #fffdf8;
+      --ink: #17191d;
+      --muted: #626770;
+      --line: #cbc8bf;
+      --teal: #0f766e;
+      --teal-soft: #d8eee9;
+      --coral: #d85843;
+      --coral-soft: #f6ded8;
+      --blue: #3156a3;
+      --blue-soft: #dce5f8;
+      --yellow: #e5b92f;
+      --yellow-soft: #f8edbd;
+      --code: #171b21;
+      --code-text: #eef3f8;
+      --body: "Noto Sans KR", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; letter-spacing: 0; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--body); }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+    code, pre { font-family: var(--mono); }
+    h1, h2, h3, p { margin: 0; word-break: keep-all; }
+    .shell { width: min(1240px, calc(100% - 2rem)); margin: 0 auto; padding-bottom: 6rem; }
+    .topbar { position: sticky; z-index: 10; top: 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line); background: rgba(246, 244, 239, 0.95); backdrop-filter: blur(12px); }
+    .brand { color: var(--teal); font: 600 0.78rem var(--mono); }
+    .nav { display: flex; gap: 0.5rem; }
+    .nav a { padding: 0.48rem 0.72rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+    header { display: grid; gap: 1.2rem; padding: 5rem 0 3.5rem; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--teal); font: 600 0.78rem var(--mono); text-transform: uppercase; }
+    h1 { max-width: 15ch; font-size: 4.5rem; line-height: 1.1; font-weight: 900; }
+    h2 { font-size: 2rem; line-height: 1.3; }
+    h3 { font-size: 1.05rem; }
+    .lead { max-width: 68ch; color: var(--muted); font-size: 1.08rem; line-height: 1.75; }
+    .accent { color: var(--coral); }
+    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--surface); }
+    .summary div { min-height: 7.3rem; padding: 1.15rem; border-right: 1px solid var(--line); }
+    .summary div:last-child { border-right: 0; }
+    .summary strong { display: block; margin-bottom: 0.35rem; color: var(--coral); font: 600 0.72rem var(--mono); }
+    .summary p { font-weight: 700; line-height: 1.5; }
+    section { padding: 3.4rem 0; border-bottom: 1px solid var(--line); }
+    .section-head { display: grid; gap: 0.7rem; margin-bottom: 1.6rem; }
+    .section-head span { color: var(--teal); font: 600 0.72rem var(--mono); }
+    .callout { padding: 1.25rem 1.35rem; border-left: 6px solid var(--blue); background: var(--blue-soft); line-height: 1.7; }
+    .issue-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 1rem; }
+    .issue-card { padding: 1.4rem; border-top: 7px solid var(--teal); background: var(--teal-soft); }
+    .issue-card:nth-child(2) { border-color: var(--coral); background: var(--coral-soft); }
+    .issue-card strong { display: block; margin-bottom: 0.65rem; color: var(--teal); font: 600 0.75rem var(--mono); }
+    .issue-card:nth-child(2) strong { color: var(--coral); }
+    .issue-card p { line-height: 1.65; }
+    .setup { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 1rem; }
+    .code-panel { overflow: hidden; border: 1px solid #303741; border-radius: 8px; background: var(--code); color: var(--code-text); }
+    .code-head { padding: 0.75rem 1rem; border-bottom: 1px solid #303741; color: #9eabb9; font: 0.7rem var(--mono); }
+    pre { margin: 0; padding: 1.1rem 1.2rem; overflow: auto; font-size: 0.8rem; line-height: 1.72; white-space: pre-wrap; overflow-wrap: anywhere; }
+    table { width: 100%; border-collapse: collapse; border-top: 3px solid var(--ink); background: var(--surface); }
+    th, td { padding: 0.8rem 0.85rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font: 600 0.68rem var(--mono); }
+    td { font-size: 0.8rem; line-height: 1.52; }
+    td code { font-size: 0.72rem; overflow-wrap: anywhere; }
+    .command-table td:first-child { width: 10%; color: var(--blue); font-weight: 800; }
+    .command-table td:nth-child(2) { width: 72%; }
+    .command-table td:last-child { color: var(--muted); }
+    .storage-table { table-layout: fixed; }
+    .storage-table td:first-child { width: 14%; color: var(--blue); font-weight: 800; }
+    .storage-table td:nth-child(2) { width: 12%; }
+    .status { display: inline-flex; min-height: 1.6rem; align-items: center; padding: 0.18rem 0.5rem; border-radius: 999px; background: var(--teal-soft); color: var(--teal); font: 700 0.64rem var(--mono); white-space: nowrap; }
+    .status.plan { background: var(--yellow-soft); color: #755300; }
+    .status.library { background: var(--blue-soft); color: var(--blue); }
+    .checklist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 3px solid var(--ink); }
+    .check { min-height: 10rem; padding: 1.2rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+    .check:last-child { border-right: 0; }
+    .check span { display: block; margin-bottom: 0.6rem; color: var(--coral); font: 700 0.68rem var(--mono); }
+    .check p { color: var(--muted); font-size: 0.85rem; line-height: 1.58; }
+    .sources { display: grid; gap: 0.55rem; }
+    .sources a { color: var(--blue); overflow-wrap: anywhere; }
+    footer { padding-top: 2rem; color: var(--muted); font-size: 0.8rem; }
+    @media (max-width: 800px) {
+      h1 { font-size: 2.8rem; }
+      .summary, .issue-grid, .setup, .checklist { grid-template-columns: 1fr; }
+      .summary div, .check { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .storage-table { table-layout: auto; }
+      table { display: block; max-width: 100%; overflow-x: auto; }
+      td code { word-break: break-all; }
+      .storage-table th, .storage-table td, .command-table th, .command-table td { padding: 0.65rem 0.45rem; font-size: 0.68rem; }
+      .topbar { align-items: flex-start; }
+      .nav { flex-wrap: wrap; justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar" aria-label="문서 이동">
+      <span class="brand">GLUESQL · STORAGE LAB</span>
+      <div class="nav"><a href="index.html">발표자료</a><a href="script.html">발표 대본</a></div>
+    </nav>
+
+    <header>
+      <span class="eyebrow">DRAFT · 2026.08.03 · 진현준</span>
+      <h1>GlueSQL <span class="accent">Storage 비교</span>와 CLI 명령</h1>
+      <p class="lead">Issue #1408의 문제의식을 바탕으로, 초보자가 Storage를 선택할 때 확인할 기준과 CLI에서 동일 조건으로 재현할 명령을 정리한 첫 초안입니다.</p>
+      <div class="summary">
+        <div><strong>전체 구현</strong><p>현재 저장소의 Storage crate 12개</p></div>
+        <div><strong>CLI 선택</strong><p>Memory를 포함한 7개 Storage</p></div>
+        <div><strong>작성 원칙</strong><p>문서 설명과 직접 검증 결과를 구분</p></div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head"><span>01 · EXISTING NEED</span><h2>왜 비교 문서가 필요한가</h2></div>
+      <div class="issue-grid">
+        <article class="issue-card"><strong>ISSUE #1408 · OPEN</strong><h3><a href="https://github.com/gluesql/gluesql/issues/1408">Document supported features of each storage</a></h3><p>2023년 9월 `gitmalong`이 등록했으며 현재 담당자와 연결 PR이 없습니다.</p></article>
+        <article class="issue-card"><strong>PROBLEM</strong><p>새 프로젝트에서 먼저 Storage를 선택해야 하지만, 각 backend가 어떤 기능을 지원하는지 한눈에 알기 어렵습니다. 이 문서는 기능표에 그치지 않고 실행 명령과 검증 근거까지 연결하는 것을 목표로 합니다.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><span>02 · COMMON INPUT</span><h2>비교 전에 입력 조건을 고정한다</h2></div>
+      <div class="setup">
+        <div class="callout"><strong>준비 경로</strong><br>PowerShell에서 한 번만 실행합니다.<br><code>New-Item -ItemType Directory -Force C:\gluesql\.codex-local\storage-lab</code></div>
+        <div class="code-panel"><div class="code-head">COMMON SQL · 모든 Storage에서 동일하게 실행</div><pre><code>CREATE TABLE storage_probe (
+  id INTEGER,
+  name TEXT NOT NULL
+);
+INSERT INTO storage_probe VALUES (1, 'GlueSQL');
+SELECT * FROM storage_probe ORDER BY id;</code></pre></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><span>03 · CLI COMMANDS</span><h2>CLI에서 선택할 수 있는 7개 Storage</h2><p class="lead">Memory만 경로가 필요 없고, 나머지는 <code>--storage</code>와 <code>--path</code>를 함께 지정합니다.</p></div>
+      <table class="command-table">
+        <thead><tr><th>Storage</th><th>PowerShell 명령</th><th>경로 의미</th></tr></thead>
+        <tbody>
+          <tr><td>Memory</td><td><code>cargo run --locked -p gluesql-cli</code></td><td>경로 없음</td></tr>
+          <tr><td>Sled</td><td><code>cargo run --locked -p gluesql-cli -- --storage sled --path C:\gluesql\.codex-local\storage-lab\sled</code></td><td>DB 디렉터리</td></tr>
+          <tr><td>Redb</td><td><code>cargo run --locked -p gluesql-cli -- --storage redb --path C:\gluesql\.codex-local\storage-lab\study.redb</code></td><td>단일 DB 파일</td></tr>
+          <tr><td>JSON</td><td><code>cargo run --locked -p gluesql-cli -- --storage json --path C:\gluesql\.codex-local\storage-lab\json</code></td><td>JSON·JSONL 디렉터리</td></tr>
+          <tr><td>CSV</td><td><code>cargo run --locked -p gluesql-cli -- --storage csv --path C:\gluesql\.codex-local\storage-lab\csv</code></td><td>CSV 디렉터리</td></tr>
+          <tr><td>Parquet</td><td><code>cargo run --locked -p gluesql-cli -- --storage parquet --path C:\gluesql\.codex-local\storage-lab\parquet</code></td><td>Parquet 디렉터리</td></tr>
+          <tr><td>File</td><td><code>cargo run --locked -p gluesql-cli -- --storage file --path C:\gluesql\.codex-local\storage-lab\file</code></td><td>SQL·RON 디렉터리</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head"><span>04 · STORAGE MAP</span><h2>12개 Storage의 사용 장면과 검증 상태</h2><p class="lead">“적합한 상황”은 시작 가설입니다. 기능 지원 여부는 관련 trait, 테스트, 실제 실행으로 계속 검증합니다.</p></div>
+      <table class="storage-table">
+        <thead><tr><th>Storage</th><th>CLI</th><th>데이터 형태·생명주기</th><th>먼저 떠올릴 사용 장면</th><th>현재 근거</th></tr></thead>
+        <tbody>
+          <tr><td>Memory</td><td>직접 선택</td><td>프로세스 메모리, 종료 시 소멸</td><td>테스트와 임시 실험</td><td><span class="status">직접 실행</span></td></tr>
+          <tr><td>SharedMemory</td><td>라이브러리</td><td>공유 가능한 메모리 데이터</td><td>여러 스레드의 동일 데이터 접근</td><td><span class="status library">코드·문서</span></td></tr>
+          <tr><td>Sled</td><td>직접 선택</td><td>로컬 embedded KV, 경로에 영속</td><td>Rust 로컬 영속 앱, transaction·index 필요</td><td><span class="status">직접 실행</span></td></tr>
+          <tr><td>Redb</td><td>직접 선택</td><td>ACID 기반 단일 `.redb` 파일</td><td>서버 없이 단일 파일로 보존</td><td><span class="status plan">실험 예정</span></td></tr>
+          <tr><td>JSON</td><td>직접 선택</td><td>SQL schema + JSON·JSONL</td><td>기존 JSON 분석과 파일 기반 교환</td><td><span class="status plan">실험 예정</span></td></tr>
+          <tr><td>CSV</td><td>직접 선택</td><td>선택적 schema + CSV</td><td>표 형식 파일을 SQL로 조회·변경</td><td><span class="status plan">실험 예정</span></td></tr>
+          <tr><td>Parquet</td><td>직접 선택</td><td>`.parquet` 파일</td><td>분석용 columnar 파일 조회·변경</td><td><span class="status plan">실험 예정</span></td></tr>
+          <tr><td>File</td><td>직접 선택</td><td>테이블 SQL + 행별 RON 파일</td><td>가벼운 로컬 영속성과 파일 관찰</td><td><span class="status plan">실험 예정</span></td></tr>
+          <tr><td>Mongo</td><td>라이브러리</td><td>외부 MongoDB</td><td>기존 MongoDB에 GlueSQL SQL 연결</td><td><span class="status library">코드·문서</span></td></tr>
+          <tr><td>Redis</td><td>라이브러리</td><td>외부 Redis 서비스</td><td>운영 중인 Redis에 SQL 계층 연결</td><td><span class="status library">코드·문서</span></td></tr>
+          <tr><td>Composite</td><td>라이브러리</td><td>여러 Storage를 테이블별 조합</td><td>서로 다른 데이터 원천의 JOIN과 이동</td><td><span class="status library">코드·문서</span></td></tr>
+          <tr><td>Git</td><td>라이브러리</td><td>File·CSV·JSON 변경을 Git commit</td><td>파일 데이터의 변경 이력 추적</td><td><span class="status library">코드·문서</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head"><span>05 · COMPARISON FIELDS</span><h2>최종 비교표에 기록할 항목</h2></div>
+      <div class="checklist">
+        <article class="check"><span>DATA</span><h3>생명주기와 형식</h3><p>재실행 보존, 생성 파일·디렉터리, schema 표현, 외부 서비스 의존성</p></article>
+        <article class="check"><span>FEATURE</span><h3>지원 기능</h3><p>Store·StoreMut, transaction, index, alter table과 특화 동작</p></article>
+        <article class="check"><span>EVIDENCE</span><h3>검증 근거</h3><p>CLI 명령, SQL 입력, 실제 출력, 관련 테스트와 구현 파일 링크</p></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><span>06 · SOURCES</span><h2>확인한 공식 근거</h2></div>
+      <div class="sources">
+        <a href="https://github.com/gluesql/gluesql/issues/1408">Issue #1408: Document supported features of each storage</a>
+        <a href="https://github.com/gluesql/gluesql/blob/main/cli/src/lib.rs">CLI Storage enum과 storage/path 처리</a>
+        <a href="https://github.com/gluesql/gluesql/blob/main/core/src/store.rs">Core Storage trait</a>
+        <a href="https://github.com/gluesql/gluesql/tree/main/storages">12개 Storage crate</a>
+        <a href="https://gluesql.org/docs/latest/storages/">GlueSQL Storage 공식 문서</a>
+      </div>
+    </section>
+
+    <footer><p>이 문서는 기여 전 비교 초안입니다. “직접 실행”과 “코드·문서 확인”, “실험 예정”을 구분하며, 검증 결과에 따라 내용을 수정합니다.</p></footer>
+  </main>
+</body>
+</html>

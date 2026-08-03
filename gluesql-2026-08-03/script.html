@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GlueSQL 초보 기여 후보 분석 발표 대본">
-  <title>GlueSQL 첫 기여 후보 분석 발표 대본 | 2026.08.03</title>
+  <meta name="description" content="GlueSQL Storage 관심 영역 발표 대본">
+  <title>GlueSQL에서 데이터는 어디에 남을까? | 발표 대본</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,342 +23,69 @@
       --blue: #3156a3;
       --blue-soft: #dce5f8;
       --yellow: #e5b92f;
-      --radius: 8px;
       --body: "Noto Sans KR", system-ui, sans-serif;
       --mono: "IBM Plex Mono", Consolas, monospace;
     }
-
-    * {
-      box-sizing: border-box;
-      letter-spacing: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      background: var(--paper);
-    }
-
-    body {
-      margin: 0;
-      color: var(--ink);
-      background: var(--paper);
-      font-family: var(--body);
-      line-height: 1.8;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    a:focus-visible {
-      outline: 3px solid var(--yellow);
-      outline-offset: 3px;
-    }
-
-    code {
-      font-family: var(--mono);
-      font-size: 0.92em;
-    }
-
-    .shell {
-      width: min(1080px, calc(100% - 2rem));
-      margin: 0 auto;
-      padding: 3rem 0 6rem;
-    }
-
-    .topbar {
-      position: sticky;
-      z-index: 10;
-      top: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.8rem 0;
-      background: rgba(246, 244, 239, 0.94);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(12px);
-    }
-
-    .brand {
-      font-family: var(--mono);
-      color: var(--teal);
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
-
-    .deck-link {
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: var(--surface);
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    header {
-      display: grid;
-      gap: 1.3rem;
-      padding: 4.5rem 0 3rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .eyebrow,
-    .slide-label,
-    .tag {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .eyebrow,
-    .slide-label {
-      color: var(--teal);
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-      word-break: keep-all;
-    }
-
-    h1 {
-      max-width: 15ch;
-      font-size: clamp(2.5rem, 7vw, 4.8rem);
-      line-height: 1.12;
-    }
-
-    h2 {
-      font-size: 1.75rem;
-      line-height: 1.35;
-    }
-
-    h3 {
-      font-size: 1.05rem;
-    }
-
-    .subtitle {
-      max-width: 58ch;
-      color: var(--muted);
-      font-size: 1.08rem;
-    }
-
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border: 1px solid var(--line);
-      background: var(--surface);
-    }
-
-    .summary div {
-      min-height: 8rem;
-      padding: 1.2rem;
-      border-right: 1px solid var(--line);
-    }
-
-    .summary div:last-child {
-      border-right: 0;
-    }
-
-    .summary strong {
-      display: block;
-      margin-bottom: 0.4rem;
-      font-family: var(--mono);
-      color: var(--coral);
-      font-size: 0.76rem;
-    }
-
-    .summary p {
-      font-weight: 700;
-      line-height: 1.55;
-    }
-
-    .latest {
-      margin-top: 2rem;
-      padding: 1.2rem 1.3rem;
-      border-left: 4px solid var(--blue);
-      background: var(--blue-soft);
-    }
-
-    .latest strong {
-      color: var(--blue);
-    }
-
-    .scripts {
-      display: grid;
-      gap: 0;
-      margin-top: 3rem;
-      border-top: 1px solid var(--line);
-    }
-
-    .script {
-      display: grid;
-      grid-template-columns: 10rem minmax(0, 1fr);
-      gap: 2rem;
-      padding: 2.5rem 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .script-meta {
-      align-self: start;
-      position: sticky;
-      top: 5rem;
-    }
-
-    .time {
-      display: block;
-      margin-top: 0.4rem;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 0.76rem;
-    }
-
-    .script-body {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .say {
-      padding: 1.4rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      font-size: 1.02rem;
-    }
-
-    .cue {
-      padding: 0.8rem 1rem;
-      border-left: 4px solid var(--teal);
-      background: var(--teal-soft);
-      color: #164f4a;
-      font-size: 0.88rem;
-      font-weight: 700;
-    }
-
-    .emphasis {
-      color: var(--coral);
-      font-weight: 800;
-    }
-
-    .reference {
-      color: var(--blue);
-      font-weight: 700;
-    }
-
-    .support {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.2rem;
-      margin-top: 3.5rem;
-    }
-
-    .support section {
-      padding: 1.4rem;
-      border: 1px solid var(--line);
-      background: var(--surface);
-    }
-
-    .support h2 {
-      margin-bottom: 1rem;
-    }
-
-    .support dl {
-      margin: 0;
-    }
-
-    .support dt {
-      margin-top: 1rem;
-      font-weight: 800;
-    }
-
-    .support dt:first-child {
-      margin-top: 0;
-    }
-
-    .support dd {
-      margin: 0.25rem 0 0;
-      color: var(--muted);
-    }
-
-    .qa {
-      grid-column: 1 / -1;
-    }
-
-    .qa-item {
-      padding: 1rem 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .qa-item:first-of-type {
-      border-top: 0;
-    }
-
-    .qa-item strong {
-      display: block;
-      margin-bottom: 0.25rem;
-      color: var(--teal);
-    }
-
-    footer {
-      margin-top: 3.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-
+    * { box-sizing: border-box; letter-spacing: 0; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--body); line-height: 1.8; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+    code { font-family: var(--mono); font-size: 0.92em; }
+    h1, h2, h3, p { margin: 0; word-break: keep-all; }
+    h1 { max-width: 15ch; font-size: 4.6rem; line-height: 1.12; }
+    h2 { font-size: 1.72rem; line-height: 1.35; }
+    h3 { font-size: 1.04rem; }
+    .shell { width: min(1080px, calc(100% - 2rem)); margin: 0 auto; padding: 0 0 6rem; }
+    .topbar { position: sticky; z-index: 10; top: 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line); background: rgba(246, 244, 239, 0.94); backdrop-filter: blur(12px); }
+    .brand, .eyebrow, .slide-label { color: var(--teal); font: 600 0.78rem var(--mono); text-transform: uppercase; }
+    .deck-link { padding: 0.48rem 0.72rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+    header { display: grid; gap: 1.3rem; padding: 4.5rem 0 3rem; border-bottom: 1px solid var(--line); }
+    .subtitle { max-width: 62ch; color: var(--muted); font-size: 1.08rem; }
+    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--surface); }
+    .summary div { min-height: 7.5rem; padding: 1.15rem; border-right: 1px solid var(--line); }
+    .summary div:last-child { border-right: 0; }
+    .summary strong { display: block; margin-bottom: 0.35rem; color: var(--coral); font: 600 0.74rem var(--mono); }
+    .summary p { font-weight: 700; line-height: 1.55; }
+    .opening { padding: 1.1rem 1.25rem; border-left: 5px solid var(--blue); background: var(--blue-soft); }
+    .opening strong { color: var(--blue); }
+    .scripts { display: grid; margin-top: 3rem; border-top: 1px solid var(--line); }
+    .script { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 2rem; padding: 2.4rem 0; border-bottom: 1px solid var(--line); }
+    .script-meta { position: sticky; top: 5rem; align-self: start; }
+    .time { display: block; margin-top: 0.35rem; color: var(--muted); font: 0.75rem var(--mono); }
+    .script-body { display: grid; gap: 0.9rem; }
+    .say { padding: 1.35rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 1.01rem; }
+    .cue { padding: 0.75rem 0.95rem; border-left: 4px solid var(--teal); background: var(--teal-soft); color: #164f4a; font-size: 0.86rem; font-weight: 700; }
+    .emphasis { color: var(--coral); font-weight: 800; }
+    .support { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 3.5rem; }
+    .support section { padding: 1.35rem; border-top: 6px solid var(--teal); background: var(--surface); }
+    .support section:nth-child(2) { border-color: var(--blue); }
+    .support h2 { margin-bottom: 1rem; }
+    dl { margin: 0; }
+    dt { margin-top: 1rem; font-weight: 800; }
+    dt:first-child { margin-top: 0; }
+    dd { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.9rem; }
+    .qa { grid-column: 1 / -1; border-color: var(--coral) !important; }
+    .qa-item { padding: 1rem 0; border-top: 1px solid var(--line); }
+    .qa-item:first-of-type { border-top: 0; }
+    .qa-item strong { display: block; margin-bottom: 0.3rem; }
+    .qa-item p { color: var(--muted); }
+    .sources { grid-column: 1 / -1; border-color: var(--yellow) !important; }
+    .sources ul { margin: 0; padding-left: 1.2rem; }
+    .sources li { margin: 0.45rem 0; overflow-wrap: anywhere; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; }
     @media (max-width: 760px) {
-      .shell {
-        width: min(100% - 1.4rem, 1080px);
-        padding-top: 0;
-      }
-
-      header {
-        padding-top: 3rem;
-      }
-
-      .summary,
-      .support {
-        grid-template-columns: 1fr;
-      }
-
-      .summary div {
-        min-height: auto;
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .summary div:last-child {
-        border-bottom: 0;
-      }
-
-      .script {
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
-      }
-
-      .script-meta {
-        position: static;
-      }
-
-      .qa {
-        grid-column: auto;
-      }
+      .shell { width: min(100% - 1.4rem, 1080px); }
+      h1 { font-size: 2.65rem; }
+      header { padding-top: 3rem; }
+      .summary, .support { grid-template-columns: 1fr; }
+      .summary div { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .summary div:last-child { border-bottom: 0; }
+      .script { grid-template-columns: 1fr; gap: 0.75rem; }
+      .script-meta { position: static; }
+      .qa, .sources { grid-column: auto; }
     }
-
-    @media print {
-      .topbar {
-        position: static;
-      }
-
-      .script {
-        break-inside: avoid;
-      }
-    }
+    @media print { .topbar { position: static; } .script { break-inside: avoid; } }
   </style>
 </head>
 <body>
@@ -370,167 +97,122 @@
 
     <header>
       <span class="eyebrow">2026.08.03 · 진현준 · 약 9분</span>
-      <h1>초보자는 GlueSQL에 어디서 기여할 수 있을까?</h1>
-      <p class="subtitle">슬라이드 12장에 맞춘 발표 대본입니다. “무엇을 모르는가”보다 “어떤 근거로 후보를 좁혔는가”가 중심입니다.</p>
+      <h1>GlueSQL에서 데이터는 어디에 남을까?</h1>
+      <p class="subtitle">지금까지의 학습, Storage에 관심을 갖게 된 경험, 앞으로의 기여 접근을 12장에 맞춰 설명하는 발표 대본입니다.</p>
       <div class="summary">
-        <div>
-          <strong>오늘의 주장</strong>
-          <p>실행 경험을 기여 후보를 판단하는 기준으로 바꿨다.</p>
-        </div>
-        <div>
-          <strong>첫 탐색 후보</strong>
-          <p>#1676의 Data Injection 문서와 Query Builder 테스트</p>
-        </div>
-        <div>
-          <strong>아직 하지 않은 것</strong>
-          <p>이슈 선점, 기여 브랜치 생성, upstream PR 제출</p>
-        </div>
+        <div><strong>배운 것</strong><p>SQL Core와 Storage가 역할과 trait으로 분리되어 있다.</p></div>
+        <div><strong>관심 영역</strong><p>데이터의 저장 방식과 상황에 맞는 Storage 선택</p></div>
+        <div><strong>기여 접근</strong><p>동일 조건의 비교 실험에서 문서·테스트의 빈틈 찾기</p></div>
       </div>
-      <p class="latest"><strong>2026년 7월 31일 조사 기준:</strong> #1676은 미할당이고 연결된 브랜치나 PR이 없습니다. 활성 문서 PR #1935가 여러 문서를 수정하지만 Data Injection 페이지는 포함하지 않습니다. 다만 큰 이슈의 하위 항목이므로 구현 전 Maintainer 확인이 필요합니다.</p>
+      <p class="opening"><strong>발표의 선:</strong> 특정 이슈를 맡겠다는 선언이 아닙니다. 직접 배운 내용에서 관심 영역을 찾고, 기여할 수 있는 근거를 만드는 방법을 설명합니다.</p>
     </header>
 
     <div class="scripts">
       <article class="script" id="slide-1">
-        <div class="script-meta">
-          <span class="slide-label">Slide 01 · 표지</span>
-          <span class="time">약 35초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 01 · 표지</span><span class="time">약 40초</span></div>
         <div class="script-body">
-          <h2>막막함에서 후보를 좁힌 과정이라고 소개하기</h2>
-          <p class="say">안녕하세요, 진현준입니다. 지난 발표자료에서는 아직 무엇에 기여할지 모르겠다는 이야기가 중심이었습니다. 이번에는 거기서 한 단계 더 나아가, 제가 실제로 실행한 경험을 기준으로 만들고 현재 GitHub 후보들을 비교했습니다. 그 결과 <span class="emphasis">첫 탐색 대상으로 좁힌 항목과 그 이유</span>를 말씀드리겠습니다. 아직 이슈를 맡았거나 PR을 준비 중이라는 뜻은 아닙니다.</p>
-          <p class="cue">“첫 탐색 후보”와 “확정 기여”를 처음부터 구분합니다.</p>
+          <h2>질문과 발표 순서를 한 번에 제시하기</h2>
+          <p class="say">안녕하세요, 진현준입니다. 저는 지금까지 GlueSQL의 SQL 실행 흐름을 따라가며 CLI로 직접 데이터를 만들고 조회했습니다. 그 과정에서 같은 SQL을 실행해도 어떤 Storage를 선택하느냐에 따라 데이터가 남는 방식이 달라진다는 점이 가장 궁금해졌습니다. 오늘은 <span class="emphasis">무엇을 배웠는지, 왜 Storage에 관심을 갖게 되었는지, 이 관심을 어떤 기여 방식으로 발전시키고 싶은지</span> 말씀드리겠습니다.</p>
+          <p class="cue">첫 문장에서 “Storage가 관심 영역”이라는 결론을 보여주고, 특정 이슈 이야기는 꺼내지 않습니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-2">
-        <div class="script-meta">
-          <span class="slide-label">Slide 02 · 실행 근거</span>
-          <span class="time">약 50초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 02 · 지금까지 한 일</span><span class="time">약 50초</span></div>
         <div class="script-body">
-          <h2>이미 한 일을 숫자와 연결하기</h2>
-          <p class="say">먼저 제가 어디까지 왔는지 정리했습니다. MemoryStorage와 SledStorage를 비교해 프로세스 종료와 데이터 영속성의 차이를 확인했고, CLI에서 CRUD 다섯 동작을 실행했습니다. table function 인자 경계를 로컬 학습 브랜치에서 수정해 보면서 Core 테스트 515개와 MemoryStorage fixture 196개를 통과시켰고 Clippy와 Formatter도 확인했습니다. 이 로컬 변경 자체를 기여 주제로 밀지는 않겠습니다. 대신 <span class="emphasis">코드를 읽고 테스트로 검증할 수 있다는 근거</span>로 사용했습니다.</p>
-          <p class="cue">네 개 숫자를 왼쪽부터 읽고 로컬 실험의 위치를 분명히 합니다.</p>
+          <h2>학습을 실행 순서로 설명하기</h2>
+          <p class="say">처음에는 Rust 프로젝트를 어떻게 실행하는지도 낯설었습니다. Rust와 Cargo 환경을 준비하고 예제를 컴파일한 뒤, CLI에서 CREATE, INSERT, SELECT, UPDATE, DELETE를 직접 실행했습니다. 이어서 MemoryStorage와 SledStorage로 같은 테이블을 열어 데이터가 재실행 뒤에도 남는지 비교했습니다. 최근에는 Translator의 table function 인자 처리를 읽고 관련 테스트도 실행했습니다. 아직 upstream PR은 없지만, <span class="emphasis">동작을 재현하고 코드 위치를 찾아 질문할 수 있는 단계</span>까지 왔습니다.</p>
+          <p class="cue">성과를 과장하지 않고 “실행 기반을 만들었다”는 점에 힘을 줍니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-3">
-        <div class="script-meta">
-          <span class="slide-label">Slide 03 · 선정 기준</span>
-          <span class="time">약 50초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 03 · 배운 실행 흐름</span><span class="time">약 55초</span></div>
         <div class="script-body">
-          <h2>good first issue보다 구체적인 기준을 말하기</h2>
-          <p class="say">초보자에게 쉬운 이슈가 무엇인지 판단하기 위해 네 가지 기준을 만들었습니다. 첫째, CLI나 테스트로 현재 동작을 직접 재현할 수 있어야 합니다. 둘째, 변경할 파일과 책임 경계를 설명할 수 있을 만큼 범위가 작아야 합니다. 셋째, 따라갈 기존 테스트나 문서가 있어야 합니다. 넷째, Assignee뿐 아니라 댓글과 활성 PR까지 확인해 다른 사람의 작업과 겹치지 않아야 합니다. <span class="emphasis">코드 줄 수보다 불확실성이 얼마나 작은가</span>를 본 것입니다.</p>
-          <p class="cue">네 기준을 각각 한 문장으로 끊어 말합니다.</p>
+          <h2>각 단계를 한 문장씩 연결하기</h2>
+          <p class="say">제가 이해한 기본 흐름은 SQL, Parser, Translator, Planner, Executor, Storage, Payload입니다. Parser는 SQL을 AST로 만들고, Translator는 이를 GlueSQL이 사용하는 문장으로 바꿉니다. Planner는 Storage와 실행할 계획을 만들고 Executor가 실제 연산을 수행합니다. 이때 Storage는 스키마와 원본 행을 제공하거나 변경을 반영합니다. 마지막 Payload가 조회 결과나 변경 건수를 호출자에게 돌려줍니다. 중요한 점은 <span class="emphasis">Storage가 SELECT 결과를 따로 쌓는 곳은 아니라는 것</span>입니다.</p>
+          <p class="cue">Storage와 Payload를 분리해서 말합니다. 이 구분이 다음 슬라이드의 경험으로 이어집니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-4">
-        <div class="script-meta">
-          <span class="slide-label">Slide 04 · 기여 난이도 지도</span>
-          <span class="time">약 45초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 04 · 관심이 생긴 순간</span><span class="time">약 55초</span></div>
         <div class="script-body">
-          <h2>문서부터 시작하는 이유를 낮은 가치로 설명하지 않기</h2>
-          <p class="say">GlueSQL 기여는 문서, 테스트와 예제, fixture 도구, Core 기능 변경으로 난이도가 올라갑니다. 첫 PR은 문서나 테스트에서 시작해도 충분합니다. 다만 문서를 단순 번역하거나 추측으로 쓰는 것은 아닙니다. 실제 Query Builder API를 실행하고 Payload를 확인한 뒤 그 결과를 설명해야 합니다. 그래서 문서와 테스트는 코어보다 덜 중요한 일이 아니라, <span class="emphasis">현재 동작을 이해했다는 검증 가능한 산출물</span>입니다.</p>
-          <p class="cue">왼쪽에서 오른쪽으로 난이도가 높아진다는 점만 짚습니다.</p>
+          <h2>실제 실패 경험을 관심의 출발점으로 말하기</h2>
+          <p class="say">Storage에 관심을 갖게 된 직접적인 계기는 CLI를 종료했다가 다시 열었을 때 테이블이 사라진 경험입니다. 기본 실행은 MemoryStorage이므로 데이터가 그 프로세스의 메모리에만 있었습니다. 이후 <code>--storage sled</code>와 <code>--path</code>를 지정해 실행하자 같은 경로에서 테이블과 행을 다시 조회할 수 있었습니다. 이때 컴파일 결과인 target 폴더와 실제 DB 데이터가 별개라는 점도 이해했습니다. <span class="emphasis">같은 SQL인데 데이터 생명주기가 달라진 이유</span>가 제 다음 질문이 됐습니다.</p>
+          <p class="cue">명령 전체를 읽지 말고 Memory, Sled, path 세 단어만 짚습니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-5">
-        <div class="script-meta">
-          <span class="slide-label">Slide 05 · 후보 비교</span>
-          <span class="time">약 70초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 05 · Storage 코드 계약</span><span class="time">약 55초</span></div>
         <div class="script-body">
-          <h2>왜 다른 후보를 지금 선택하지 않았는지 설명하기</h2>
-          <p class="say">현재 열린 후보 다섯 개를 비교했습니다. #1408의 Storage 기능 표는 제 Memory와 Sled 경험과 잘 맞지만 모든 Storage의 trait 지원 여부를 검증해야 해서 범위가 큽니다. #1946은 빈 SELECT에서 type assertion이 통과하는 문제인데, 어떤 동작을 정답으로 할지 합의가 먼저입니다. #1947은 fixture 표 안의 세로 막대를 처리하는 문제로 escape 규칙과 이전 파일의 호환성을 설계해야 합니다. #1011은 good first issue지만 기존에 진행 의사를 밝힌 댓글이 있습니다. 이에 비해 #1676의 Data Injection은 <span class="emphasis">Todo, 기존 예제, 작은 파일 범위, 낮은 중복 위험</span>을 함께 갖췄습니다.</p>
-          <p class="cue">모든 후보를 자세히 읽기보다 마지막 비교 문장에 힘을 줍니다.</p>
+          <h2>trait을 인터페이스 계약으로 설명하기</h2>
+          <p class="say">코드에서는 <code>core/src/store.rs</code>가 Storage 경계를 정의합니다. Store는 스키마와 행을 읽는 메서드를, StoreMut은 데이터를 추가하거나 삭제하는 메서드를 정의합니다. GStore와 GStoreMut은 Index, Metadata, Transaction 같은 여러 trait을 조합합니다. 각 Storage가 이 계약을 구현하기 때문에 Core는 Memory나 Sled 같은 특정 구현에 직접 묶이지 않습니다. 그래서 <span class="emphasis">같은 SQL 실행 Core에 서로 다른 저장 방식을 끼울 수 있습니다.</span></p>
+          <p class="cue">Rust 문법을 길게 설명하지 말고 “Core가 요구하는 기능 목록”이라고 풀어 말합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-6">
-        <div class="script-meta">
-          <span class="slide-label">Slide 06 · 추천 후보</span>
-          <span class="time">약 55초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 06 · 선택 기준</span><span class="time">약 50초</span></div>
         <div class="script-body">
-          <h2>#1676 전체가 아닌 하위 항목 하나라고 강조하기</h2>
-          <p class="say">#1676은 Query Builder 문서 Todo가 여러 개 묶인 큰 이슈입니다. 제가 보는 것은 그 전체가 아니라 Data Injection 한 항목입니다. 해당 문서는 현재 제목과 Todo, VALUES 한 줄만 있습니다. 반면 Core의 <code>values</code> 구현과 test-suite의 기존 예제가 있어 따라갈 선례가 있습니다. 활성 문서 PR #1935도 이 페이지를 수정하지 않습니다. 다만 미할당이라는 사실만으로 바로 시작하지 않고, <span class="emphasis">Data Injection 하위 항목만 진행해도 되는지 먼저 확인</span>하겠습니다.</p>
-          <p class="cue">“추천은 구현 시작이 아니라 확인할 가치가 가장 높다는 뜻”이라고 덧붙입니다.</p>
+          <h2>최고의 Storage가 아니라 조건의 조합이라고 말하기</h2>
+          <p class="say">Storage 선택은 어느 하나가 항상 더 좋다는 문제가 아니라고 생각합니다. 첫째, 데이터가 프로세스 안에서만 필요할지 재시작 뒤에도 남아야 할지 봐야 합니다. 둘째, 브라우저나 로컬 앱, 여러 스레드, 외부 서비스처럼 실행 환경을 봐야 합니다. 셋째, JSON이나 CSV처럼 기존 파일 형식과 연결할 필요가 있는지 확인해야 합니다. 넷째, 인덱스, 트랜잭션, 스키마 변경 같은 기능 요구가 있습니다. <span class="emphasis">이 네 조건을 코드와 테스트로 확인하는 것</span>이 제 관심입니다.</p>
+          <p class="cue">각 기준을 짧게 끊고, 아직 성능 우열을 주장하는 것이 아니라고 분명히 합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-7">
-        <div class="script-meta">
-          <span class="slide-label">Slide 07 · 변경 지도</span>
-          <span class="time">약 55초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 07 · Storage 지형</span><span class="time">약 65초</span></div>
         <div class="script-body">
-          <h2>파일 네 개의 역할로 범위를 설명하기</h2>
-          <p class="say">기존 패턴을 보면 예상 변경 범위는 네 역할로 나뉩니다. 첫째, Data Injection 테스트 파일을 추가해 <code>values(...).execute(glue)</code>의 입력과 Payload를 검증합니다. 둘째, querying 모듈에 새 테스트를 공개합니다. 셋째, test-suite의 공통 Storage 테스트에 등록합니다. 넷째, 검증된 코드와 결과 표로 Todo 문서를 교체합니다. 계획상 Core 수정은 없습니다. <span class="emphasis">새 테스트 하나, 등록 두 곳, 문서 한 페이지</span>라서 리뷰 가능한 범위입니다.</p>
-          <p class="cue">각 상자의 파일명보다 아래 역할을 먼저 말합니다.</p>
+          <h2>12개 이름을 외우기보다 분류의 목적을 설명하기</h2>
+          <p class="say">현재 storages 디렉터리에는 12개 crate가 있습니다. Memory와 SharedMemory는 메모리 사용을, Sled와 Redb와 File은 로컬 영속 저장을 먼저 떠올릴 수 있습니다. JSON, CSV, Parquet은 파일 형식과 연결되고, Mongo와 Redis는 외부 서비스, Composite와 Git은 조합과 변경 이력이라는 질문으로 볼 수 있습니다. 이 분류는 공식 우열표가 아니라 제가 탐색하기 위한 질문 지도입니다. 현재 CLI에서는 <span class="emphasis">Memory, Sled, Redb, JSON, CSV, Parquet, File 일곱 종류</span>를 직접 선택할 수 있습니다.</p>
+          <p class="cue">Storage 이름을 전부 빠르게 읽은 뒤, “CLI에서 직접 비교할 수 있는 7개”로 초점을 좁힙니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-8">
-        <div class="script-meta">
-          <span class="slide-label">Slide 08 · 실행 경로</span>
-          <span class="time">약 55초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 08 · 나의 관심 영역</span><span class="time">약 45초</span></div>
         <div class="script-body">
-          <h2>이 기여 후보가 무엇을 새로 가르치는지 설명하기</h2>
-          <p class="say">이 후보가 좋은 또 하나의 이유는 제가 아는 GlueSQL 흐름을 확장해 주기 때문입니다. SQL 문자열은 Parser와 Translator를 지나 StatementPlan으로 갑니다. Query Builder는 Rust API의 <code>Build</code> 구현으로 StatementPlan을 직접 만들고, 그다음 Storage Planner와 Executor로 들어갑니다. 즉 Parser와 Translator를 거치지 않는 두 번째 입력 경로입니다. 문서와 테스트를 작성하면서 <span class="emphasis">Query Builder가 같은 실행기로 합류하는 지점</span>을 실제 코드로 확인할 수 있습니다.</p>
-          <p class="cue">Parser·Translator에 취소선이 있는 이유를 꼭 설명합니다.</p>
+          <h2>관심을 한 문장과 세 질문으로 고정하기</h2>
+          <p class="say">그래서 제 관심을 한 문장으로 정리했습니다. <span class="emphasis">같은 SQL을 유지하면서 사용 목적에 맞는 Storage를 어떻게 선택하고 검증할 수 있을까?</span>입니다. 이를 위해 각 Storage가 데이터를 어디에 어떤 형태로 남기는지, 같은 SQL에서 지원 기능과 오류 경계가 어떻게 다른지, 초보자가 선택할 수 있는 설명이 충분한지를 확인하고 싶습니다. 단순히 Storage 이름을 나열하는 문서보다 실제 명령과 결과가 있는 비교를 만들고 싶습니다.</p>
+          <p class="cue">큰 인용문을 천천히 읽고, 아래 세 상자는 키워드만 짚습니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-9">
-        <div class="script-meta">
-          <span class="slide-label">Slide 09 · 중복 방지</span>
-          <span class="time">약 50초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 09 · 다른 기여 방향</span><span class="time">약 45초</span></div>
         <div class="script-body">
-          <h2>확인 절차를 기여 활동의 일부로 말하기</h2>
-          <p class="say">실제 코드를 쓰기 전에는 세 번 확인합니다. 이슈의 Assignee, 최근 댓글, 연결 PR을 보고, 활성 PR이 수정하는 정확한 파일 목록도 비교합니다. 마지막으로 이슈에 Data Injection 한 항목의 테스트와 문서를 진행해도 되는지 묻습니다. 답변 전에는 기존 테스트 실행과 코드 읽기까지만 합니다. 이렇게 해야 미할당 이슈라도 누군가 준비 중인 작업과 겹치는 위험을 줄일 수 있습니다. <span class="emphasis">질문은 막혀서 하는 일이 아니라 범위를 합의하는 기여 절차</span>입니다.</p>
-          <p class="cue">영문 댓글 예시는 읽지 말고 질문의 핵심만 한국어로 말합니다.</p>
+          <h2>다른 팀원의 방향과 비교하되 우열을 만들지 않기</h2>
+          <p class="say">팀원 중에는 GlueSQL에 아직 구현되지 않은 SQL 문법이나 함수를 추가하는 데 관심이 있는 분들도 있습니다. 그 방향은 사용자가 무엇을 표현할 수 있는지를 넓힙니다. 제가 관심을 가진 Storage 방향은 데이터가 어디에서 어떻게 살게 할지를 다룹니다. 둘 중 하나가 더 중요하다는 뜻은 아닙니다. <span class="emphasis">GlueSQL의 모듈성을 서로 다른 쪽에서 확장하는 기여</span>입니다. 현재 저는 새로운 문법보다 같은 SQL과 다른 Storage의 차이에서 더 많은 질문이 생겼습니다.</p>
+          <p class="cue">오른쪽 Storage 패널에서 “현재의 나”라는 표현을 사용합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-10">
-        <div class="script-meta">
-          <span class="slide-label">Slide 10 · 다음 실행 순서</span>
-          <span class="time">약 55초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 10 · 기여 접근</span><span class="time">약 60초</span></div>
         <div class="script-body">
-          <h2>발표 후 바로 할 일을 실행 단위로 말하기</h2>
-          <p class="say">다음 순서는 다섯 단계입니다. 먼저 기존 values 테스트를 실행해 현재 API와 Payload를 확인합니다. 다음으로 완성된 Data Aggregation 문서와 테스트를 비교해 프로젝트 문서 형식을 익힙니다. 그 뒤 최소 예제의 입력과 기대 결과를 한 문장으로 정하고, #1676에 범위를 질문합니다. 합의되면 별도 기여 브랜치에서 구현하고, 이미 겹치거나 범위가 커지면 #1408 Storage 문서의 더 작은 조사 단위로 전환합니다. <span class="emphasis">진행 기준뿐 아니라 중단과 전환 기준도 미리 정했습니다.</span></p>
-          <p class="cue">Run, Read, Define, Ask, Decide 순으로 손가락을 이동합니다.</p>
+          <h2>기능 구현 전에 근거를 만드는 네 단계를 말하기</h2>
+          <p class="say">기여는 기능부터 바로 만들기보다 네 단계로 접근하려고 합니다. 먼저 같은 스키마와 행을 여러 Storage에서 실행합니다. 다음으로 각 구현이 어떤 trait과 테스트를 갖는지 코드로 확인합니다. 그 차이를 재시작, 데이터 경로, 지원 동작, 오류가 포함된 문서로 남깁니다. 마지막으로 검증 과정에서 발견한 문서 누락이나 테스트 공백 같은 작은 문제부터 Maintainer와 논의합니다. 공개 이슈 #1408도 Storage 기능 비교의 필요성을 말하지만 범위가 큽니다. <span class="emphasis">이슈 전체를 맡기보다 작은 비교 단위를 만들 근거부터 쌓겠습니다.</span></p>
+          <p class="cue">#1408은 마지막 한 문장에만 등장시킵니다. 발표의 중심 이슈처럼 보이지 않게 합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-11">
-        <div class="script-meta">
-          <span class="slide-label">Slide 11 · 중간보고서</span>
-          <span class="time">약 50초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 11 · 다음 실험</span><span class="time">약 55초</span></div>
         <div class="script-body">
-          <h2>기여 건수와 준비 성과를 분리해 보고하기</h2>
-          <p class="say">중간보고서에는 upstream PR 0건을 그대로 적겠습니다. 대신 환경 구축, CRUD, Memory와 Sled 비교, Core 테스트 515개, fixture 196개, 로컬 학습 브랜치와 후보 다섯 개 비교를 증거로 남깁니다. 완료한 일과 아직 하지 않은 일을 구분하고, Sled 재시작 화면, 테스트 통과 화면, 모임 증빙을 추가하겠습니다. 이렇게 하면 “아직 기여하지 못했다”가 아니라 <span class="emphasis">기여할 수 있는 상태를 어떻게 만들었는지</span>를 보여줄 수 있습니다.</p>
-          <p class="cue">PR 0건을 작게 말하지 말고 솔직한 현재 상태로 말합니다.</p>
+          <h2>발표 뒤 바로 실행할 수 있는 작업을 제시하기</h2>
+          <p class="say">다음 실험은 CLI에서 직접 고를 수 있는 Storage 중 Memory, Sled, Redb, JSON부터 비교하는 것입니다. CREATE, INSERT, SELECT로 구성한 동일한 SQL 스크립트를 사용하고, 정상 종료 뒤 다시 열어 데이터를 조회합니다. 생성된 파일과 경로, 실행 옵션, 성공 결과와 오류를 함께 기록하겠습니다. 아직 확인하지 않은 기능을 표에 먼저 채우지 않고, 직접 실행한 결과와 관련 코드 위치만 남깁니다. 결과물은 추천 순위가 아니라 <span class="emphasis">선택할 때 확인할 질문과 재현 방법</span>입니다.</p>
+          <p class="cue">Memory, Sled, Redb, JSON 네 이름과 “같은 SQL”을 강조합니다.</p>
         </div>
       </article>
 
       <article class="script" id="slide-12">
-        <div class="script-meta">
-          <span class="slide-label">Slide 12 · 결론</span>
-          <span class="time">약 35초</span>
-        </div>
+        <div class="script-meta"><span class="slide-label">Slide 12 · 결론</span><span class="time">약 40초</span></div>
         <div class="script-body">
-          <h2>후보는 구체적으로, 약속은 신중하게 끝내기</h2>
-          <p class="say">정리하겠습니다. 저는 실행 경험을 기여 판단의 근거로 바꿨고, 재현성, 범위, 선례, 중복이라는 기준으로 후보를 비교했습니다. 그 결과 #1676의 Data Injection 문서와 Query Builder 테스트를 첫 탐색 대상으로 좁혔습니다. 아직 확정 기여는 아닙니다. 기존 테스트를 실행하고 Maintainer에게 범위를 확인한 뒤 다음 결정을 내리겠습니다. <span class="emphasis">막막함에서 검증 가능한 후보까지 왔다는 것</span>이 이번 발표의 결론입니다. 감사합니다.</p>
-          <p class="cue">한 박자 쉬고 “질문 부탁드립니다”로 마칩니다.</p>
+          <h2>학습, 관심, 접근을 다시 한 번 연결하기</h2>
+          <p class="say">정리하겠습니다. 저는 GlueSQL의 SQL 실행 흐름을 CLI와 코드로 따라가며 기본 구조를 배웠습니다. Memory와 Sled의 차이에서 데이터가 어디에 어떻게 남는지에 관심을 갖게 됐습니다. 앞으로는 여러 Storage를 동일 조건으로 비교해 선택 기준과 실제 동작을 검증하겠습니다. 그 결과를 문서와 테스트로 남기고 확인된 작은 빈틈부터 기여 가능성을 논의하겠습니다. <span class="emphasis">아직 특정 이슈를 확정한 발표가 아니라, 제 관심 영역과 접근 방법을 정한 발표</span>입니다. 감사합니다.</p>
+          <p class="cue">마지막에는 “질문 부탁드립니다”라고 덧붙이고 화면의 세 문장을 한 번 보여줍니다.</p>
         </div>
       </article>
     </div>
@@ -539,57 +221,44 @@
       <section>
         <h2>용어 메모</h2>
         <dl>
-          <dt>Query Builder</dt>
-          <dd>SQL 문자열 대신 Rust API를 조합해 GlueSQL의 실행 계획을 만드는 인터페이스입니다.</dd>
-          <dt>StatementPlan</dt>
-          <dd>Planner와 Executor가 사용할 수 있도록 표현식과 문장을 실행 가능한 형태로 담은 구조입니다.</dd>
-          <dt>Fixture</dt>
-          <dd>SQL 입력과 기대 Payload 또는 오류를 함께 기록한 회귀 테스트 자산입니다.</dd>
-          <dt>Payload</dt>
-          <dd>SELECT 결과, 생성·수정 행 수처럼 실행 뒤 호출자에게 돌아오는 결과입니다.</dd>
+          <dt>Storage</dt><dd>GlueSQL Core가 trait을 통해 스키마와 행을 읽고 변경하는 데이터 계층입니다.</dd>
+          <dt>Payload</dt><dd>SELECT 결과, 생성·수정 행 수처럼 실행 뒤 호출자에게 돌아오는 결과입니다.</dd>
+          <dt>trait</dt><dd>Core가 Storage에 요구하는 동작의 인터페이스 계약입니다.</dd>
+          <dt>영속성</dt><dd>프로세스가 종료된 뒤에도 데이터를 다시 열 수 있는 성질입니다.</dd>
         </dl>
       </section>
 
       <section>
         <h2>발표 중 지킬 선</h2>
         <dl>
-          <dt>#1676을 맡았다고 말하지 않기</dt>
-          <dd>현재는 첫 탐색 후보이며 Maintainer에게 하위 범위 확인 전입니다.</dd>
-          <dt>Core 변경이 없다고 단정하지 않기</dt>
-          <dd>현재 예상 범위에는 없지만 테스트 중 필요가 발견되면 다시 범위를 합의합니다.</dd>
-          <dt>문서를 쉬운 일로만 표현하지 않기</dt>
-          <dd>API 실행과 테스트 결과를 근거로 정확한 사용법을 고정하는 기여라고 설명합니다.</dd>
+          <dt>Storage별 기능을 단정하지 않기</dt><dd>문서 설명과 직접 검증한 사실을 구분하고, 아직 비교하지 않은 항목은 질문으로 둡니다.</dd>
+          <dt>#1408을 맡았다고 말하지 않기</dt><dd>관심 영역과 연결된 기존 요구일 뿐이며, 현재는 비교 실험의 작은 단위를 찾는 단계입니다.</dd>
+          <dt>문법 기여와 우열을 만들지 않기</dt><dd>SQL 표현 범위와 데이터 저장 범위를 넓히는 서로 다른 기여 방향으로 설명합니다.</dd>
         </dl>
       </section>
 
       <section class="qa">
         <h2>예상 질문과 답변</h2>
-        <div class="qa-item">
-          <strong>Q. 그래서 #1676에 기여하겠다는 뜻인가요?</strong>
-          <p>A. 아직 확정이 아닙니다. Data Injection 한 항목을 첫 탐색 대상으로 정했고, 기존 테스트 실행과 Maintainer의 범위 확인 후에만 구현을 시작합니다.</p>
-        </div>
-        <div class="qa-item">
-          <strong>Q. Data Injection은 정확히 무엇인가요?</strong>
-          <p>A. Query Builder의 <code>values(...)</code>를 사용해 테이블 없이 값 행을 직접 만들고 실행하는 사용법입니다. SQL의 <code>VALUES (1, 'Jin')</code>에 대응합니다.</p>
-        </div>
-        <div class="qa-item">
-          <strong>Q. Parser와 Translator를 공부했는데 왜 Query Builder로 바꿨나요?</strong>
-          <p>A. 바꾼 것이 아니라 학습 범위를 확장한 것입니다. Query Builder도 결국 Storage Planner와 Executor에 합류하므로, 기존 지식을 활용하면서 새로운 입력 경로를 배울 수 있습니다.</p>
-        </div>
-        <div class="qa-item">
-          <strong>Q. 왜 #1408 Storage 문서를 먼저 하지 않나요?</strong>
-          <p>A. 개인 경험과는 잘 맞지만 정확한 기능 표를 만들려면 여러 Storage trait과 테스트를 전부 검증해야 합니다. 첫 PR로는 범위가 크고, 더 작은 하위 조사로 쪼갤 합의가 필요합니다.</p>
-        </div>
-        <div class="qa-item">
-          <strong>Q. upstream PR이 0건인데 중간보고서에 쓸 것이 충분한가요?</strong>
-          <p>A. 기여 건수는 0건으로 명확히 적습니다. 대신 재현 가능한 실행 기록, 테스트 수치, 로컬 실험, 이슈 중복 조사, 다음 후보의 파일 범위를 정량 근거로 제시합니다.</p>
-        </div>
+        <div class="qa-item"><strong>Q. GlueSQL은 데이터베이스인가요?</strong><p>A. MySQL처럼 독립 서버 하나로만 보는 것보다, 애플리케이션에 넣어 SQL 실행 Core와 원하는 Storage를 조합하는 임베디드 SQL 엔진으로 이해하는 편이 정확합니다.</p></div>
+        <div class="qa-item"><strong>Q. 어떤 Storage가 가장 좋나요?</strong><p>A. 하나의 정답을 전제하지 않습니다. 영속성, 실행 환경, 데이터 형식, 필요한 기능을 먼저 정하고 실제 구현과 테스트로 적합성을 확인해야 합니다.</p></div>
+        <div class="qa-item"><strong>Q. Storage를 새로 구현하겠다는 뜻인가요?</strong><p>A. 아직 아닙니다. 먼저 기존 Storage들을 같은 조건으로 실행해 계약과 차이를 이해하고, 그 과정에서 발견한 문서나 테스트의 작은 빈틈부터 기여하려고 합니다.</p></div>
+        <div class="qa-item"><strong>Q. 왜 SQL 문법보다 Storage인가요?</strong><p>A. CLI에서 데이터가 사라지고 다시 남는 차이를 직접 겪으면서 데이터 생명주기와 저장 방식에 더 구체적인 질문이 생겼기 때문입니다.</p></div>
+        <div class="qa-item"><strong>Q. 비교 결과는 어떤 형태로 남길 건가요?</strong><p>A. 동일 SQL, 실행 명령, 재실행 결과, 데이터 경로, 오류 출력, 관련 코드 위치를 함께 기록한 재현 가능한 표와 예제로 남길 계획입니다.</p></div>
+      </section>
+
+      <section class="sources">
+        <h2>주요 근거</h2>
+        <ul>
+          <li><a href="https://github.com/gluesql/gluesql/blob/main/core/src/store.rs">Core Storage trait</a></li>
+          <li><a href="https://github.com/gluesql/gluesql/blob/main/core/src/glue.rs">Glue 실행 경로</a></li>
+          <li><a href="https://github.com/gluesql/gluesql/blob/main/cli/src/lib.rs">CLI Storage 선택 구현</a></li>
+          <li><a href="https://github.com/gluesql/gluesql/tree/main/storages">Storage crate 목록</a></li>
+          <li><a href="https://github.com/gluesql/gluesql/issues/1408">Issue #1408: Storage별 지원 기능 표</a></li>
+        </ul>
       </section>
     </div>
 
-    <footer>
-      <p>발표자료와 대본은 2026년 7월 31일 GlueSQL 저장소와 공개 GitHub 이슈 상태를 기준으로 작성했습니다.</p>
-    </footer>
+    <footer><p>발표자료는 로컬 GlueSQL 코드와 2026년 8월 3일 공개 저장소 상태를 기준으로 정리했습니다.</p></footer>
   </main>
 </body>
 </html>

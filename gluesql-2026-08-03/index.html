@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GlueSQL 초보 기여자가 실행 경험에서 첫 탐색 후보를 고르는 과정">
+  <meta name="description" content="GlueSQL 학습 경험에서 Storage 관심 영역과 기여 접근을 찾아가는 발표">
   <meta name="author" content="진현준">
-  <meta property="og:title" content="초보자는 GlueSQL에 어디서 기여할 수 있을까?">
-  <meta property="og:description" content="실행 경험, 후보 비교, 중복 확인으로 좁힌 첫 기여 탐색">
+  <meta property="og:title" content="GlueSQL에서 데이터는 어디에 남을까?">
+  <meta property="og:description" content="CLI 실습에서 Storage 관심 영역을 찾기까지">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://opengraph.githubassets.com/1/gluesql/gluesql">
-  <title>초보자는 GlueSQL에 어디서 기여할 수 있을까? | GlueSQL</title>
+  <title>GlueSQL에서 데이터는 어디에 남을까? | 2026.08.03</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
   <style>
     :root {
       --paper: #f6f4ef;
-      --paper-strong: #fffdf8;
+      --surface: #fffdf8;
       --ink: #17191d;
       --muted: #626770;
       --line: #cbc8bf;
@@ -34,1988 +34,518 @@
       --code-text: #eef3f8;
       --shadow: 0 16px 46px rgba(23, 25, 29, 0.12);
       --radius: 8px;
-      --slide-pad-x: 5.5rem;
-      --slide-pad-y: 4.5rem;
-      --font-body: "Noto Sans KR", system-ui, sans-serif;
-      --font-mono: "IBM Plex Mono", Consolas, monospace;
+      --slide-x: 5.5rem;
+      --slide-y: 4.4rem;
+      --body: "Noto Sans KR", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      letter-spacing: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-snap-type: y mandatory;
-      background: var(--paper);
-    }
-
-    body {
-      margin: 0;
-      color: var(--ink);
-      background: var(--paper);
-      font-family: var(--font-body);
-      overflow-x: hidden;
-    }
-
-    button,
-    a {
-      font: inherit;
-    }
-
-    button:focus-visible,
-    a:focus-visible {
-      outline: 3px solid var(--yellow);
-      outline-offset: 3px;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .deck {
-      position: relative;
-    }
-
+    * { box-sizing: border-box; letter-spacing: 0; }
+    html { scroll-behavior: smooth; scroll-snap-type: y mandatory; background: var(--paper); }
+    body { margin: 0; overflow-x: hidden; color: var(--ink); background: var(--paper); font-family: var(--body); }
+    button, a { font: inherit; }
+    a { color: inherit; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+    h1, h2, h3, p { margin: 0; word-break: keep-all; }
+    h1 { max-width: 12ch; font-size: 4.7rem; line-height: 1.09; font-weight: 900; }
+    h2 { max-width: 20ch; font-size: 3.25rem; line-height: 1.17; font-weight: 850; }
+    h3 { font-size: 1.2rem; line-height: 1.4; }
+    code, .mono { font-family: var(--mono); }
+    .accent { color: var(--coral); }
+    .teal { color: var(--teal); }
+    .blue { color: var(--blue); }
+    .deck { position: relative; }
     .slide {
       position: relative;
       min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: var(--slide-y) var(--slide-x);
+      overflow: hidden;
       scroll-snap-align: start;
       scroll-snap-stop: always;
-      display: grid;
-      place-items: center;
-      padding: var(--slide-pad-y) var(--slide-pad-x);
-      overflow: hidden;
       border-bottom: 1px solid var(--line);
     }
-
     .slide-inner {
-      width: min(1400px, 100%);
-      min-height: calc(100svh - (var(--slide-pad-y) * 2));
-      display: grid;
-      align-content: center;
-      gap: 2rem;
       position: relative;
       z-index: 1;
-    }
-
-    .slide-number {
-      position: absolute;
-      top: 2rem;
-      right: 2.2rem;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 0;
-      color: var(--teal);
-      font-family: var(--font-mono);
-      font-size: 0.84rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .kicker::before {
-      content: "";
-      width: 2rem;
-      height: 3px;
-      background: currentColor;
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-      word-break: keep-all;
-    }
-
-    h1 {
-      max-width: 12ch;
-      font-size: 4.8rem;
-      line-height: 1.08;
-      font-weight: 900;
-    }
-
-    h2 {
-      max-width: 19ch;
-      font-size: 3.35rem;
-      line-height: 1.16;
-      font-weight: 850;
-    }
-
-    h3 {
-      font-size: 1.3rem;
-      line-height: 1.35;
-      font-weight: 800;
-    }
-
-    .lead {
-      max-width: 52ch;
-      color: var(--muted);
-      font-size: 1.25rem;
-      line-height: 1.75;
-    }
-
-    .accent {
-      color: var(--coral);
-    }
-
-    .teal {
-      color: var(--teal);
-    }
-
-    .blue {
-      color: var(--blue);
-    }
-
-    .mono {
-      font-family: var(--font-mono);
-    }
-
-    .cover {
-      background: var(--paper-strong);
-    }
-
-    .cover::after {
-      content: "";
-      position: absolute;
-      inset: auto 0 0 0;
-      height: 1rem;
-      background: var(--teal);
-    }
-
-    .cover-grid {
+      width: min(1400px, 100%);
+      min-height: calc(100svh - (var(--slide-y) * 2));
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(340px, 0.9fr);
-      gap: 4.5rem;
-      align-items: center;
+      align-content: center;
+      gap: 1.8rem;
     }
-
-    .cover-copy {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    .cover-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem 1.25rem;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-    }
-
-    .query-hero {
-      position: relative;
-      padding: 2rem;
-      border: 1px solid #2e353e;
-      border-radius: var(--radius);
-      background: var(--code);
-      color: var(--code-text);
-      box-shadow: var(--shadow);
-      font-family: var(--font-mono);
-    }
-
-    .query-hero::before {
-      content: "QUERY / 01";
-      display: block;
-      margin-bottom: 2rem;
-      color: #7ed8ca;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-
-    .query-hero code {
-      font-size: 1.55rem;
-      line-height: 1.8;
-      white-space: pre-wrap;
-    }
-
-    .query-hero .arg {
-      color: #f0c95f;
-      border-bottom: 3px solid var(--coral);
-    }
-
-    .question-mark {
-      position: absolute;
-      right: -1.5rem;
-      bottom: -3.4rem;
-      color: var(--coral);
-      font-family: var(--font-mono);
-      font-size: 9rem;
-      font-weight: 700;
-      line-height: 1;
-      opacity: 0.95;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-      gap: 4.5rem;
-      align-items: center;
-    }
-
-    .stack {
-      display: grid;
-      gap: 1.4rem;
-    }
-
-    .journey {
-      display: grid;
-      gap: 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .journey-row {
-      display: grid;
-      grid-template-columns: 7rem minmax(0, 1fr);
-      gap: 1rem;
-      padding: 1.15rem 0;
-      border-bottom: 1px solid var(--line);
-      align-items: baseline;
-    }
-
-    .journey-row strong {
-      font-family: var(--font-mono);
-      color: var(--blue);
-      font-size: 0.82rem;
-    }
-
-    .journey-row p {
-      font-size: 1.08rem;
-      line-height: 1.55;
-    }
-
-    .statement {
-      padding: 2rem 2.2rem;
-      border-left: 8px solid var(--coral);
-      background: var(--coral-soft);
-      font-size: 1.45rem;
-      line-height: 1.65;
-      font-weight: 700;
-    }
-
-    .pipeline {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 0.7rem;
-      align-items: stretch;
-    }
-
-    .stage {
-      position: relative;
-      display: grid;
-      align-content: start;
-      gap: 0.65rem;
-      min-height: 11rem;
-      padding: 1.2rem 1rem;
-      border: 1px solid var(--line);
-      border-top: 6px solid var(--stage-color, var(--teal));
-      border-radius: var(--radius);
-      background: var(--paper-strong);
-    }
-
-    .stage:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      z-index: 2;
-      top: 50%;
-      right: -1rem;
-      transform: translateY(-50%);
-      width: 1.3rem;
-      height: 1.3rem;
-      display: grid;
-      place-items: center;
-      color: var(--ink);
-      background: var(--paper);
-      font-family: var(--font-mono);
-      font-weight: 600;
-    }
-
-    .stage .index {
-      font-family: var(--font-mono);
-      color: var(--muted);
-      font-size: 0.7rem;
-    }
-
-    .stage b {
-      font-size: 1.05rem;
-    }
-
-    .stage small {
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.5;
-    }
-
+    .slide-number { position: absolute; top: 2rem; right: 2.2rem; color: var(--muted); font: 0.78rem var(--mono); }
+    .stack { display: grid; gap: 1.2rem; }
+    .kicker { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--teal); font: 600 0.82rem var(--mono); text-transform: uppercase; }
+    .kicker::before { content: ""; width: 2rem; height: 3px; background: currentColor; }
+    .lead { max-width: 58ch; color: var(--muted); font-size: 1.18rem; line-height: 1.72; }
+    .cover { background: var(--surface); }
+    .cover::after { content: ""; position: absolute; inset: auto 0 0; height: 1rem; background: var(--teal); }
+    .cover-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr); gap: 4.5rem; align-items: center; }
+    .cover-copy { display: grid; gap: 1.4rem; }
+    .cover-meta { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; color: var(--muted); font: 0.83rem var(--mono); }
+    .storage-hero { display: grid; gap: 0; border: 1px solid #303741; border-radius: var(--radius); background: var(--code); color: var(--code-text); box-shadow: var(--shadow); overflow: hidden; }
+    .storage-hero-head { display: flex; justify-content: space-between; padding: 0.8rem 1rem; border-bottom: 1px solid #303741; color: #9eabb9; font: 0.72rem var(--mono); }
+    .storage-core { padding: 1.35rem 1.4rem; border-bottom: 1px solid #303741; color: #7ed8ca; font: 600 1.1rem var(--mono); }
+    .storage-options { display: grid; grid-template-columns: 1fr 1fr; }
+    .storage-option { display: grid; gap: 0.35rem; padding: 1.35rem; }
+    .storage-option:first-child { border-right: 1px solid #303741; }
+    .storage-option strong { color: #f3ca6a; font: 600 1rem var(--mono); }
+    .storage-option span { color: #bcc6d2; font-size: 0.82rem; line-height: 1.5; }
+    .journey { display: grid; border-top: 3px solid var(--ink); background: var(--surface); }
+    .journey-row { display: grid; grid-template-columns: 7rem minmax(0, 1fr) 9rem; gap: 1rem; align-items: baseline; padding: 1.05rem 1.2rem; border-bottom: 1px solid var(--line); }
+    .journey-row strong { color: var(--blue); font: 600 0.8rem var(--mono); }
+    .journey-row p { font-size: 1rem; line-height: 1.5; }
+    .journey-row span { color: var(--muted); font: 0.74rem var(--mono); text-align: right; }
+    .statement { padding: 1.6rem 2rem; border-left: 8px solid var(--coral); background: var(--coral-soft); font-size: 1.28rem; line-height: 1.6; font-weight: 750; }
+    .pipeline { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.65rem; }
+    .stage { position: relative; min-height: 10.5rem; display: grid; align-content: start; gap: 0.6rem; padding: 1.05rem 0.9rem; border: 1px solid var(--line); border-top: 6px solid var(--stage-color, var(--teal)); border-radius: var(--radius); background: var(--surface); }
+    .stage:not(:last-child)::after { content: "→"; position: absolute; z-index: 2; top: 50%; right: -0.95rem; transform: translateY(-50%); width: 1.2rem; display: grid; place-items: center; background: var(--paper); font: 700 0.9rem var(--mono); }
+    .stage .index { color: var(--muted); font: 0.68rem var(--mono); }
+    .stage b { font-size: 0.98rem; }
+    .stage small { color: var(--muted); font-size: 0.75rem; line-height: 1.48; }
     .stage.parser { --stage-color: var(--blue); }
     .stage.translator { --stage-color: var(--coral); }
     .stage.planner { --stage-color: var(--yellow); }
     .stage.executor { --stage-color: var(--teal); }
     .stage.storage { --stage-color: var(--green); }
-
-    .boundary-note {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1rem;
-      align-items: stretch;
-    }
-
-    .boundary-note > div {
-      padding: 1.15rem 1.3rem;
-      border: 1px solid var(--line);
-      background: var(--paper-strong);
-      border-radius: var(--radius);
-    }
-
-    .boundary-note strong {
-      display: block;
-      margin-bottom: 0.35rem;
-      font-size: 0.94rem;
-    }
-
-    .boundary-note p {
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.6;
-    }
-
-    .experiment-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .experiment {
-      display: grid;
-      gap: 1.1rem;
-      padding: 1.5rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--paper-strong);
-    }
-
-    .experiment.ok {
-      border-top: 7px solid var(--green);
-    }
-
-    .experiment.warn {
-      border-top: 7px solid var(--coral);
-    }
-
-    .experiment code {
-      min-height: 4rem;
-      font-family: var(--font-mono);
-      font-size: 1.02rem;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .result {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: var(--muted);
-      font-size: 0.86rem;
-    }
-
-    .result .mark {
-      width: 1.5rem;
-      height: 1.5rem;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: white;
-      background: var(--green);
-      font-size: 0.75rem;
-      font-weight: 800;
-    }
-
-    .warn .result .mark {
-      background: var(--coral);
-    }
-
-    .parameter-table {
-      width: 100%;
-      border-collapse: collapse;
-      border-top: 3px solid var(--ink);
-      background: var(--paper-strong);
-    }
-
-    .parameter-table th,
-    .parameter-table td {
-      padding: 1.15rem 1.2rem;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    .parameter-table th {
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .parameter-table td:first-child,
-    .parameter-table td:nth-child(2) {
-      font-family: var(--font-mono);
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      min-height: 2rem;
-      padding: 0.3rem 0.7rem;
-      border-radius: 999px;
-      background: var(--blue-soft);
-      color: var(--blue);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-
-    .pill.some {
-      background: var(--yellow-soft);
-      color: #755300;
-    }
-
-    .code-panel {
-      overflow: hidden;
-      border: 1px solid #303741;
-      border-radius: var(--radius);
-      background: var(--code);
-      color: var(--code-text);
-      box-shadow: var(--shadow);
-    }
-
-    .code-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.85rem 1.1rem;
-      border-bottom: 1px solid #303741;
-      color: #9eabb9;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-    }
-
-    pre {
-      margin: 0;
-      padding: 1.35rem 1.5rem;
-      overflow: auto;
-      font-family: var(--font-mono);
-      font-size: 0.94rem;
-      line-height: 1.75;
-      white-space: pre-wrap;
-    }
-
-    .code-key { color: #75d4c6; }
-    .code-string { color: #f3ca6a; }
-    .code-error { color: #ff917f; }
-    .code-muted { color: #8793a1; }
-    .diff-minus { color: #ff917f; }
-    .diff-plus { color: #7ed8a1; }
-
-    .cause-map {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .cause-step {
-      position: relative;
-      padding: 1.4rem;
-      border-top: 5px solid var(--coral);
-      background: var(--coral-soft);
-    }
-
-    .cause-step:nth-child(2) {
-      border-color: var(--yellow);
-      background: var(--yellow-soft);
-    }
-
-    .cause-step:nth-child(3) {
-      border-color: var(--blue);
-      background: var(--blue-soft);
-    }
-
-    .cause-step span {
-      display: block;
-      margin-bottom: 0.65rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-
-    .cause-step p {
-      font-size: 1rem;
-      line-height: 1.55;
-      font-weight: 650;
-    }
-
-    .test-strip {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      border: 1px solid var(--line);
-      background: var(--paper-strong);
-    }
-
-    .test-metric {
-      padding: 1.25rem;
-      border-right: 1px solid var(--line);
-    }
-
-    .test-metric:last-child {
-      border-right: 0;
-    }
-
-    .test-metric strong {
-      display: block;
-      color: var(--teal);
-      font-family: var(--font-mono);
-      font-size: 1.5rem;
-    }
-
-    .test-metric span {
-      color: var(--muted);
-      font-size: 0.75rem;
-    }
-
-    .error-lanes {
-      display: grid;
-      gap: 1.25rem;
-    }
-
-    .error-lane {
-      display: grid;
-      grid-template-columns: 11rem minmax(0, 1fr) 10rem;
-      gap: 1rem;
-      align-items: center;
-      padding: 1rem 1.2rem;
-      border: 1px solid var(--line);
-      background: var(--paper-strong);
-    }
-
-    .error-lane code {
-      font-family: var(--font-mono);
-      font-size: 0.86rem;
-    }
-
-    .error-lane .path {
-      position: relative;
-      height: 0.5rem;
-      background: var(--teal-soft);
-    }
-
-    .error-lane .path::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: var(--stop, 50%);
-      width: 1.1rem;
-      height: 1.1rem;
-      border: 4px solid var(--paper-strong);
-      border-radius: 50%;
-      background: var(--lane-color, var(--coral));
-      transform: translate(-50%, -50%);
-    }
-
-    .error-lane .error-name {
-      color: var(--lane-color, var(--coral));
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-align: right;
-    }
-
-    .learning-layout {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .learning-slide .slide-inner {
-      gap: 1.25rem;
-    }
-
-    .learning-slide .statement {
-      padding: 1.4rem 2rem;
-    }
-
-    .learning-panel {
-      padding: 1.8rem;
-      border-top: 6px solid var(--teal);
-      background: var(--teal-soft);
-    }
-
-    .learning-panel:nth-child(2) {
-      border-color: var(--coral);
-      background: var(--coral-soft);
-    }
-
-    .learning-panel .label {
-      display: block;
-      margin-bottom: 0.8rem;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-
-    .learning-panel h3 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    }
-
-    .learning-list {
-      display: grid;
-      gap: 0.85rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      counter-reset: learning-item;
-    }
-
-    .learning-list li {
-      display: grid;
-      grid-template-columns: 1.8rem minmax(0, 1fr);
-      gap: 0.65rem;
-      align-items: start;
-      line-height: 1.55;
-      counter-increment: learning-item;
-    }
-
-    .learning-list li::before {
-      content: "0" counter(learning-item);
-      color: var(--teal);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .learning-panel:nth-child(2) .learning-list li::before {
-      color: var(--coral);
-    }
-
-    .interest-box {
-      display: grid;
-      gap: 1.2rem;
-      padding: 2.4rem;
-      border: 2px solid var(--teal);
-      background: var(--teal-soft);
-    }
-
-    .interest-box .quote {
-      max-width: 31ch;
-      font-size: 2.2rem;
-      line-height: 1.45;
-      font-weight: 850;
-    }
-
-    .scope-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .scope {
-      padding: 1.4rem;
-      border-top: 6px solid var(--scope-color, var(--teal));
-      background: var(--paper-strong);
-    }
-
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+    .learning-panel { padding: 1.6rem; border-top: 7px solid var(--teal); background: var(--teal-soft); }
+    .learning-panel.coral { border-color: var(--coral); background: var(--coral-soft); }
+    .learning-panel.blue-panel { border-color: var(--blue); background: var(--blue-soft); }
+    .learning-panel .label { display: block; margin-bottom: 0.75rem; color: var(--muted); font: 600 0.72rem var(--mono); }
+    .learning-panel h3 { margin-bottom: 0.8rem; font-size: 1.42rem; }
+    .learning-list { display: grid; gap: 0.7rem; margin: 0; padding: 0; list-style: none; counter-reset: item; }
+    .learning-list li { display: grid; grid-template-columns: 1.7rem minmax(0, 1fr); gap: 0.6rem; line-height: 1.5; counter-increment: item; }
+    .learning-list li::before { content: "0" counter(item); color: var(--teal); font: 700 0.7rem var(--mono); }
+    .coral .learning-list li::before { color: var(--coral); }
+    .command { margin-top: 1rem; padding: 1rem; overflow-wrap: anywhere; background: var(--code); color: var(--code-text); font: 0.82rem/1.65 var(--mono); }
+    .trait-table { width: 100%; border-collapse: collapse; border-top: 3px solid var(--ink); background: var(--surface); table-layout: fixed; }
+    .trait-table th, .trait-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .trait-table th { color: var(--muted); font: 600 0.7rem var(--mono); }
+    .trait-table td { font-size: 0.84rem; line-height: 1.52; }
+    .trait-table td:first-child { width: 18%; color: var(--teal); font: 600 0.82rem var(--mono); }
+    .trait-table td:nth-child(2) { width: 31%; font-family: var(--mono); }
+    .criteria-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .criterion { display: grid; grid-template-columns: 3.6rem minmax(0, 1fr); gap: 1rem; padding: 1.35rem; border: 1px solid var(--line); border-top: 6px solid var(--item-color, var(--teal)); background: var(--surface); }
+    .criterion:nth-child(2) { --item-color: var(--coral); }
+    .criterion:nth-child(3) { --item-color: var(--blue); }
+    .criterion:nth-child(4) { --item-color: var(--yellow); }
+    .criterion .code { color: var(--item-color, var(--teal)); font: 700 0.74rem var(--mono); }
+    .criterion h3 { margin-bottom: 0.35rem; font-size: 1.04rem; }
+    .criterion p { color: var(--muted); font-size: 0.84rem; line-height: 1.52; }
+    .landscape-table { width: 100%; border-collapse: collapse; border-top: 3px solid var(--ink); background: var(--surface); table-layout: fixed; }
+    .landscape-table th, .landscape-table td { padding: 0.78rem 0.9rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    .landscape-table th { color: var(--muted); font: 600 0.7rem var(--mono); }
+    .landscape-table td { font-size: 0.82rem; line-height: 1.45; }
+    .landscape-table td:first-child { width: 22%; color: var(--blue); font-weight: 800; }
+    .landscape-table td:nth-child(2) { width: 44%; font-family: var(--mono); }
+    .tag { display: inline-flex; min-height: 1.7rem; align-items: center; padding: 0.2rem 0.55rem; border-radius: 999px; background: var(--teal-soft); color: var(--teal); font: 700 0.66rem var(--mono); white-space: nowrap; }
+    .interest-box { display: grid; gap: 1.1rem; padding: 2.1rem; border: 2px solid var(--teal); background: var(--teal-soft); }
+    .interest-box .quote { max-width: 30ch; font-size: 2rem; line-height: 1.42; font-weight: 850; }
+    .scope-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .scope { padding: 1.3rem; border-top: 6px solid var(--scope-color, var(--teal)); background: var(--surface); }
     .scope:nth-child(2) { --scope-color: var(--coral); }
     .scope:nth-child(3) { --scope-color: var(--blue); }
-
-    .scope span {
-      display: block;
-      margin-bottom: 0.7rem;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-    }
-
-    .scope p {
-      font-size: 1rem;
-      line-height: 1.55;
-      font-weight: 650;
-    }
-
-    .evidence-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      border-top: 3px solid var(--ink);
-      background: var(--paper-strong);
-    }
-
-    .evidence-card {
-      min-height: 9.5rem;
-      padding: 1.35rem;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .evidence-card:last-child {
-      border-right: 0;
-    }
-
-    .evidence-card strong {
-      display: block;
-      margin-bottom: 0.45rem;
-      color: var(--teal);
-      font-family: var(--font-mono);
-      font-size: 2rem;
-    }
-
-    .evidence-card b {
-      display: block;
-      margin-bottom: 0.45rem;
-      font-size: 1rem;
-    }
-
-    .evidence-card span {
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.55;
-    }
-
-    .criteria-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .criterion {
-      display: grid;
-      grid-template-columns: 4.4rem minmax(0, 1fr);
-      gap: 1.1rem;
-      align-items: start;
-      padding: 1.45rem;
-      border: 1px solid var(--line);
-      border-top: 6px solid var(--criterion-color, var(--teal));
-      background: var(--paper-strong);
-    }
-
-    .criterion:nth-child(2) { --criterion-color: var(--coral); }
-    .criterion:nth-child(3) { --criterion-color: var(--blue); }
-    .criterion:nth-child(4) { --criterion-color: var(--yellow); }
-
-    .criterion .code {
-      color: var(--criterion-color, var(--teal));
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-
-    .criterion h3 {
-      margin-bottom: 0.4rem;
-      font-size: 1.08rem;
-    }
-
-    .criterion p {
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.55;
-    }
-
-    .track-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0;
-      border-top: 3px solid var(--ink);
-    }
-
-    .track {
-      min-height: 14rem;
-      padding: 1.45rem 1.2rem;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: var(--paper-strong);
-    }
-
-    .track:last-child {
-      border-right: 0;
-    }
-
-    .track .level {
-      display: inline-block;
-      margin-bottom: 1.1rem;
-      padding: 0.25rem 0.55rem;
-      border-radius: 999px;
-      color: var(--blue);
-      background: var(--blue-soft);
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 700;
-    }
-
-    .track:nth-child(3) .level,
-    .track:nth-child(4) .level {
-      color: #7a3b2e;
-      background: var(--coral-soft);
-    }
-
-    .track h3 {
-      margin-bottom: 0.65rem;
-      font-size: 1.12rem;
-    }
-
-    .track p {
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.6;
-    }
-
-    .candidate-table {
-      width: 100%;
-      border-collapse: collapse;
-      border-top: 3px solid var(--ink);
-      background: var(--paper-strong);
-      table-layout: fixed;
-    }
-
-    .candidate-table th,
-    .candidate-table td {
-      padding: 0.72rem 0.85rem;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: middle;
-      overflow-wrap: anywhere;
-    }
-
-    .candidate-table th {
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 600;
-    }
-
-    .candidate-table td {
-      font-size: 0.78rem;
-      line-height: 1.45;
-    }
-
-    .candidate-table td:first-child {
-      width: 26%;
-      font-weight: 750;
-    }
-
-    .candidate-table tr.recommended {
-      background: var(--teal-soft);
-    }
-
-    .score,
-    .state-tag {
-      display: inline-flex;
-      align-items: center;
-      min-height: 1.65rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .score.easy { color: var(--green); background: #dcefe2; }
-    .score.mid { color: #755300; background: var(--yellow-soft); }
-    .score.hard { color: #7a3b2e; background: var(--coral-soft); }
-    .state-tag { color: var(--blue); background: var(--blue-soft); }
-    .state-tag.focus { color: var(--green); background: #dcefe2; }
-
-    .focus-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      gap: 2rem;
-      align-items: stretch;
-    }
-
-    .issue-sheet {
-      display: grid;
-      align-content: start;
-      gap: 1rem;
-      padding: 1.7rem;
-      border: 1px solid var(--line);
-      border-top: 8px solid var(--teal);
-      background: var(--paper-strong);
-    }
-
-    .issue-sheet .issue-id {
-      color: var(--teal);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    .issue-sheet h3 {
-      font-size: 1.5rem;
-    }
-
-    .issue-sheet code {
-      padding: 0.9rem;
-      background: var(--code);
-      color: var(--code-text);
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      overflow-wrap: anywhere;
-    }
-
-    .reason-list {
-      display: grid;
-      gap: 0;
-      margin: 0;
-      padding: 0;
-      border-top: 1px solid var(--line);
-      list-style: none;
-    }
-
-    .reason-list li {
-      display: grid;
-      grid-template-columns: 1.5rem minmax(0, 1fr);
-      gap: 0.75rem;
-      padding: 0.8rem 0;
-      border-bottom: 1px solid var(--line);
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .reason-list li::before {
-      content: "✓";
-      color: var(--teal);
-      font-weight: 900;
-    }
-
-    .file-flow {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0.8rem;
-    }
-
-    .file-node {
-      position: relative;
-      min-height: 12rem;
-      padding: 1.3rem;
-      border: 1px solid var(--line);
-      border-top: 6px solid var(--node-color, var(--teal));
-      background: var(--paper-strong);
-    }
-
-    .file-node:nth-child(2) { --node-color: var(--blue); }
-    .file-node:nth-child(3) { --node-color: var(--yellow); }
-    .file-node:nth-child(4) { --node-color: var(--coral); }
-
-    .file-node:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      z-index: 2;
-      top: 50%;
-      right: -1rem;
-      width: 1.2rem;
-      display: grid;
-      place-items: center;
-      color: var(--ink);
-      background: var(--paper);
-      font-family: var(--font-mono);
-      font-weight: 700;
-    }
-
-    .file-node span {
-      display: block;
-      margin-bottom: 0.75rem;
-      color: var(--node-color, var(--teal));
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      font-weight: 700;
-    }
-
-    .file-node code {
-      display: block;
-      margin-bottom: 0.75rem;
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      line-height: 1.55;
-      overflow-wrap: anywhere;
-    }
-
-    .file-node p {
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.5;
-    }
-
-    .path-compare {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .path-row {
-      display: grid;
-      grid-template-columns: 8rem minmax(0, 1fr);
-      gap: 1.2rem;
-      align-items: stretch;
-    }
-
-    .path-label {
-      display: grid;
-      place-items: center;
-      padding: 1rem;
-      color: white;
-      background: var(--path-color, var(--blue));
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .path-steps {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      border: 1px solid var(--line);
-      background: var(--paper-strong);
-    }
-
-    .path-step {
-      position: relative;
-      display: grid;
-      place-items: center;
-      min-height: 6.5rem;
-      padding: 0.9rem 0.55rem;
-      border-right: 1px solid var(--line);
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .path-step:last-child {
-      border-right: 0;
-    }
-
-    .path-step.skip {
-      color: var(--muted);
-      background: #eceae4;
-      text-decoration: line-through;
-    }
-
-    .guardrail-grid,
-    .report-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .guardrail,
-    .report-item {
-      padding: 1.4rem;
-      border-top: 6px solid var(--item-color, var(--teal));
-      background: var(--paper-strong);
-    }
-
-    .guardrail:nth-child(2),
-    .report-item:nth-child(2) { --item-color: var(--blue); }
-    .guardrail:nth-child(3),
-    .report-item:nth-child(3) { --item-color: var(--coral); }
-
-    .guardrail span,
-    .report-item span {
-      display: block;
-      margin-bottom: 0.7rem;
-      color: var(--item-color, var(--teal));
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-
-    .guardrail h3,
-    .report-item h3 {
-      margin-bottom: 0.55rem;
-      font-size: 1.05rem;
-    }
-
-    .guardrail p,
-    .report-item p {
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.55;
-    }
-
-    .roadmap {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0;
-      border-top: 3px solid var(--ink);
-    }
-
-    .roadmap-step {
-      min-height: 12rem;
-      padding: 1.35rem 1.1rem;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: var(--paper-strong);
-    }
-
-    .roadmap-step:last-child {
-      border-right: 0;
-    }
-
-    .roadmap-step .day {
-      color: var(--coral);
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 600;
-    }
-
-    .roadmap-step h3 {
-      margin: 0.7rem 0;
-      font-size: 1rem;
-    }
-
-    .roadmap-step p {
-      color: var(--muted);
-      font-size: 0.8rem;
-      line-height: 1.55;
-    }
-
-    .decision {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-      gap: 3.5rem;
-      align-items: end;
-    }
-
-    .decision-copy {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    .decision-copy h2 {
-      max-width: 14ch;
-      font-size: 4rem;
-    }
-
-    .decision-points {
-      display: grid;
-      gap: 0;
-      border-top: 3px solid var(--ink);
-    }
-
-    .decision-points p {
-      display: grid;
-      grid-template-columns: 2rem minmax(0, 1fr);
-      gap: 0.8rem;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--line);
-      line-height: 1.55;
-    }
-
-    .decision-points b {
-      color: var(--teal);
-      font-family: var(--font-mono);
-    }
-
-    .qr-panel {
-      display: grid;
-      justify-items: center;
-      gap: 1rem;
-      padding: 1.5rem;
-      border: 1px solid var(--line);
-      background: var(--paper-strong);
-    }
-
-    #qrcode {
-      width: 190px;
-      min-height: 190px;
-      display: grid;
-      place-items: center;
-    }
-
-    #qrcode img,
-    #qrcode canvas {
-      width: 190px;
-      height: 190px;
-    }
-
-    .qr-panel a {
-      color: var(--blue);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      text-align: center;
-      overflow-wrap: anywhere;
-    }
-
-    .notes {
-      display: none;
-    }
-
-    .speaker-panel {
-      position: fixed;
-      z-index: 90;
-      right: 1rem;
-      bottom: 5.25rem;
-      width: min(440px, calc(100vw - 2rem));
-      max-height: 45svh;
-      overflow: auto;
-      padding: 1.2rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 253, 248, 0.98);
-      box-shadow: var(--shadow);
-      display: none;
-    }
-
-    .speaker-panel.open {
-      display: block;
-    }
-
-    .speaker-panel h3 {
-      margin-bottom: 0.65rem;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--teal);
-    }
-
-    .speaker-panel p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.75;
-    }
-
-    .controls {
-      position: fixed;
-      z-index: 100;
-      right: 1rem;
-      bottom: 1rem;
-      display: flex;
-      gap: 0.45rem;
-      align-items: center;
-      padding: 0.45rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 253, 248, 0.94);
-      box-shadow: 0 8px 24px rgba(23, 25, 29, 0.1);
-      backdrop-filter: blur(12px);
-    }
-
-    .control-button {
-      width: 2.7rem;
-      height: 2.7rem;
-      display: grid;
-      place-items: center;
-      border: 0;
-      border-radius: 6px;
-      color: var(--ink);
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .control-button:hover,
-    .control-button.active {
-      color: white;
-      background: var(--teal);
-    }
-
-    .control-button:disabled {
-      cursor: default;
-      opacity: 0.28;
-    }
-
-    .control-button svg {
-      width: 1.2rem;
-      height: 1.2rem;
-    }
-
-    .counter {
-      min-width: 4.4rem;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 0.74rem;
-      text-align: center;
-    }
-
-    .progress {
-      position: fixed;
-      z-index: 101;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: rgba(23, 25, 29, 0.08);
-    }
-
-    .progress-bar {
-      width: 0;
-      height: 100%;
-      background: var(--coral);
-      transition: width 220ms ease;
-    }
-
-    .overview {
-      position: fixed;
-      z-index: 95;
-      inset: 0;
-      padding: 4rem;
-      overflow: auto;
-      background: rgba(23, 25, 29, 0.95);
-      display: none;
-    }
-
-    .overview.open {
-      display: block;
-    }
-
-    .overview-grid {
-      width: min(1200px, 100%);
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .overview-item {
-      min-height: 11rem;
-      padding: 1.2rem;
-      border: 1px solid #454b55;
-      border-radius: var(--radius);
-      color: white;
-      background: #22262d;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .overview-item:hover {
-      border-color: #7ed8ca;
-      background: #2a3038;
-    }
-
-    .overview-item span {
-      display: block;
-      margin-bottom: 0.7rem;
-      color: #7ed8ca;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-    }
-
-    .overview-item strong {
-      font-size: 1rem;
-      line-height: 1.5;
-    }
+    .scope span { display: block; margin-bottom: 0.55rem; color: var(--scope-color, var(--teal)); font: 700 0.7rem var(--mono); }
+    .scope p { font-size: 0.92rem; line-height: 1.55; font-weight: 650; }
+    .contrast { display: grid; grid-template-columns: 1fr 5rem 1fr; align-items: stretch; }
+    .contrast-panel { padding: 1.8rem; border-top: 7px solid var(--blue); background: var(--blue-soft); }
+    .contrast-panel.storage-focus { border-color: var(--teal); background: var(--teal-soft); }
+    .contrast-panel span { display: block; margin-bottom: 0.75rem; color: var(--muted); font: 600 0.72rem var(--mono); }
+    .contrast-panel h3 { margin-bottom: 0.85rem; font-size: 1.5rem; }
+    .contrast-panel p { line-height: 1.65; }
+    .contrast-join { display: grid; place-items: center; color: var(--coral); font: 800 1.8rem var(--mono); }
+    .track-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 3px solid var(--ink); }
+    .track { min-height: 13rem; padding: 1.35rem 1.15rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+    .track:last-child { border-right: 0; }
+    .track .level { display: inline-block; margin-bottom: 0.9rem; padding: 0.24rem 0.5rem; border-radius: 999px; color: var(--blue); background: var(--blue-soft); font: 700 0.66rem var(--mono); }
+    .track:nth-child(3) .level, .track:nth-child(4) .level { color: #7a3b2e; background: var(--coral-soft); }
+    .track h3 { margin-bottom: 0.55rem; font-size: 1.05rem; }
+    .track p { color: var(--muted); font-size: 0.8rem; line-height: 1.58; }
+    .experiment-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; }
+    .experiment-step { position: relative; min-height: 11rem; padding: 1.25rem; border: 1px solid var(--line); border-top: 6px solid var(--node-color, var(--teal)); background: var(--surface); }
+    .experiment-step:nth-child(2) { --node-color: var(--blue); }
+    .experiment-step:nth-child(3) { --node-color: var(--yellow); }
+    .experiment-step:nth-child(4) { --node-color: var(--coral); }
+    .experiment-step:not(:last-child)::after { content: "→"; position: absolute; z-index: 2; top: 50%; right: -1rem; width: 1.2rem; display: grid; place-items: center; background: var(--paper); font: 700 0.9rem var(--mono); }
+    .experiment-step span { display: block; margin-bottom: 0.7rem; color: var(--node-color, var(--teal)); font: 700 0.68rem var(--mono); }
+    .experiment-step h3 { margin-bottom: 0.55rem; font-size: 1.05rem; }
+    .experiment-step p { color: var(--muted); font-size: 0.8rem; line-height: 1.52; }
+    .decision { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr); gap: 3.5rem; align-items: end; }
+    .decision-copy { display: grid; gap: 1.4rem; }
+    .decision-copy h2 { max-width: 15ch; font-size: 3.8rem; }
+    .decision-points { display: grid; border-top: 3px solid var(--ink); }
+    .decision-points p { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 0.8rem; padding: 0.9rem 0; border-bottom: 1px solid var(--line); line-height: 1.5; }
+    .decision-points b { color: var(--teal); font-family: var(--mono); }
+    .qr-panel { display: grid; justify-items: center; gap: 0.9rem; padding: 1.4rem; border: 1px solid var(--line); background: var(--surface); }
+    #qrcode { width: 176px; min-height: 176px; display: grid; place-items: center; }
+    #qrcode img, #qrcode canvas { width: 176px; height: 176px; }
+    .qr-panel a { color: var(--blue); font: 0.7rem var(--mono); text-align: center; overflow-wrap: anywhere; }
+    .notes { display: none; }
+    .progress { position: fixed; z-index: 101; top: 0; left: 0; width: 100%; height: 5px; background: rgba(23, 25, 29, 0.08); }
+    .progress-bar { width: 0; height: 100%; background: var(--coral); transition: width 220ms ease; }
+    .controls { position: fixed; z-index: 100; right: 1rem; bottom: 1rem; display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255, 253, 248, 0.95); box-shadow: 0 8px 24px rgba(23, 25, 29, 0.1); backdrop-filter: blur(12px); }
+    .control-button { width: 2.65rem; height: 2.65rem; display: grid; place-items: center; border: 0; border-radius: 6px; color: var(--ink); background: transparent; cursor: pointer; text-decoration: none; }
+    .control-button:hover, .control-button.active { color: white; background: var(--teal); }
+    .control-button:disabled { cursor: default; opacity: 0.28; }
+    .control-button svg { width: 1.18rem; height: 1.18rem; }
+    .counter { min-width: 4.3rem; color: var(--muted); font: 0.72rem var(--mono); text-align: center; }
+    .speaker-panel { position: fixed; z-index: 90; right: 1rem; bottom: 5.15rem; width: min(460px, calc(100vw - 2rem)); max-height: 48svh; display: none; overflow: auto; padding: 1.15rem; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255, 253, 248, 0.98); box-shadow: var(--shadow); }
+    .speaker-panel.open { display: block; }
+    .speaker-panel h3 { margin-bottom: 0.6rem; color: var(--teal); font: 600 0.76rem var(--mono); }
+    .speaker-panel p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; white-space: pre-line; }
+    .overview { position: fixed; z-index: 95; inset: 0; display: none; padding: 4rem; overflow: auto; background: rgba(23, 25, 29, 0.95); }
+    .overview.open { display: block; }
+    .overview-grid { width: min(1200px, 100%); margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .overview-item { min-height: 10rem; padding: 1.15rem; border: 1px solid #454b55; border-radius: var(--radius); color: white; background: #22262d; text-align: left; cursor: pointer; }
+    .overview-item:hover { border-color: #7ed8ca; background: #2a3038; }
+    .overview-item span { display: block; margin-bottom: 0.65rem; color: #7ed8ca; font: 0.68rem var(--mono); }
+    .overview-item strong { font-size: 0.98rem; line-height: 1.45; }
 
     @media (max-width: 1100px) {
-      :root {
-        --slide-pad-x: 3rem;
-        --slide-pad-y: 3.8rem;
-      }
-
+      :root { --slide-x: 3rem; --slide-y: 3.7rem; }
       h1 { font-size: 4rem; }
-      h2 { font-size: 2.8rem; }
+      h2 { font-size: 2.75rem; }
       .pipeline { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .stage:not(:last-child)::after { display: none; }
-      .track-grid,
-      .file-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .file-node::after { display: none !important; }
-      .roadmap { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .roadmap-step:nth-child(3) { border-right: 0; }
-      .roadmap-step:last-child { border-right: 1px solid var(--line); }
+      .stage:not(:last-child)::after, .experiment-step:not(:last-child)::after { display: none; }
+      .track-grid, .experiment-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-
     @media (max-width: 820px) {
-      :root {
-        --slide-pad-x: 1.3rem;
-        --slide-pad-y: 4rem;
-      }
-
-      .slide {
-        min-height: 100svh;
-        padding-bottom: 6.5rem;
-        overflow: visible;
-        scroll-snap-align: none;
-      }
-
-      .slide-inner {
-        min-height: auto;
-      }
-
-      html {
-        scroll-snap-type: none;
-      }
-
-      h1 { font-size: 3.25rem; }
-      h2 { font-size: 2.3rem; }
-      .lead { font-size: 1.05rem; }
-      .cover-grid,
-      .two-col,
-      .learning-layout,
-      .decision,
-      .focus-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
-
-      .query-hero code { font-size: 1.15rem; }
-      .question-mark { display: none; }
-      .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .experiment-grid,
-      .cause-map,
-      .scope-grid,
-      .criteria-grid,
-      .track-grid,
-      .file-flow,
-      .guardrail-grid,
-      .report-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .evidence-card:nth-child(2) { border-right: 0; }
-      .path-row { grid-template-columns: 1fr; }
-      .path-steps { grid-template-columns: 1fr; }
-      .path-step { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
-      .path-step:last-child { border-bottom: 0; }
-      .candidate-table { table-layout: auto; }
-      .boundary-note { grid-template-columns: 1fr; }
-      .test-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .test-metric:nth-child(2) { border-right: 0; }
-      .test-metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-      .error-lane { grid-template-columns: 1fr; }
-      .error-lane .error-name { text-align: left; }
-      .roadmap { grid-template-columns: 1fr; }
-      .roadmap-step { min-height: auto; border-right: 1px solid var(--line); }
-      .decision-copy h2 { font-size: 3rem; }
+      :root { --slide-x: 1.3rem; --slide-y: 4rem; }
+      html { scroll-snap-type: none; }
+      .slide { min-height: 100svh; padding-bottom: 6.2rem; overflow: visible; scroll-snap-align: none; }
+      .slide-inner { min-height: auto; }
+      h1 { font-size: 3.15rem; }
+      h2 { font-size: 2.25rem; }
+      .lead { font-size: 1.02rem; }
+      .cover-grid, .two-col, .decision { grid-template-columns: 1fr; gap: 2rem; }
+      .pipeline, .criteria-grid, .scope-grid, .track-grid, .experiment-flow { grid-template-columns: 1fr; }
+      .journey-row { grid-template-columns: 5.5rem minmax(0, 1fr); }
+      .journey-row span { grid-column: 2; text-align: left; }
+      .contrast { grid-template-columns: 1fr; }
+      .contrast-join { min-height: 3rem; }
       .overview { padding: 3.5rem 1rem 6rem; }
       .overview-grid { grid-template-columns: 1fr; }
       .controls { right: 0.7rem; bottom: 0.7rem; }
-      .control-button { width: 2.45rem; height: 2.45rem; }
-      .counter { min-width: 3.5rem; }
+      .landscape-table { table-layout: auto; }
     }
-
     @media (max-width: 520px) {
-      h1 { font-size: 2.55rem; }
-      h2 { font-size: 2rem; }
+      h1 { font-size: 2.5rem; }
+      h2 { font-size: 1.9rem; }
       .slide-number { top: 1.2rem; right: 1.2rem; }
-      .pipeline { grid-template-columns: 1fr; }
-      .parameter-table { font-size: 0.82rem; }
-      .parameter-table th,
-      .parameter-table td { padding: 0.8rem 0.55rem; }
-      .candidate-table th,
-      .candidate-table td { padding: 0.6rem 0.45rem; font-size: 0.68rem; }
-      .evidence-grid { grid-template-columns: 1fr; }
-      .evidence-card { border-right: 0; }
+      .storage-options { grid-template-columns: 1fr; }
+      .storage-option:first-child { border-right: 0; border-bottom: 1px solid #303741; }
       .criterion { grid-template-columns: 1fr; }
-      pre { font-size: 0.78rem; padding: 1rem; }
-      .interest-box { padding: 1.4rem; }
-      .interest-box .quote { font-size: 1.6rem; }
+      .trait-table th, .trait-table td, .landscape-table th, .landscape-table td { padding: 0.65rem 0.45rem; font-size: 0.68rem; }
+      .interest-box { padding: 1.35rem; }
+      .interest-box .quote { font-size: 1.55rem; }
+      .decision-copy h2 { font-size: 2.7rem; }
       .controls { display: none; }
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .progress-bar { transition: none; }
-    }
-
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .progress-bar { transition: none; } }
     @media print {
-      @page {
-        size: 16in 9in;
-        margin: 0;
-      }
-
-      html,
-      body {
-        background: white;
-        scroll-snap-type: none;
-      }
-
-      .slide {
-        min-height: 9in;
-        height: 9in;
-        width: 16in;
-        page-break-after: always;
-        break-after: page;
-        border: 0;
-      }
-
-      .controls,
-      .progress,
-      .overview,
-      .speaker-panel {
-        display: none !important;
-      }
+      @page { size: 16in 9in; margin: 0; }
+      html, body { background: white; scroll-snap-type: none; }
+      .slide { width: 16in; height: 9in; min-height: 9in; page-break-after: always; break-after: page; border: 0; }
+      .controls, .progress, .overview, .speaker-panel { display: none !important; }
     }
   </style>
 </head>
 <body>
-  <div class="progress" aria-hidden="true">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
 
   <main class="deck" id="deck">
     <section class="slide cover" data-title="표지">
       <span class="slide-number">01 / 12</span>
       <div class="slide-inner cover-grid">
         <div class="cover-copy">
-          <p class="kicker">GlueSQL · First Contribution Research</p>
-          <h1>초보자는 GlueSQL에 <span class="accent">어디서 기여</span>할 수 있을까?</h1>
-          <p class="lead">실행 경험을 근거로 후보를 비교하고, 첫 탐색 대상을 좁힌 과정</p>
-          <div class="cover-meta">
-            <span>2026.08.03</span>
-            <span>진현준</span>
-            <span>OSSCA 2026 · GlueSQL</span>
+          <p class="kicker">GlueSQL · Learning to Contribution</p>
+          <h1>GlueSQL에서 데이터는 <span class="accent">어디에 남을까?</span></h1>
+          <p class="lead">CLI 실습에서 Storage 관심 영역을 찾기까지</p>
+          <div class="cover-meta"><span>2026.08.03</span><span>진현준</span><span>OSSCA 2026 · GlueSQL</span></div>
+        </div>
+        <div class="storage-hero" aria-label="같은 SQL과 서로 다른 Storage">
+          <div class="storage-hero-head"><span>SAME SQL CORE</span><span>CHOOSE STORAGE</span></div>
+          <div class="storage-core">CREATE · INSERT · SELECT · UPDATE · DELETE</div>
+          <div class="storage-options">
+            <div class="storage-option"><strong>Memory</strong><span>프로세스가 끝나면 데이터도 끝난다</span></div>
+            <div class="storage-option"><strong>Sled</strong><span>지정 경로에 남아 다음 실행으로 이어진다</span></div>
           </div>
         </div>
-        <div class="query-hero" aria-label="첫 탐색 후보 코드">
-          <code>values(vec![
-  "1, 'Jin'",
-  "2, 'GlueSQL'"
-])
-.<span class="arg">execute</span>(&amp;mut glue);</code>
-          <span class="question-mark">?</span>
-        </div>
       </div>
-      <aside class="notes">처음에는 무엇에 기여할지 몰랐습니다. 이번 발표에서는 그 상태에서 멈추지 않고, 제가 실제로 실행한 것에서 기준을 만들고 GitHub 후보를 비교해 첫 탐색 대상을 좁힌 과정을 말씀드리겠습니다. 오늘 특정 이슈를 맡겠다고 선언하는 발표는 아닙니다.</aside>
+      <aside class="notes">안녕하세요, 진현준입니다. 저는 지금까지 GlueSQL의 SQL 실행 흐름을 따라가며 CLI로 직접 데이터를 만들고 조회했습니다. 그 과정에서 같은 SQL을 실행해도 어떤 Storage를 선택하느냐에 따라 데이터가 남는 방식이 달라진다는 점이 가장 궁금해졌습니다. 오늘은 무엇을 배웠는지, 왜 Storage에 관심을 갖게 되었는지, 그 관심을 어떤 기여 방식으로 발전시키고 싶은지 말씀드리겠습니다.</aside>
     </section>
 
-    <section class="slide" data-title="현재까지 만든 근거">
+    <section class="slide" data-title="지금까지 한 일">
       <span class="slide-number">02 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">01 · Evidence, Not Guesswork</p>
-          <h2>막막함을 줄인 것은 <span class="teal">직접 실행한 기록</span>이었다</h2>
-          <p class="lead">기여 분야를 먼저 정하기보다, CLI·Storage·코드·테스트를 한 번씩 통과하며 판단 재료를 만들었습니다.</p>
+          <p class="kicker">01 · What I Explored</p>
+          <h2>문서를 읽는 데서 멈추지 않고 <span class="teal">직접 실행했다</span></h2>
+          <p class="lead">환경 구축부터 CLI, Storage 재실행, Core 테스트까지 한 단계씩 확인했습니다.</p>
         </div>
-        <div class="evidence-grid">
-          <article class="evidence-card">
-            <strong>2</strong>
-            <b>Storage 비교</b>
-            <span>Memory는 종료 시 소멸, Sled는 지정 경로에서 재시작 후에도 유지</span>
-          </article>
-          <article class="evidence-card">
-            <strong>5</strong>
-            <b>SQL 동작</b>
-            <span>CREATE·INSERT·SELECT·UPDATE·DELETE를 CLI에서 직접 검증</span>
-          </article>
-          <article class="evidence-card">
-            <strong>515</strong>
-            <b>Core 테스트 통과</b>
-            <span>로컬 table function 인자 실험과 관련 검증 완료</span>
-          </article>
-          <article class="evidence-card">
-            <strong>196</strong>
-            <b>Fixture 통과</b>
-            <span>MemoryStorage 기준 공통 SQL fixture가 모두 통과</span>
-          </article>
+        <div class="journey">
+          <div class="journey-row"><strong>START</strong><p>Rust와 Cargo 환경을 구축하고 GlueSQL 예제를 컴파일</p><span>BUILD</span></div>
+          <div class="journey-row"><strong>SQL</strong><p>CLI에서 CREATE, INSERT, SELECT, UPDATE, DELETE를 실행</p><span>CRUD</span></div>
+          <div class="journey-row"><strong>STORAGE</strong><p>Memory와 Sled로 같은 테이블의 재실행 결과를 비교</p><span>LIFECYCLE</span></div>
+          <div class="journey-row"><strong>CODE</strong><p>Translator의 table function 인자 처리와 관련 테스트를 추적</p><span>READ + TEST</span></div>
         </div>
-        <div class="statement">로컬 <code class="mono">args</code> 실험은 기여 주제가 아니라, <span class="accent">코드를 읽고 테스트하는 방법을 익힌 증거</span>로 남긴다.</div>
+        <div class="statement">이 과정의 결과는 아직 PR이 아니라, <span class="accent">GlueSQL을 질문할 수 있게 된 기반</span>이다.</div>
       </div>
-      <aside class="notes">제가 한 일은 단순 SQL 연습에서 끝나지 않았습니다. Memory와 Sled의 생명주기를 비교했고, CRUD를 실행했고, table function 인자 경계를 로컬에서 수정해 관련 테스트와 Clippy까지 통과했습니다. 이 실험을 PR로 바로 내지는 않지만, 다음 후보를 판단할 수 있는 기반이 됐습니다.</aside>
+      <aside class="notes">처음에는 Rust 프로젝트를 어떻게 실행하는지도 낯설었습니다. Rust와 Cargo 환경을 준비한 뒤 CLI에서 기본 CRUD를 실행했고, MemoryStorage와 SledStorage를 바꿔 재실행 결과도 비교했습니다. 최근에는 Translator의 table function 인자 처리를 읽고 관련 테스트를 실행했습니다. 아직 upstream PR은 없지만, 이제는 동작을 재현하고 코드 위치를 찾아 질문할 수 있는 단계까지 왔습니다.</aside>
     </section>
 
-    <section class="slide" data-title="첫 이슈의 기준">
+    <section class="slide" data-title="배운 실행 흐름">
       <span class="slide-number">03 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">02 · Selection Criteria</p>
-          <h2>“쉬워 보인다”보다 중요한 <span class="blue">네 가지 기준</span></h2>
-          <p class="lead">초보자의 첫 기여는 코드 줄 수가 아니라 재현성, 범위, 선례, 중복 여부로 판단해야 했습니다.</p>
+          <p class="kicker">02 · What I Learned</p>
+          <h2>SQL 한 줄은 <span class="blue">역할이 나뉜 단계</span>를 통과한다</h2>
+          <p class="lead">Core는 SQL을 실행 가능한 계획으로 바꾸고, 선택된 Storage의 계약을 통해 데이터를 읽거나 바꿉니다.</p>
         </div>
-        <div class="criteria-grid">
-          <article class="criterion">
-            <span class="code">01</span>
-            <div><h3>직접 재현 가능한가</h3><p>CLI나 기존 테스트로 현재 동작과 기대 결과를 확인할 수 있어야 합니다.</p></div>
-          </article>
-          <article class="criterion">
-            <span class="code">02</span>
-            <div><h3>변경 범위가 작은가</h3><p>파일 수와 책임 경계를 설명할 수 있는 크기로 시작합니다.</p></div>
-          </article>
-          <article class="criterion">
-            <span class="code">03</span>
-            <div><h3>따라갈 선례가 있는가</h3><p>비슷한 테스트나 문서가 있어 프로젝트 방식을 배울 수 있어야 합니다.</p></div>
-          </article>
-          <article class="criterion">
-            <span class="code">04</span>
-            <div><h3>다른 작업과 겹치지 않는가</h3><p>Assignee, 댓글, 연결 PR, 같은 파일을 만지는 활성 PR을 확인합니다.</p></div>
-          </article>
+        <div class="pipeline" aria-label="GlueSQL 실행 흐름">
+          <div class="stage"><span class="index">INPUT</span><b>SQL</b><small>사용자가 전달한 문자열</small></div>
+          <div class="stage parser"><span class="index">01</span><b>Parser</b><small>SQL을 AST로 구조화</small></div>
+          <div class="stage translator"><span class="index">02</span><b>Translator</b><small>AST를 GlueSQL 문장으로 변환</small></div>
+          <div class="stage planner"><span class="index">03</span><b>Planner</b><small>Storage와 실행할 계획 생성</small></div>
+          <div class="stage executor"><span class="index">04</span><b>Executor</b><small>계획에 따라 연산 수행</small></div>
+          <div class="stage storage"><span class="index">05</span><b>Storage</b><small>스키마와 행을 제공·변경</small></div>
+          <div class="stage"><span class="index">OUTPUT</span><b>Payload</b><small>조회 결과나 변경 건수 반환</small></div>
         </div>
+        <div class="statement">Storage는 SELECT 결과를 쌓는 곳이 아니라, <span class="teal">실행 중 읽고 변경하는 원본 데이터 계층</span>이다.</div>
       </div>
-      <aside class="notes">good first issue 라벨만 보고 고르면 이미 누군가 진행 의사를 남겼거나 실제 구현 범위가 넓을 수 있습니다. 그래서 제가 직접 재현할 수 있는지, 변경 파일을 설명할 수 있는지, 기존 예제가 있는지, 현재 누가 작업 중인지 네 가지를 기준으로 삼았습니다.</aside>
+      <aside class="notes">제가 이해한 전체 흐름은 SQL, Parser, Translator, Planner, Executor, Storage, Payload입니다. 여기서 중요한 수정은 Storage를 SELECT 결과 보관소로 이해하지 않는 것입니다. Storage는 스키마와 원본 행을 제공하고 INSERT나 UPDATE 같은 변경을 반영합니다. 실행 결과는 Payload로 호출자에게 돌아갑니다.
+
+[Sources] https://github.com/gluesql/gluesql/blob/main/core/src/glue.rs · https://github.com/gluesql/gluesql/blob/main/core/src/store.rs</aside>
     </section>
 
-    <section class="slide" data-title="기여 난이도 지도">
+    <section class="slide" data-title="관심이 생긴 순간">
       <span class="slide-number">04 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">03 · Contribution Landscape</p>
-          <h2>GlueSQL 기여는 한 종류가 아니라 <span class="teal">난이도 경사</span>가 있다</h2>
-          <p class="lead">첫 PR은 가장 왼쪽에서 시작해도 충분합니다. 중요한 것은 테스트와 문서가 실제 코드 동작을 근거로 한다는 점입니다.</p>
+          <p class="kicker">03 · The Turning Point</p>
+          <h2>같은 SQL인데 <span class="accent">재실행 결과가 달랐다</span></h2>
+          <p class="lead">테이블이 사라진 경험이 Storage를 더 알고 싶은 구체적인 계기가 됐습니다.</p>
         </div>
-        <div class="track-grid">
-          <article class="track">
-            <span class="level">ENTRY 1</span>
-            <h3>문서 보완</h3>
-            <p>현재 Todo 페이지를 실제 API와 테스트 결과에 맞게 설명합니다.</p>
+        <div class="two-col">
+          <article class="learning-panel coral">
+            <span class="label">MEMORY STORAGE</span>
+            <h3>프로세스를 종료하자 테이블이 사라졌다</h3>
+            <ul class="learning-list"><li>별도 경로 없이 바로 실행</li><li>CLI 프로세스의 메모리에만 존재</li><li>새 프로세스는 새 Storage로 시작</li></ul>
+            <div class="command">cargo run --locked -p gluesql-cli</div>
           </article>
-          <article class="track">
-            <span class="level">ENTRY 2</span>
-            <h3>테스트·예제 추가</h3>
-            <p>기존 패턴을 따라 지원 동작과 오류 경계를 실행 가능한 사례로 남깁니다.</p>
-          </article>
-          <article class="track">
-            <span class="level">ENTRY 3</span>
-            <h3>Fixture 도구 개선</h3>
-            <p>테스트 문법, assertion, parser 규칙과 호환성을 함께 다룹니다.</p>
-          </article>
-          <article class="track">
-            <span class="level">ENTRY 4</span>
-            <h3>Core 기능 변경</h3>
-            <p>Translator·Planner·Executor의 계약과 여러 Storage에 미치는 영향을 검증합니다.</p>
+          <article class="learning-panel">
+            <span class="label">SLED STORAGE</span>
+            <h3>같은 경로로 다시 열자 데이터가 남아 있었다</h3>
+            <ul class="learning-list"><li><span><code>--storage sled</code>로 구현 선택</span></li><li><span><code>--path</code>로 데이터 위치 지정</span></li><li><span>종료 후 같은 경로에서 다시 조회</span></li></ul>
+            <div class="command">cargo run --locked -p gluesql-cli -- --storage sled --path .codex-local/study-sled</div>
           </article>
         </div>
-        <div class="statement">문서와 테스트는 코어보다 덜 중요한 일이 아니라, <span class="teal">동작을 이해했다는 검증 가능한 결과</span>다.</div>
+        <div class="statement">컴파일 결과인 <code>target/</code>과 실제 DB 데이터는 <span class="accent">서로 다른 생명주기</span>를 가진다.</div>
       </div>
-      <aside class="notes">GlueSQL에는 문서, 테스트, fixture 도구, 코어 기능처럼 여러 기여 층이 있습니다. 초보자에게 문서와 테스트가 좋은 이유는 쉬워서만이 아닙니다. 구현을 읽고 실제 결과를 확인해야 정확하게 쓸 수 있기 때문에 구조를 배우는 입구가 됩니다.</aside>
+      <aside class="notes">Storage에 관심을 갖게 된 직접적인 계기입니다. 기본 CLI는 MemoryStorage를 사용하므로 종료 뒤 다시 실행하면 새 인스턴스가 만들어집니다. 반면 SledStorage는 경로를 지정하고 같은 경로로 다시 열었을 때 데이터가 남았습니다. 이때 target 폴더의 실행 파일과 DB 데이터가 별개라는 점도 이해했습니다. 실행 파일을 다시 빌드해도 데이터 보존 여부는 Storage와 데이터 경로가 결정합니다.
+
+[Sources] https://github.com/gluesql/gluesql/blob/main/cli/src/lib.rs · https://github.com/gluesql/gluesql/tree/main/storages/sled-storage</aside>
     </section>
 
-    <section class="slide" data-title="후보 비교">
+    <section class="slide" data-title="Storage의 코드 계약">
       <span class="slide-number">05 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">04 · Live GitHub Review</p>
-          <h2>현재 열린 후보를 같은 기준으로 비교했다</h2>
-          <p class="lead">난이도만이 아니라 중복 위험과 결정이 필요한 범위까지 함께 봤습니다.</p>
+          <p class="kicker">04 · Storage Contract</p>
+          <h2>Core와 Storage는 <span class="teal">Rust trait</span>으로 연결된다</h2>
+          <p class="lead">Core는 특정 DB 파일 형식을 직접 알기보다, 필요한 동작을 인터페이스로 요청합니다.</p>
         </div>
-        <table class="candidate-table" aria-label="GlueSQL 초보 기여 후보 비교">
-          <thead>
-            <tr>
-              <th>후보</th>
-              <th>난이도</th>
-              <th>현재 상태</th>
-              <th>초보자 관점 판단</th>
-            </tr>
-          </thead>
+        <table class="trait-table" aria-label="GlueSQL Storage trait 역할">
+          <thead><tr><th>계약</th><th>대표 메서드</th><th>실행에서 하는 일</th></tr></thead>
           <tbody>
-            <tr class="recommended">
-              <td>#1676 Data Injection 문서+테스트</td>
-              <td><span class="score easy">2 / 5</span></td>
-              <td><span class="state-tag focus">첫 탐색</span></td>
-              <td>Todo와 기존 예제가 모두 있고 활성 관련 PR을 찾지 못함</td>
-            </tr>
-            <tr>
-              <td>#1408 Storage 지원 기능 표</td>
-              <td><span class="score mid">3 / 5</span></td>
-              <td><span class="state-tag">후속 문서</span></td>
-              <td>경험과 잘 맞지만 모든 Storage 검증 범위가 큼</td>
-            </tr>
-            <tr>
-              <td>#1946 빈 결과 type assertion</td>
-              <td><span class="score mid">3 / 5</span></td>
-              <td><span class="state-tag">설계 토론</span></td>
-              <td>코드보다 “무엇이 맞는 동작인가” 합의가 먼저 필요</td>
-            </tr>
-            <tr>
-              <td>#1947 fixture의 literal pipe</td>
-              <td><span class="score hard">4 / 5</span></td>
-              <td><span class="state-tag">후속 구현</span></td>
-              <td>escape 규칙과 이전 fixture 호환성을 함께 설계해야 함</td>
-            </tr>
-            <tr>
-              <td>#1011 LIKE ESCAPE</td>
-              <td><span class="score mid">3 / 5</span></td>
-              <td><span class="state-tag">보류</span></td>
-              <td>기존 참여 의사 댓글이 있어 중복 확인이 먼저 필요</td>
-            </tr>
+            <tr><td>Store</td><td>fetch_schema · fetch_data · scan_data</td><td>테이블 구조와 행을 읽어 SELECT에 필요한 데이터를 제공</td></tr>
+            <tr><td>StoreMut</td><td>append_data · insert_data · delete_data</td><td>INSERT, UPDATE, DELETE에서 행 변경을 Storage에 반영</td></tr>
+            <tr><td>GStore</td><td>Store + Index + Metadata + Function</td><td>조회에 필요한 여러 읽기 기능을 하나의 경계로 묶음</td></tr>
+            <tr><td>GStoreMut</td><td>StoreMut + AlterTable + Transaction + ...</td><td>쓰기, 스키마 변경, 트랜잭션 등 가변 기능을 묶음</td></tr>
           </tbody>
         </table>
+        <div class="statement">Storage를 바꿔도 SQL Core를 재사용할 수 있는 이유는 <span class="teal">구현보다 계약에 의존하기 때문</span>이다.</div>
       </div>
-      <aside class="notes">다섯 후보를 비교했습니다. Storage 표는 제 경험과 맞지만 전체 기능 확인이 큽니다. 1946은 동작 정책 합의가 먼저이고, 1947은 fixture parser 규칙을 바꿔야 합니다. 1011은 good first issue지만 기존 참여 의사가 있습니다. 그래서 첫 탐색은 1676의 Data Injection 한 항목으로 좁혔습니다.</aside>
+      <aside class="notes">코드에서는 core/src/store.rs가 핵심입니다. Store는 스키마와 데이터를 읽는 메서드를, StoreMut은 데이터를 추가하거나 삭제하는 메서드를 정의합니다. GStore와 GStoreMut은 Index, Metadata, Transaction 같은 여러 trait을 조합합니다. 각 Storage가 이 계약을 구현하기 때문에 Core는 Memory인지 Sled인지에 강하게 묶이지 않고 같은 SQL 실행 흐름을 재사용할 수 있습니다.
+
+[Sources] https://github.com/gluesql/gluesql/blob/main/core/src/store.rs</aside>
     </section>
 
-    <section class="slide" data-title="추천 후보">
+    <section class="slide" data-title="선택 기준">
       <span class="slide-number">06 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">05 · Recommended Exploration</p>
-          <h2>#1676 전체가 아니라 <span class="accent">Data Injection 하나</span></h2>
-          <p class="lead">큰 문서 이슈를 통째로 맡지 않고, 익숙한 <code class="mono">VALUES</code> 예제 한 묶음으로 범위를 제한합니다.</p>
+          <p class="kicker">05 · Why Choice Matters</p>
+          <h2>Storage 선택은 이름이 아니라 <span class="blue">요구사항의 조합</span>이다</h2>
+          <p class="lead">“무엇이 가장 좋은가?”보다 “이 상황에서 무엇이 필요한가?”를 먼저 물어야 합니다.</p>
         </div>
-        <div class="focus-grid">
-          <article class="issue-sheet">
-            <span class="issue-id">ISSUE #1676 · DOCUMENTATION</span>
-            <h3>Query Builder: Data Injection</h3>
-            <code>docs/docs/query-builder/statements/querying/data-injection.md</code>
-            <p class="lead">현재 내용은 제목과 <code class="mono">Todo</code>, <code class="mono">VALUES</code> 한 줄뿐입니다.</p>
-          </article>
-          <div class="stack">
-            <ul class="reason-list">
-              <li><span>CLI에서 이미 다뤄 본 값 입력과 결과 조회에 연결된다.</span></li>
-              <li><span><code class="mono">values.rs</code>와 기존 Query Builder 테스트가 선례를 제공한다.</span></li>
-              <li><span>문서와 테스트가 함께 움직이는 GlueSQL 방식을 배울 수 있다.</span></li>
-              <li><span>현재 이슈는 미할당이고 연결된 브랜치나 PR이 없다.</span></li>
-              <li><span>활성 문서 PR #1935는 Data Injection 페이지를 수정하지 않는다.</span></li>
-            </ul>
-            <div class="statement">추천은 “바로 구현”이 아니라 <span class="teal">Maintainer에게 이 하위 항목의 진행 가능 여부를 확인할 가치가 가장 높다</span>는 뜻이다.</div>
-          </div>
+        <div class="criteria-grid">
+          <article class="criterion"><span class="code">01</span><div><h3>데이터를 얼마나 오래 남길 것인가</h3><p>한 프로세스 안의 임시 데이터인지, 재시작 이후에도 보존할 데이터인지 구분합니다.</p></div></article>
+          <article class="criterion"><span class="code">02</span><div><h3>어디에서 실행할 것인가</h3><p>브라우저, 단일 로컬 앱, 여러 스레드, 외부 서비스 등 실행 환경을 봅니다.</p></div></article>
+          <article class="criterion"><span class="code">03</span><div><h3>어떤 형식과 연결할 것인가</h3><p>JSON, CSV, Parquet처럼 이미 존재하는 파일과 SQL을 연결할 필요가 있는지 봅니다.</p></div></article>
+          <article class="criterion"><span class="code">04</span><div><h3>어떤 기능을 보장해야 하는가</h3><p>인덱스, 트랜잭션, 스키마 변경처럼 필요한 trait과 실제 지원 범위를 확인합니다.</p></div></article>
         </div>
       </div>
-      <aside class="notes">1676에는 여러 Todo 문서가 묶여 있습니다. 저는 그중 Data Injection 하나만 봅니다. 현재 문서는 사실상 비어 있고, values 구현과 테스트가 이미 있어 읽을 선례가 있습니다. 이슈가 미할당이고 관련 PR도 없지만, 큰 이슈의 하위 항목이므로 먼저 댓글로 범위를 확인해야 합니다.</aside>
+      <aside class="notes">Storage를 선택할 때는 단순 속도 순위로 볼 수 없다고 생각합니다. 데이터가 재시작 후에도 남아야 하는지, 어디에서 실행할지, 기존 파일 형식과 연결해야 하는지, 인덱스나 트랜잭션 같은 기능이 필요한지를 함께 봐야 합니다. 이 기준별로 실제 구현과 테스트를 확인하는 것이 제 다음 학습 질문입니다.
+
+[Sources] https://gluesql.org/docs/latest/storages/</aside>
     </section>
 
-    <section class="slide" data-title="예상 변경 지도">
+    <section class="slide" data-title="Storage 지형">
       <span class="slide-number">07 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">06 · Small Change Map</p>
-          <h2>예상 범위를 <span class="blue">네 개의 파일 역할</span>로 설명할 수 있다</h2>
-          <p class="lead">아직 코드를 바꾸기 전이지만, 어디에 무엇을 추가해야 하는지는 기존 패턴으로 확인했습니다.</p>
+          <p class="kicker">06 · Storage Landscape</p>
+          <h2>저장 방식이 달라지면 <span class="teal">사용 장면도 달라진다</span></h2>
+          <p class="lead">현재 저장소에는 12개 Storage crate가 있고, CLI는 그중 7개를 직접 선택할 수 있습니다.</p>
         </div>
-        <div class="file-flow">
-          <article class="file-node">
-            <span>01 · NEW TEST</span>
-            <code>test-suite/src/query_builder/statements/querying/data_injection.rs</code>
-            <p><code class="mono">values(...).execute(glue)</code>의 입력과 Payload를 검증</p>
-          </article>
-          <article class="file-node">
-            <span>02 · MODULE</span>
-            <code>test-suite/src/query_builder/statements/querying.rs</code>
-            <p>새 테스트 모듈을 Querying 범위에 공개</p>
-          </article>
-          <article class="file-node">
-            <span>03 · REGISTER</span>
-            <code>test-suite/src/lib.rs</code>
-            <p>공통 Storage 테스트 매크로에 새 사례를 등록</p>
-          </article>
-          <article class="file-node">
-            <span>04 · DOCUMENT</span>
-            <code>docs/docs/query-builder/statements/querying/data-injection.md</code>
-            <p>검증된 코드와 결과 표, 설명으로 Todo를 교체</p>
-          </article>
-        </div>
-        <div class="test-strip">
-          <div class="test-metric"><strong>1</strong><span>new test case</span></div>
-          <div class="test-metric"><strong>2</strong><span>registration edits</span></div>
-          <div class="test-metric"><strong>1</strong><span>documentation page</span></div>
-          <div class="test-metric"><strong>0</strong><span>planned core edits</span></div>
-        </div>
+        <table class="landscape-table" aria-label="GlueSQL Storage 종류">
+          <thead><tr><th>분류</th><th>Storage</th><th>먼저 확인할 질문</th></tr></thead>
+          <tbody>
+            <tr><td>메모리</td><td>memory · shared-memory</td><td>임시 사용인가, 여러 스레드가 같은 데이터를 봐야 하는가</td></tr>
+            <tr><td>로컬 영속</td><td>sled · redb · file</td><td>프로세스 밖에 남겨야 하는가, 데이터 파일은 어떻게 관리되는가</td></tr>
+            <tr><td>파일 형식</td><td>json · csv · parquet</td><td>기존 파일을 SQL로 읽고 쓰는 목적이 있는가</td></tr>
+            <tr><td>외부 서비스</td><td>mongo · redis</td><td>이미 운영 중인 데이터 서비스와 연결하는가</td></tr>
+            <tr><td>조합·이력</td><td>composite · git</td><td>여러 Storage를 묶거나 변경 이력을 남겨야 하는가</td></tr>
+          </tbody>
+        </table>
+        <div class="statement"><span class="tag">CLI DIRECT 7</span> memory · sled · redb · json · csv · parquet · file</div>
       </div>
-      <aside class="notes">예상 변경은 테스트 파일 하나, 모듈 등록, 공통 스토리지 테스트 등록, 문서 한 페이지입니다. 핵심 코어 로직 변경은 계획하지 않습니다. 이 정도면 각 파일의 역할을 설명할 수 있고, 리뷰에서도 범위를 쉽게 확인할 수 있습니다.</aside>
+      <aside class="notes">storages 디렉터리에는 Memory, SharedMemory, Sled, Redb, File, JSON, CSV, Parquet, Mongo, Redis, Composite, Git의 12개 crate가 있습니다. 이 표는 우열을 정한 것이 아니라 탐색 질문별로 묶은 것입니다. 현재 CLI의 storage enum에서는 Memory, Sled, Redb, JSON, CSV, Parquet, File 일곱 종류를 직접 선택할 수 있습니다. 나머지는 라이브러리 수준에서 구성하거나 별도 환경이 필요합니다.
+
+[Sources] https://github.com/gluesql/gluesql/tree/main/storages · https://github.com/gluesql/gluesql/blob/main/cli/src/lib.rs</aside>
     </section>
 
-    <section class="slide" data-title="새로 배우는 실행 경로">
+    <section class="slide" data-title="나의 관심 영역">
       <span class="slide-number">08 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">07 · Architecture Payoff</p>
-          <h2>이 후보는 두 번째 실행 입구를 보여준다</h2>
-          <p class="lead">SQL 문자열과 Query Builder는 같은 실행기로 향하지만, 앞부분의 경로가 다릅니다.</p>
+          <p class="kicker">07 · My Interest</p>
+          <h2>내가 더 알고 싶은 것은 <span class="accent">데이터가 사는 방식</span>이다</h2>
         </div>
-        <div class="path-compare">
-          <div class="path-row" style="--path-color: var(--blue)">
-            <div class="path-label">SQL TEXT</div>
-            <div class="path-steps">
-              <div class="path-step">Parser</div>
-              <div class="path-step">Translator</div>
-              <div class="path-step">StatementPlan</div>
-              <div class="path-step">Storage Planner</div>
-              <div class="path-step">Executor → Payload</div>
-            </div>
-          </div>
-          <div class="path-row" style="--path-color: var(--teal)">
-            <div class="path-label">QUERY BUILDER</div>
-            <div class="path-steps">
-              <div class="path-step">Rust Builder API</div>
-              <div class="path-step skip">Parser·Translator</div>
-              <div class="path-step">Build → StatementPlan</div>
-              <div class="path-step">Storage Planner</div>
-              <div class="path-step">Executor → Payload</div>
-            </div>
-          </div>
+        <div class="interest-box">
+          <p class="quote">같은 SQL을 유지하면서, 사용 목적에 맞는 Storage를 어떻게 선택하고 검증할 수 있을까?</p>
+          <p class="lead">Storage 이름을 외우는 것보다 선택 근거와 실제 동작의 차이를 재현 가능한 형태로 남기고 싶습니다.</p>
         </div>
-        <div class="statement">첫 기여 후보가 곧 다음 학습 주제다. <span class="teal">Query Builder가 SQL 문자열 경로를 어떻게 우회하는지</span> 코드로 확인할 수 있다.</div>
+        <div class="scope-grid">
+          <article class="scope"><span>QUESTION 01</span><p>각 Storage는 데이터를 어디에, 어떤 형태로 남기는가?</p></article>
+          <article class="scope"><span>QUESTION 02</span><p>같은 SQL에서 지원 기능과 오류 경계는 어떻게 달라지는가?</p></article>
+          <article class="scope"><span>QUESTION 03</span><p>초보자가 사용 상황에 맞춰 선택할 수 있는 설명은 충분한가?</p></article>
+        </div>
       </div>
-      <aside class="notes">제가 지금까지 배운 Parser, Translator 경로만이 GlueSQL의 전부는 아닙니다. Query Builder의 Execute trait은 Build로 StatementPlan을 만든 뒤 storage.plan과 execute_stmt로 갑니다. 그래서 이 문서 테스트는 코어를 크게 바꾸지 않으면서 GlueSQL의 두 번째 입력 경로를 배우게 해 줍니다.</aside>
+      <aside class="notes">제 관심은 새로운 SQL 문법 자체보다 데이터가 실제로 어디에 남고, 같은 SQL을 여러 저장 방식에 어떻게 연결하는지에 있습니다. 특정 Storage 하나를 최고라고 정하려는 것은 아닙니다. 사용 목적에 따라 선택 기준을 세우고, 그 기준을 실제 실행과 코드로 검증한 뒤 다른 초보자도 따라 할 수 있는 형태로 정리하는 데 관심이 있습니다.</aside>
     </section>
 
-    <section class="slide" data-title="중복 방지">
+    <section class="slide" data-title="다른 기여 방향과의 관계">
       <span class="slide-number">09 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">08 · Avoiding Duplicate Work</p>
-          <h2>코드를 쓰기 전 세 번 확인한다</h2>
-          <p class="lead">미할당 이슈도 누군가 준비 중일 수 있으므로, GitHub 화면과 실제 변경 파일을 함께 봅니다.</p>
+          <p class="kicker">08 · Contribution Directions</p>
+          <h2>문법 기여와 Storage 기여는 <span class="blue">서로 다른 질문</span>을 넓힌다</h2>
+          <p class="lead">둘 중 하나가 더 중요한 것이 아니라, GlueSQL의 서로 다른 확장 지점을 다룹니다.</p>
         </div>
-        <div class="guardrail-grid">
-          <article class="guardrail">
-            <span>CHECK 01</span>
-            <h3>이슈 활동</h3>
-            <p>Assignee, 최근 댓글, Development의 연결 브랜치·PR을 확인합니다.</p>
+        <div class="contrast">
+          <article class="contrast-panel">
+            <span>SQL SYNTAX · FUNCTIONS</span>
+            <h3>무엇을 표현할 수 있는가</h3>
+            <p>아직 구현되지 않은 SQL 문법이나 함수를 추가해 사용자가 작성할 수 있는 쿼리의 범위를 넓힙니다.</p>
           </article>
-          <article class="guardrail">
-            <span>CHECK 02</span>
-            <h3>활성 PR 파일</h3>
-            <p>문서 PR #1935처럼 같은 영역을 수정하는 작업의 정확한 파일 목록을 비교합니다.</p>
-          </article>
-          <article class="guardrail">
-            <span>CHECK 03</span>
-            <h3>범위 확인 댓글</h3>
-            <p>“Data Injection 한 항목의 테스트와 문서를 진행해도 될까요?”라고 먼저 묻습니다.</p>
+          <div class="contrast-join">+</div>
+          <article class="contrast-panel storage-focus">
+            <span>STORAGE · INTEGRATION</span>
+            <h3>어디에서 어떻게 살게 할 것인가</h3>
+            <p>같은 실행 Core를 다양한 데이터 형식과 저장 시스템에 연결하고, 선택과 검증의 기준을 분명하게 만듭니다.</p>
           </article>
         </div>
-        <div class="two-col">
-          <div class="code-panel">
-            <div class="code-head"><span>proposed issue comment</span><span>before coding</span></div>
-            <pre>I'd like to work on the Data Injection sub-item only.
-My planned scope is one Query Builder test example
-and the matching documentation page.
-Is this scope available?</pre>
-          </div>
-          <div class="statement">확인 전에는 학습과 재현까지만 진행하고, <span class="accent">기여 브랜치와 구현은 합의 후</span> 시작한다.</div>
-        </div>
+        <div class="statement">현재의 나는 “새 문법”보다 <span class="teal">“같은 SQL과 다른 Storage의 차이”</span>에서 더 많은 질문이 생긴다.</div>
       </div>
-      <aside class="notes">중복을 피하기 위해 세 번 확인합니다. 이슈의 assignee와 댓글, 연결 PR을 보고, 같은 파일을 만지는 활성 PR을 봅니다. 마지막으로 Data Injection 한 항목의 범위를 댓글로 확인합니다. 답변 전에는 테스트 실행과 코드 읽기까지만 합니다.</aside>
+      <aside class="notes">팀원 중에는 GlueSQL에 아직 구현되지 않은 SQL 문법을 추가하는 데 관심이 있는 분들도 있습니다. 그 방향은 사용자가 표현할 수 있는 SQL 범위를 넓힙니다. 제가 관심을 가진 Storage 방향은 같은 Core를 어떤 데이터 계층에 연결하고, 그 선택을 어떻게 설명할지 다룹니다. 서로 경쟁하는 주제가 아니라 GlueSQL의 모듈성을 서로 다른 쪽에서 확장하는 기여라고 생각합니다.</aside>
     </section>
 
-    <section class="slide" data-title="다음 실행 순서">
+    <section class="slide" data-title="기여 접근 방식">
       <span class="slide-number">10 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">09 · Five-Step Trial</p>
-          <h2>발표 뒤에 진행할 <span class="teal">작은 완주 루프</span></h2>
-          <p class="lead">첫 목표는 PR이 아니라, 이 후보가 정말 내 수준과 프로젝트 방향에 맞는지 검증하는 것입니다.</p>
+          <p class="kicker">09 · How I Want to Contribute</p>
+          <h2>기능부터 만들기보다 <span class="teal">비교 가능한 근거</span>부터 만든다</h2>
+          <p class="lead">작은 실험을 반복해 이해한 범위를 넓히고, 그 과정에서 문서·테스트·코드의 빈틈을 찾겠습니다.</p>
         </div>
-        <div class="roadmap">
-          <div class="roadmap-step">
-            <span class="day">01 · RUN</span>
-            <h3>기존 values 테스트 실행</h3>
-            <p>현재 API와 Payload 형태를 로컬에서 확인합니다.</p>
-          </div>
-          <div class="roadmap-step">
-            <span class="day">02 · READ</span>
-            <h3>완성 문서 비교</h3>
-            <p>Data Aggregation 문서와 테스트의 연결 방식을 읽습니다.</p>
-          </div>
-          <div class="roadmap-step">
-            <span class="day">03 · DEFINE</span>
-            <h3>최소 예제 정의</h3>
-            <p>VALUES 입력, 실행 결과, 설명 범위를 한 문장으로 정합니다.</p>
-          </div>
-          <div class="roadmap-step">
-            <span class="day">04 · ASK</span>
-            <h3>Maintainer 확인</h3>
-            <p>#1676에 하위 항목 범위와 중복 여부를 질문합니다.</p>
-          </div>
-          <div class="roadmap-step">
-            <span class="day">05 · DECIDE</span>
-            <h3>진행 또는 전환</h3>
-            <p>합의되면 구현하고, 겹치면 #1408의 작은 조사로 전환합니다.</p>
-          </div>
+        <div class="track-grid">
+          <article class="track"><span class="level">STEP 1</span><h3>같은 SQL 재현</h3><p>동일한 스키마와 행을 여러 Storage에서 실행해 입력 조건을 맞춥니다.</p></article>
+          <article class="track"><span class="level">STEP 2</span><h3>코드 계약 추적</h3><p>각 구현이 어떤 trait을 어떻게 구현하고 테스트하는지 파일 단위로 확인합니다.</p></article>
+          <article class="track"><span class="level">STEP 3</span><h3>차이를 문서화</h3><p>재시작, 데이터 경로, 지원 동작, 오류를 명령과 결과가 있는 예제로 남깁니다.</p></article>
+          <article class="track"><span class="level">STEP 4</span><h3>작은 빈틈 제안</h3><p>검증 과정에서 확인된 문서 누락, 테스트 공백, 작은 사용성 문제부터 논의합니다.</p></article>
         </div>
-        <div class="statement">중단 기준도 정한다. 범위가 커지거나 코어 변경이 필요하면 <span class="accent">다시 쪼개고 질문한다.</span></div>
+        <div class="statement">공개 이슈 #1408의 Storage 기능 비교 요구는 이 작업의 필요성을 보여주지만, <span class="accent">지금 당장 맡겠다는 선언은 아니다.</span></div>
       </div>
-      <aside class="notes">다음 행동은 구체적입니다. 기존 values 테스트를 실행하고, 완성된 Data Aggregation 문서를 비교하고, 최소 예제를 정의합니다. 그 뒤에 Maintainer에게 묻습니다. 가능하면 기여 브랜치를 만들고, 겹치거나 범위가 커지면 Storage 문서 조사의 작은 단위로 전환합니다.</aside>
+      <aside class="notes">제가 생각한 기여 접근은 네 단계입니다. 먼저 같은 SQL을 여러 Storage에서 재현하고, 각 구현의 trait과 테스트를 읽고, 차이를 실행 가능한 문서로 정리합니다. 그 과정에서 확인된 작은 누락부터 Maintainer와 논의하려고 합니다. #1408에는 Storage별 지원 기능을 비교해 달라는 요구가 이미 있지만 범위가 큽니다. 그래서 이슈 전체를 맡겠다고 하기보다 작은 비교 단위로 나눌 수 있는지 근거를 먼저 만들겠습니다.
+
+[Sources] https://github.com/gluesql/gluesql/issues/1408</aside>
     </section>
 
-    <section class="slide" data-title="중간보고서에 남길 것">
+    <section class="slide" data-title="다음 비교 실험">
       <span class="slide-number">11 / 12</span>
       <div class="slide-inner">
         <div class="stack">
-          <p class="kicker">10 · Midterm Report</p>
-          <h2>PR 개수만이 아니라 <span class="blue">근거 있는 성장 과정</span>을 기록한다</h2>
-          <p class="lead">중간보고서는 환경 구축부터 후보 선정까지, 완료한 일과 아직 하지 않은 일을 분리해 보여줍니다.</p>
+          <p class="kicker">10 · Next Experiment</p>
+          <h2>다음에는 <span class="blue">동일 조건의 Storage 비교</span>를 한다</h2>
+          <p class="lead">Memory, Sled, Redb, JSON을 CLI에서 같은 SQL 스크립트로 실행하고 관찰 기록을 남깁니다.</p>
         </div>
-        <div class="report-grid">
-          <article class="report-item">
-            <span>EVIDENCE</span>
-            <h3>실행과 검증</h3>
-            <p>CRUD, Memory·Sled 비교, 515 Core tests, 196 fixtures, Clippy 결과</p>
-          </article>
-          <article class="report-item">
-            <span>LEARNING</span>
-            <h3>구조 이해</h3>
-            <p>SQL pipeline, Storage·Payload 구분, 로컬 table function 인자 실험</p>
-          </article>
-          <article class="report-item">
-            <span>NEXT STEP</span>
-            <h3>기여 후보 조사</h3>
-            <p>후보 5개 비교, 중복 확인, #1676 Data Injection 탐색 계획</p>
-          </article>
+        <div class="experiment-flow">
+          <article class="experiment-step"><span>01 · PREPARE</span><h3>SQL 고정</h3><p>CREATE, INSERT, SELECT로 구성한 한 개의 스크립트를 모든 Storage에 사용</p></article>
+          <article class="experiment-step"><span>02 · REOPEN</span><h3>재실행</h3><p>정상 종료 후 같은 설정으로 열어 테이블과 행의 보존 여부 확인</p></article>
+          <article class="experiment-step"><span>03 · INSPECT</span><h3>데이터 위치</h3><p>생성된 파일과 디렉터리, 실행 옵션, 필요한 외부 조건을 기록</p></article>
+          <article class="experiment-step"><span>04 · COMPARE</span><h3>증거 표 작성</h3><p>성공 결과와 오류를 명령, 출력, 관련 코드 위치와 함께 비교</p></article>
         </div>
-        <div class="test-strip">
-          <div class="test-metric"><strong>0</strong><span>upstream PR, honestly stated</span></div>
-          <div class="test-metric"><strong>1</strong><span>local learning branch</span></div>
-          <div class="test-metric"><strong>4</strong><span>evidence screenshots needed</span></div>
-          <div class="test-metric"><strong>8/9</strong><span>report deadline</span></div>
-        </div>
-        <div class="statement">“아직 기여하지 못했다”에서 끝내지 않고, <span class="teal">기여할 수 있는 상태를 어떻게 만들었는지</span> 보여준다.</div>
+        <div class="statement">결과물은 “추천 순위”가 아니라 <span class="teal">선택할 때 확인해야 할 질문과 재현 방법</span>이다.</div>
       </div>
-      <aside class="notes">중간보고서에는 PR 0건을 솔직히 적습니다. 대신 실행과 검증 수치, 배운 구조, 후보를 좁힌 기준을 근거로 제시합니다. 남은 일은 Sled 재시작, 테스트 결과, 모임 사진 같은 캡처를 보완하고, 발표 피드백과 Maintainer 확인 결과를 추가하는 것입니다.</aside>
+      <aside class="notes">발표 뒤 바로 할 수 있는 다음 실험입니다. CLI에서 직접 고를 수 있는 Storage 중 먼저 Memory, Sled, Redb, JSON을 사용하겠습니다. 동일한 SQL을 실행하고 종료와 재실행, 생성된 데이터 경로, 성공과 오류를 기록합니다. 아직 측정하지 않은 기능을 표에 미리 단정하지 않고, 직접 확인한 결과와 코드 근거만 남기겠습니다. 이 자료가 쌓이면 문서나 테스트 기여의 작은 범위를 구체적으로 제안할 수 있습니다.
+
+[Sources] https://github.com/gluesql/gluesql/blob/main/cli/src/lib.rs</aside>
     </section>
 
-    <section class="slide" data-title="결론">
+    <section class="slide cover" data-title="결론">
       <span class="slide-number">12 / 12</span>
       <div class="slide-inner decision">
         <div class="decision-copy">
           <p class="kicker">Conclusion</p>
-          <h2>막막함에서 <span class="accent">검증 가능한 후보</span>까지</h2>
+          <h2>내 첫 관심 영역은 <span class="accent">Storage</span>다</h2>
           <div class="decision-points">
-            <p><b>1</b><span>실행 경험을 기여 판단의 근거로 바꿨다.</span></p>
-            <p><b>2</b><span>후보를 재현성·범위·선례·중복으로 비교했다.</span></p>
-            <p><b>3</b><span>#1676 Data Injection을 첫 탐색 대상으로 좁혔다.</span></p>
+            <p><b>1</b><span>SQL 실행 흐름을 CLI와 코드로 따라가며 기본 구조를 배웠다.</span></p>
+            <p><b>2</b><span>Memory와 Sled의 차이에서 데이터 생명주기에 관심이 생겼다.</span></p>
+            <p><b>3</b><span>여러 Storage를 같은 조건으로 비교하며 기여 지점을 찾겠다.</span></p>
           </div>
-          <p class="lead">다음 결정은 추측이 아니라 기존 테스트 실행과 Maintainer의 범위 확인 뒤에 내립니다.</p>
+          <p class="lead">기여 대상을 먼저 정하기보다, 관심에서 출발한 검증 가능한 결과로 다음 결정을 만들겠습니다.</p>
         </div>
         <div class="qr-panel">
           <div id="qrcode" aria-label="발표자료 링크 QR 코드"></div>
           <a href="https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/" target="_blank" rel="noreferrer">jinhyunjun.github.io/my-website/<br>gluesql-2026-08-03/</a>
         </div>
       </div>
-      <aside class="notes">처음에는 기여할 주제가 없다고만 느꼈습니다. 지금은 실제 실행을 근거로 네 가지 기준을 만들고 후보를 비교했습니다. 첫 탐색 대상은 1676의 Data Injection 문서와 테스트입니다. 아직 확정 기여는 아니며, 기존 테스트 실행과 Maintainer 확인을 거쳐 다음 결정을 내리겠습니다. 질문 부탁드립니다.</aside>
+      <aside class="notes">정리하겠습니다. 저는 GlueSQL의 SQL 실행 흐름을 직접 실행하며 기본 구조를 배웠고, Memory와 Sled의 차이에서 데이터가 어디에 어떻게 남는지에 관심을 갖게 됐습니다. 앞으로는 여러 Storage를 동일 조건으로 비교해 선택 기준과 실제 동작을 검증하겠습니다. 그 결과를 문서와 테스트로 남기고, 확인된 작은 빈틈부터 기여 가능성을 논의하겠습니다. 아직 특정 이슈를 확정한 발표가 아니라, 제 관심과 접근 방법을 정한 발표입니다. 감사합니다.</aside>
     </section>
   </main>
 
-  <div class="speaker-panel" id="speakerPanel" aria-live="polite">
-    <h3>발표자 노트</h3>
-    <p id="speakerText"></p>
-  </div>
-
-  <div class="overview" id="overview" aria-hidden="true">
-    <div class="overview-grid" id="overviewGrid"></div>
-  </div>
-
+  <div class="speaker-panel" id="speakerPanel" aria-live="polite"><h3>발표자 노트</h3><p id="speakerText"></p></div>
+  <div class="overview" id="overview" aria-hidden="true"><div class="overview-grid" id="overviewGrid"></div></div>
   <nav class="controls" aria-label="슬라이드 제어">
-    <button class="control-button" id="prevButton" type="button" title="이전 슬라이드" aria-label="이전 슬라이드">
-      <i data-lucide="arrow-left"></i>
-    </button>
+    <button class="control-button" id="prevButton" type="button" title="이전 슬라이드" aria-label="이전 슬라이드"><i data-lucide="arrow-left"></i></button>
     <span class="counter" id="counter" aria-live="polite">01 / 12</span>
-    <button class="control-button" id="nextButton" type="button" title="다음 슬라이드" aria-label="다음 슬라이드">
-      <i data-lucide="arrow-right"></i>
-    </button>
-    <button class="control-button" id="overviewButton" type="button" title="전체 슬라이드" aria-label="전체 슬라이드">
-      <i data-lucide="layout-grid"></i>
-    </button>
-    <button class="control-button notes-toggle" id="notesButton" type="button" title="발표자 노트" aria-label="발표자 노트">
-      <i data-lucide="notebook-text"></i>
-    </button>
-    <a class="control-button" href="script.html" title="발표 대본" aria-label="발표 대본">
-      <i data-lucide="scroll-text"></i>
-    </a>
-    <button class="control-button fullscreen-toggle" id="fullscreenButton" type="button" title="전체 화면" aria-label="전체 화면">
-      <i data-lucide="maximize"></i>
-    </button>
+    <button class="control-button" id="nextButton" type="button" title="다음 슬라이드" aria-label="다음 슬라이드"><i data-lucide="arrow-right"></i></button>
+    <button class="control-button" id="overviewButton" type="button" title="전체 슬라이드" aria-label="전체 슬라이드"><i data-lucide="layout-grid"></i></button>
+    <button class="control-button" id="notesButton" type="button" title="발표자 노트" aria-label="발표자 노트"><i data-lucide="notebook-text"></i></button>
+    <a class="control-button" href="script.html" title="발표 대본" aria-label="발표 대본"><i data-lucide="scroll-text"></i></a>
+    <button class="control-button" id="fullscreenButton" type="button" title="전체 화면" aria-label="전체 화면"><i data-lucide="maximize"></i></button>
   </nav>
 
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script>
     (() => {
-      if ("scrollRestoration" in history) {
-        history.scrollRestoration = "manual";
-      }
-
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
       const slides = Array.from(document.querySelectorAll(".slide"));
       const progressBar = document.getElementById("progressBar");
       const counter = document.getElementById("counter");
@@ -2029,99 +559,54 @@ Is this scope available?</pre>
       const speakerPanel = document.getElementById("speakerPanel");
       const speakerText = document.getElementById("speakerText");
       let currentIndex = 0;
-
       const pad = (value) => String(value).padStart(2, "0");
-
       function goTo(index, behavior = "smooth") {
         const safeIndex = Math.max(0, Math.min(slides.length - 1, index));
         slides[safeIndex].scrollIntoView({ behavior, block: "start" });
       }
-
       function update(index) {
         currentIndex = index;
-        const current = slides[index];
-        const progress = ((index + 1) / slides.length) * 100;
-        progressBar.style.width = `${progress}%`;
+        progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
         counter.textContent = `${pad(index + 1)} / ${pad(slides.length)}`;
         prevButton.disabled = index === 0;
         nextButton.disabled = index === slides.length - 1;
-        const note = current.querySelector(".notes");
+        const note = slides[index].querySelector(".notes");
         speakerText.textContent = note ? note.textContent.trim() : "";
         history.replaceState(null, "", `#${index + 1}`);
       }
-
       const observer = new IntersectionObserver((entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        update(slides.indexOf(visible.target));
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) update(slides.indexOf(visible.target));
       }, { threshold: [0.55, 0.75] });
-
       slides.forEach((slide) => observer.observe(slide));
-
       prevButton.addEventListener("click", () => goTo(currentIndex - 1));
       nextButton.addEventListener("click", () => goTo(currentIndex + 1));
-
       notesButton.addEventListener("click", () => {
-        const isOpen = speakerPanel.classList.toggle("open");
-        notesButton.classList.toggle("active", isOpen);
+        const open = speakerPanel.classList.toggle("open");
+        notesButton.classList.toggle("active", open);
       });
-
       overviewButton.addEventListener("click", () => {
-        const isOpen = overview.classList.toggle("open");
-        overview.setAttribute("aria-hidden", String(!isOpen));
-        overviewButton.classList.toggle("active", isOpen);
+        const open = overview.classList.toggle("open");
+        overview.setAttribute("aria-hidden", String(!open));
+        overviewButton.classList.toggle("active", open);
       });
-
       overview.addEventListener("click", (event) => {
-        if (event.target === overview) {
-          overview.classList.remove("open");
-          overview.setAttribute("aria-hidden", "true");
-          overviewButton.classList.remove("active");
-        }
+        if (event.target === overview) overviewButton.click();
       });
-
       fullscreenButton.addEventListener("click", async () => {
-        if (!document.fullscreenElement) {
-          await document.documentElement.requestFullscreen();
-        } else {
-          await document.exitFullscreen();
-        }
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
       });
-
-      document.addEventListener("fullscreenchange", () => {
-        fullscreenButton.classList.toggle("active", Boolean(document.fullscreenElement));
-      });
-
+      document.addEventListener("fullscreenchange", () => fullscreenButton.classList.toggle("active", Boolean(document.fullscreenElement)));
       document.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "PageDown") {
-          event.preventDefault();
-          goTo(currentIndex + 1);
-        }
-        if (event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp") {
-          event.preventDefault();
-          goTo(currentIndex - 1);
-        }
-        if (event.key === "Home") {
-          event.preventDefault();
-          goTo(0);
-        }
-        if (event.key === "End") {
-          event.preventDefault();
-          goTo(slides.length - 1);
-        }
-        if (event.key.toLowerCase() === "o") {
-          overviewButton.click();
-        }
-        if (event.key.toLowerCase() === "n") {
-          notesButton.click();
-        }
-        if (event.key === "Escape" && overview.classList.contains("open")) {
-          overviewButton.click();
-        }
+        if (["ArrowRight", "ArrowDown", "PageDown"].includes(event.key)) { event.preventDefault(); goTo(currentIndex + 1); }
+        if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) { event.preventDefault(); goTo(currentIndex - 1); }
+        if (event.key === "Home") { event.preventDefault(); goTo(0); }
+        if (event.key === "End") { event.preventDefault(); goTo(slides.length - 1); }
+        if (event.key.toLowerCase() === "o") overviewButton.click();
+        if (event.key.toLowerCase() === "n") notesButton.click();
+        if (event.key === "Escape" && overview.classList.contains("open")) overviewButton.click();
       });
-
       slides.forEach((slide, index) => {
         const button = document.createElement("button");
         button.type = "button";
@@ -2135,20 +620,15 @@ Is this scope available?</pre>
         });
         overviewGrid.appendChild(button);
       });
-
       const initialIndex = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1) || 1) - 1));
       update(initialIndex);
       requestAnimationFrame(() => goTo(initialIndex, "auto"));
-
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
-
+      if (window.lucide) window.lucide.createIcons();
       if (window.QRCode) {
         new QRCode(document.getElementById("qrcode"), {
           text: "https://jinhyunjun.github.io/my-website/gluesql-2026-08-03/",
-          width: 190,
-          height: 190,
+          width: 176,
+          height: 176,
           colorDark: "#17191d",
           colorLight: "#fffdf8",
           correctLevel: QRCode.CorrectLevel.M
